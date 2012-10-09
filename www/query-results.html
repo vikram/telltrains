@@ -1,0 +1,580 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html
+  ><head
+    ><title
+      >Trains from Reading to Brighton</title
+    >
+<meta name="robots" content="index, follow" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="description" content="Telltrains is an uk train information search engine that helps anyone find the perfect journey home, so that they can get there in time." />
+<meta name="keywords" content="telltrains, trains, train, train times, train fare, fare, rail, uk, british rail, graphical view, timetable, sms" />
+
+<script type="text/javascript" src="/javascripts/jscalendar-1.0/calendar.js"></script>
+  <script type="text/javascript" src="/javascripts/jscalendar-1.0/lang/calendar-en.js"></script>
+
+  <!-- the following script defines the Calendar.setup helper function, which makes
+       adding a calendar a matter of 1 or 2 lines of code. -->
+  <script type="text/javascript" src="/javascripts/jscalendar-1.0/calendar-setup.js"></script>
+
+<link rel="stylesheet" href="/stylesheets/sheet.css"/>
+
+
+<!--[if IE 7]>
+<link rel="stylesheet" href="/css/ie7.css" type="text/css" />
+<![endif]-->
+
+<link href="http://css.telltrains.com/stylesheets/timeline.css" rel="stylesheet"
+    /><link href="http://images.telltrains.com/images/transparent.ico" rel="icon"
+    /><script type="text/javascript" src="http://js.telltrains.com/javascripts/timeline.js"
+      ></script
+    ><link href="http://css.telltrains.com/stylesheets/gmlightbox.css" rel="stylesheet"
+    /><script type="text/javascript" src="http://js.telltrains.com/javascripts/gmlightbox.js"
+      ></script
+    ><script type="text/javascript" src="http://js.telltrains.com/javascripts/prototype.js"
+      ></script
+    ><script type="text/javascript" src="http://js.telltrains.com/javascripts/scriptaculous.js"
+      ></script
+    ><script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAfzASmKvmIGhgVZBphgbIMhSbOCASmIHfcyCoxgLWrOePWQVFNhScF6BwHPam3my7bT67NmWM1eTM4g"
+      ></script
+    >
+
+</head
+  ><body onload="init(); "
+    ><center
+      ><h2
+        >Trains from Reading to Brighton on Mon May 7 2007</h2
+      ><a href="#" style="z-index: 5" onclick="Effect.Appear('options',{duration:.2})">Options</a></center
+    >
+<div id="options" style="display: none;">
+
+<form enctype="multipart/form-data" method="post" action="#public">
+
+<div class="info">
+<h2>Journey options</h2>
+<p></p>
+</div>
+
+<ul id="reading-manchester">
+
+<li class="  " id="fo16li21">
+<label class="desc" id="title21" for="Field21">Leaving<span id="req_21" class="req"> </span></label>
+
+<span>
+<input id="Field21-1"
+name="Field21-1"
+class="field text"
+size="2"
+type="text"
+maxlength="2"
+value=""  /> /
+<label for="Field21-1">DD</label>
+</span>
+
+<span>
+<input id="Field21-2"
+name="Field21-2"
+class="field text "
+size="2"
+type="text"
+maxlength="2"
+value=""  /> /
+<label for="Field21-2">MM</label>
+
+</span>
+
+<span>
+ <input id="Field21"
+name="Field21"
+class="field text"
+size="4"
+type="text"
+maxlength="4" 
+value=""  />
+<label for="Field21">YYYY</label>
+</span>
+
+<a id="pickdate21" class="button"><img class="icon" src="/images/calendar.png" alt="Pick date." /></a>
+
+ <script type="text/javascript">
+ <!--
+    Calendar.setup({
+        inputField     :    "Field21",     // id of the input field
+        ifFormat       :    "%B %e, %Y",     // format of the input field (even if hidden, this format will be honored)
+        button         :    "pickdate21",  // trigger button (well, IMG in our case)
+	weekNumbers    :    false,
+        onSelect       :    selectDate,
+        singleClick    :    true
+    });
+function selectDate(cal) {
+    var p = cal.params;
+    var update = cal.dateClicked || p.electric;
+    year = p.inputField.id;
+    day = year + "-1";
+    month = year + "-2";
+    document.getElementById(month).value = cal.date.print("%m");
+    document.getElementById(day).value = cal.date.print("%e");
+    document.getElementById(year).value = cal.date.print("%Y");
+}
+ -->
+ </script>
+
+</li>
+
+<li class="  " id="fo16li4">
+<label for="Field4" id="title4" class="desc">Changes<span class="req" id="req_4"> </span></label>
+<div>
+<select id="Field4" 
+   name="Field4" 
+   class="field select" >
+<option value="-1" selected="selected">Any number</option>
+<option value="0">Direct</option>
+<option value="1">1 change</option>
+<option value="2">2 changes</option>
+<option value="3">3 changes</option>
+</select>
+</div>
+</li>
+<li class="  " id="fiod">
+<div class="left">
+<span>
+<input id="Field5" 
+       name="Field5" 
+       class="field checkbox" 
+       type="checkbox" 
+       checked="checked"
+       value="checked" />
+<label class="choice" for="field5">Include stopping services</label>
+</span>
+<span>
+<input id="Field6" 
+       name="Field6" 
+       class="field checkbox" 
+       type="checkbox" 
+       checked="checked"
+       value="checked" />
+<label class="choice" for="field6">Include peak time journeys</label>
+</span>
+</div>
+</li>
+
+<li>
+<div class="left">
+<label class="desc" id="title12" for="Field12">Routes (Reading to Manchester)<span id="req_12" class="req"> </span></label>
+<span>
+<input id="Field12" 
+   name="Field12" 
+   class="field checkbox" 
+   checked="checked"
+   type="checkbox" value="checked" 
+ />
+<label class="choice" for="field12">Direct train</label>
+</span>
+
+<span>
+<input id="Field13" 
+   name="Field13" 
+   class="field checkbox" 
+   type="checkbox" value="checked" 
+   checked="checked"
+ /> 
+<label class="choice" for="field13">Change at Warrington Bank Quay</label>
+</span>
+
+<span>
+<input id="Field14" 
+   name="Field14" 
+   class="field checkbox" 
+   type="checkbox" value="checked" 
+   checked="checked"
+/> 
+<label class="choice" for="field14">Change first at Birmingham New street then at Warrington Bank Quay</label>
+</span>
+</li>
+
+<li>
+<div class="left">
+<label class="desc" id="title11" for="Field11">Departing between<span id="req_11" class="req"> </span></label>
+
+<span>
+<select id="Field11" 
+   name="Field11" 
+   class="field select" >
+<option value="6" selected="selected">6 am</option>
+<option value="7">7 am</option>
+<option value="8">8 am</option>
+<option value="9">9 am</option>
+<option value="10">10 am</option>
+</select> and
+</span>
+
+<span>
+<select id="Field11-1" 
+   name="Field11-1" 
+   class="field select" >
+<option value="7" selected="selected">7 am</option>
+<option value="8">8 am</option>
+<option value="9">9 am</option>
+<option value="10">10 am</option>
+<option value="11">11 am</option>
+</select>
+</span>
+</div>
+<div class="left">
+<label class="desc" id="title12" for="Field12">Arriving between<span id="req_12" class="req"> </span></label>
+
+<span>
+<select id="Field12" 
+   name="Field12" 
+   class="field select medium" >
+<option value="6" selected="selected">6 am</option>
+<option value="7">7 am</option>
+<option value="8">8 am</option>
+<option value="9">9 am</option>
+<option value="10">10 am</option>
+</select>
+ and 
+</span>
+
+<span>
+<select id="Field12-1" 
+   name="Field12-1" 
+   class="field select medium" >
+<option value="7" selected="selected">7 am</option>
+<option value="8">8 am</option>
+<option value="9">9 am</option>
+<option value="10">10 am</option>
+<option value="11">11 am</option>
+</select>
+</span>
+</div>
+</li>
+
+</ul>
+</form>
+</div>
+
+<div id="outerDiv"
+      >
+<div id="sliders"
+      ><div id="tracktime"
+        ><div class="sliderhandle" id="handleleavingstart"
+          ></div
+        ><div class="sliderhandle" id="handleleavingend"
+          ></div
+        ><div class="sliderhandle" id="handlearrivingstart"
+          ></div
+        ><div class="sliderhandle" id="handlearrivingend"
+          ></div
+        ></div
+      ></div>
+<div id="markers" style="left: 180px;"
+  ><div
+    ><div class="odd" style="left: -180px;"
+  >2pm</div
+><div class="even" style="left: -120px;"
+  >3pm</div
+><div class="odd" style="left: -60px;"
+  >4pm</div
+><div class="even" style="left: 0px;"
+  >5pm</div
+><div class="odd" style="left: 60px;"
+  >6pm</div
+><div class="even" style="left: 120px;"
+  >7pm</div
+><div class="odd" style="left: 180px;"
+  >8pm</div
+><div class="even" style="left: 240px;"
+  >9pm</div
+><div class="odd" style="left: 300px;"
+  >10pm</div
+><div class="even" style="left: 360px;"
+  >11pm</div
+><div class="odd" style="left: 420px;"
+  >midnight</div
+><div class="even" style="left: 480px;"
+  >1am</div
+><div class="odd" style="left: 540px;"
+  >2am</div
+><div class="even" style="left: 600px;"
+  >3am</div
+><div class="odd" style="left: 660px;"
+  >4am</div
+><div class="even" style="left: 720px;"
+  >5am</div
+><div class="odd" style="left: 780px;"
+  >6am</div
+><div class="even" style="left: 840px;"
+  >7am</div
+></div
+  ></div
+><div id="container"
+        >
+<div id="timeline" style="left: -540px;"
+          ><div id="trains"
+            ><div class="red" id="1" style="top: 1em; left: 584px; width: 311px;"
+  ><div class="deptime"
+    >3:34 PM</div
+  ><div class="arrtime" style="left: 166px;"
+    >5:25 PM</div
+  ><div class="duration" style="left: 166px;"
+    >1 hour, 51 min</div
+  ><img class="train" title="Train from Reading (RDG)" alt="Train from Reading (RDG)" src="http://images.telltrains.com/images/leftbluebar.png" width="5"
+/><img class="train" style="left: 156px;" title="arriving Brighton (BTN) at 17:25" alt="arriving Brighton (BTN) at 17:25" src="http://images.telltrains.com/images/rightbluebar.png" width="5"
+/><img class="train" style="left: 55px;" title="leaving Reading (RDG) at 15:34" alt="leaving at 15:34" src="http://images.telltrains.com/images/bluebar.png" width="66"
+/><img class="train" style="left: 131px;" title="leaving Gatwick Airport (GTW) at 17:00" alt="leaving at 17:00" src="http://images.telltrains.com/images/bluebar.png" width="25"
+/><img class="change" style="left: 121px;" title="Gatwick Airport (GTW)" alt="Gatwick Airport (GTW)" src="http://images.telltrains.com/images/change.png" width="10"
+/></div
+><div class="red" id="2" style="top: 4em; left: 592px; width: 345px;"
+  ><div class="deptime"
+    >3:42 PM</div
+  ><div class="arrtime" style="left: 200px;"
+    >6:07 PM</div
+  ><div class="duration" style="left: 200px;"
+    >2 hours, 25 min</div
+  ><img class="train" title="Train from Reading (RDG)" alt="Train from Reading (RDG)" src="http://images.telltrains.com/images/leftbluebar.png" width="5"
+/><img class="train" style="left: 190px;" title="arriving Brighton (BTN) at 18:07" alt="arriving Brighton (BTN) at 18:07" src="http://images.telltrains.com/images/rightbluebar.png" width="5"
+/><img class="train" style="left: 55px;" title="leaving Reading (RDG) at 15:42" alt="leaving at 15:42" src="http://images.telltrains.com/images/bluebar.png" width="61"
+/><img class="train" style="left: 130px;" title="leaving Clapham Junction (CLJ) at 17:07" alt="leaving at 17:07" src="http://images.telltrains.com/images/bluebar.png" width="60"
+/><img class="change" style="left: 116px;" title="Clapham Junction (CLJ)" alt="Clapham Junction (CLJ)" src="http://images.telltrains.com/images/change.png" width="14"
+/></div
+><div class="red" id="3" style="top: 7em; left: 595px; width: 342px;"
+  ><div class="deptime"
+    >3:45 PM</div
+  ><div class="arrtime" style="left: 197px;"
+    >6:07 PM</div
+  ><div class="duration" style="left: 197px;"
+    >2 hours, 22 min</div
+  ><img class="train" title="Train from Reading (RDG)" alt="Train from Reading (RDG)" src="http://images.telltrains.com/images/leftbluebar.png" width="5"
+/><img class="train" style="left: 187px;" title="arriving Brighton (BTN) at 18:07" alt="arriving Brighton (BTN) at 18:07" src="http://images.telltrains.com/images/rightbluebar.png" width="5"
+/><img class="train" style="left: 55px;" title="leaving Reading (RDG) at 15:45" alt="leaving at 15:45" src="http://images.telltrains.com/images/bluebar.png" width="20"
+/><img class="underground" style="left: 75px;" title="leaving London Paddington (PAD) at 16:15" alt="leaving at 16:15" src="http://images.telltrains.com/images/bluebar.png" width="47"
+/><img class="train" style="left: 122px;" title="leaving London Victoria (VIC) at 17:02" alt="leaving at 17:02" src="http://images.telltrains.com/images/bluebar.png" width="65"
+/><img class="change" style="left: 75px;" title="London Paddington (PAD)" alt="London Paddington (PAD)" src="http://images.telltrains.com/images/change.png" width="0"
+/><img class="change" style="left: 122px;" title="London Victoria (VIC)" alt="London Victoria (VIC)" src="http://images.telltrains.com/images/change.png" width="0"
+/></div
+><div class="red" id="4" style="top: 10em; left: 612px; width: 330px;"
+  ><div class="deptime"
+    >4:02 PM</div
+  ><div class="arrtime" style="left: 185px;"
+    >6:12 PM</div
+  ><div class="duration" style="left: 185px;"
+    >2 hours, 10 min</div
+  ><img class="train" title="Train from Reading (RDG)" alt="Train from Reading (RDG)" src="http://images.telltrains.com/images/leftbluebar.png" width="5"
+/><img class="train" style="left: 55px;" title="leaving at 16:02" alt="leaving at 16:02" src="http://images.telltrains.com/images/bluebar.png" width="120"
+/><img class="train" style="left: 175px;" title="arriving Brighton (BTN) at 18:12" alt="arriving Brighton (BTN) at 18:12" src="http://images.telltrains.com/images/rightbluebar.png" width="5"
+/></div
+><div class="red" id="5" style="top: 13em; left: 614px; width: 336px;"
+  ><div class="deptime"
+    >4:04 PM</div
+  ><div class="arrtime" style="left: 191px;"
+    >6:20 PM</div
+  ><div class="duration" style="left: 191px;"
+    >2 hours, 16 min</div
+  ><img class="train" title="Train from Reading (RDG)" alt="Train from Reading (RDG)" src="http://images.telltrains.com/images/leftbluebar.png" width="5"
+/><img class="train" style="left: 181px;" title="arriving Brighton (BTN) at 18:20" alt="arriving Brighton (BTN) at 18:20" src="http://images.telltrains.com/images/rightbluebar.png" width="5"
+/><img class="train" style="left: 55px;" title="leaving Reading (RDG) at 16:04" alt="leaving at 16:04" src="http://images.telltrains.com/images/bluebar.png" width="69"
+/><img class="train" style="left: 130px;" title="leaving Redhill (RDH) at 17:29" alt="leaving at 17:29" src="http://images.telltrains.com/images/bluebar.png" width="14"
+/><img class="train" style="left: 151px;" title="leaving Three Bridges (TBD) at 17:50" alt="leaving at 17:50" src="http://images.telltrains.com/images/bluebar.png" width="30"
+/><img class="change" style="left: 124px;" title="Redhill (RDH)" alt="Redhill (RDH)" src="http://images.telltrains.com/images/change.png" width="6"
+/><img class="change" style="left: 144px;" title="Three Bridges (TBD)" alt="Three Bridges (TBD)" src="http://images.telltrains.com/images/change.png" width="7"
+/></div
+><div class="red" id="6" style="top: 16em; left: 644px; width: 311px;"
+  ><div class="deptime"
+    >4:34 PM</div
+  ><div class="arrtime" style="left: 166px;"
+    >6:25 PM</div
+  ><div class="duration" style="left: 166px;"
+    >1 hour, 51 min</div
+  ><img class="train" title="Train from Reading (RDG)" alt="Train from Reading (RDG)" src="http://images.telltrains.com/images/leftbluebar.png" width="5"
+/><img class="train" style="left: 156px;" title="arriving Brighton (BTN) at 18:25" alt="arriving Brighton (BTN) at 18:25" src="http://images.telltrains.com/images/rightbluebar.png" width="5"
+/><img class="train" style="left: 55px;" title="leaving Reading (RDG) at 16:34" alt="leaving at 16:34" src="http://images.telltrains.com/images/bluebar.png" width="66"
+/><img class="train" style="left: 131px;" title="leaving Gatwick Airport (GTW) at 18:00" alt="leaving at 18:00" src="http://images.telltrains.com/images/bluebar.png" width="25"
+/><img class="change" style="left: 121px;" title="Gatwick Airport (GTW)" alt="Gatwick Airport (GTW)" src="http://images.telltrains.com/images/change.png" width="10"
+/></div
+><div class="red" id="7" style="top: 19em; left: 652px; width: 345px;"
+  ><div class="deptime"
+    >4:42 PM</div
+  ><div class="arrtime" style="left: 200px;"
+    >7:07 PM</div
+  ><div class="duration" style="left: 200px;"
+    >2 hours, 25 min</div
+  ><img class="train" title="Train from Reading (RDG)" alt="Train from Reading (RDG)" src="http://images.telltrains.com/images/leftbluebar.png" width="5"
+/><img class="train" style="left: 190px;" title="arriving Brighton (BTN) at 19:07" alt="arriving Brighton (BTN) at 19:07" src="http://images.telltrains.com/images/rightbluebar.png" width="5"
+/><img class="train" style="left: 55px;" title="leaving Reading (RDG) at 16:42" alt="leaving at 16:42" src="http://images.telltrains.com/images/bluebar.png" width="61"
+/><img class="train" style="left: 130px;" title="leaving Clapham Junction (CLJ) at 18:07" alt="leaving at 18:07" src="http://images.telltrains.com/images/bluebar.png" width="60"
+/><img class="change" style="left: 116px;" title="Clapham Junction (CLJ)" alt="Clapham Junction (CLJ)" src="http://images.telltrains.com/images/change.png" width="14"
+/></div
+><div class="red" id="8" style="top: 22em; left: 655px; width: 342px;"
+  ><div class="deptime"
+    >4:45 PM</div
+  ><div class="arrtime" style="left: 197px;"
+    >7:07 PM</div
+  ><div class="duration" style="left: 197px;"
+    >2 hours, 22 min</div
+  ><img class="train" title="Train from Reading (RDG)" alt="Train from Reading (RDG)" src="http://images.telltrains.com/images/leftbluebar.png" width="5"
+/><img class="train" style="left: 187px;" title="arriving Brighton (BTN) at 19:07" alt="arriving Brighton (BTN) at 19:07" src="http://images.telltrains.com/images/rightbluebar.png" width="5"
+/><img class="train" style="left: 55px;" title="leaving Reading (RDG) at 16:45" alt="leaving at 16:45" src="http://images.telltrains.com/images/bluebar.png" width="20"
+/><img class="underground" style="left: 75px;" title="leaving London Paddington (PAD) at 17:15" alt="leaving at 17:15" src="http://images.telltrains.com/images/bluebar.png" width="47"
+/><img class="train" style="left: 122px;" title="leaving London Victoria (VIC) at 18:02" alt="leaving at 18:02" src="http://images.telltrains.com/images/bluebar.png" width="65"
+/><img class="change" style="left: 75px;" title="London Paddington (PAD)" alt="London Paddington (PAD)" src="http://images.telltrains.com/images/change.png" width="0"
+/><img class="change" style="left: 122px;" title="London Victoria (VIC)" alt="London Victoria (VIC)" src="http://images.telltrains.com/images/change.png" width="0"
+/></div
+><div class="red" id="9" style="top: 25em; left: 674px; width: 336px;"
+  ><div class="deptime"
+    >5:04 PM</div
+  ><div class="arrtime" style="left: 191px;"
+    >7:20 PM</div
+  ><div class="duration" style="left: 191px;"
+    >2 hours, 16 min</div
+  ><img class="train" title="Train from Reading (RDG)" alt="Train from Reading (RDG)" src="http://images.telltrains.com/images/leftbluebar.png" width="5"
+/><img class="train" style="left: 181px;" title="arriving Brighton (BTN) at 19:20" alt="arriving Brighton (BTN) at 19:20" src="http://images.telltrains.com/images/rightbluebar.png" width="5"
+/><img class="train" style="left: 55px;" title="leaving Reading (RDG) at 17:04" alt="leaving at 17:04" src="http://images.telltrains.com/images/bluebar.png" width="70"
+/><img class="train" style="left: 130px;" title="leaving Redhill (RDH) at 18:29" alt="leaving at 18:29" src="http://images.telltrains.com/images/bluebar.png" width="14"
+/><img class="train" style="left: 151px;" title="leaving Three Bridges (TBD) at 18:50" alt="leaving at 18:50" src="http://images.telltrains.com/images/bluebar.png" width="30"
+/><img class="change" style="left: 125px;" title="Redhill (RDH)" alt="Redhill (RDH)" src="http://images.telltrains.com/images/change.png" width="5"
+/><img class="change" style="left: 144px;" title="Three Bridges (TBD)" alt="Three Bridges (TBD)" src="http://images.telltrains.com/images/change.png" width="7"
+/></div
+><div class="red" id="10" style="top: 28em; left: 704px; width: 311px;"
+  ><div class="deptime"
+    >5:34 PM</div
+  ><div class="arrtime" style="left: 166px;"
+    >7:25 PM</div
+  ><div class="duration" style="left: 166px;"
+    >1 hour, 51 min</div
+  ><img class="train" title="Train from Reading (RDG)" alt="Train from Reading (RDG)" src="http://images.telltrains.com/images/leftbluebar.png" width="5"
+/><img class="train" style="left: 156px;" title="arriving Brighton (BTN) at 19:25" alt="arriving Brighton (BTN) at 19:25" src="http://images.telltrains.com/images/rightbluebar.png" width="5"
+/><img class="train" style="left: 55px;" title="leaving Reading (RDG) at 17:34" alt="leaving at 17:34" src="http://images.telltrains.com/images/bluebar.png" width="66"
+/><img class="train" style="left: 131px;" title="leaving Gatwick Airport (GTW) at 19:00" alt="leaving at 19:00" src="http://images.telltrains.com/images/bluebar.png" width="25"
+/><img class="change" style="left: 121px;" title="Gatwick Airport (GTW)" alt="Gatwick Airport (GTW)" src="http://images.telltrains.com/images/change.png" width="10"
+/></div
+><div class="red" id="11" style="top: 31em; left: 712px; width: 345px;"
+  ><div class="deptime"
+    >5:42 PM</div
+  ><div class="arrtime" style="left: 200px;"
+    >8:07 PM</div
+  ><div class="duration" style="left: 200px;"
+    >2 hours, 25 min</div
+  ><img class="train" title="Train from Reading (RDG)" alt="Train from Reading (RDG)" src="http://images.telltrains.com/images/leftbluebar.png" width="5"
+/><img class="train" style="left: 190px;" title="arriving Brighton (BTN) at 20:07" alt="arriving Brighton (BTN) at 20:07" src="http://images.telltrains.com/images/rightbluebar.png" width="5"
+/><img class="train" style="left: 55px;" title="leaving Reading (RDG) at 17:42" alt="leaving at 17:42" src="http://images.telltrains.com/images/bluebar.png" width="61"
+/><img class="train" style="left: 130px;" title="leaving Clapham Junction (CLJ) at 19:07" alt="leaving at 19:07" src="http://images.telltrains.com/images/bluebar.png" width="60"
+/><img class="change" style="left: 116px;" title="Clapham Junction (CLJ)" alt="Clapham Junction (CLJ)" src="http://images.telltrains.com/images/change.png" width="14"
+/></div
+><div class="red" id="12" style="top: 34em; left: 715px; width: 342px;"
+  ><div class="deptime"
+    >5:45 PM</div
+  ><div class="arrtime" style="left: 197px;"
+    >8:07 PM</div
+  ><div class="duration" style="left: 197px;"
+    >2 hours, 22 min</div
+  ><img class="train" title="Train from Reading (RDG)" alt="Train from Reading (RDG)" src="http://images.telltrains.com/images/leftbluebar.png" width="5"
+/><img class="train" style="left: 187px;" title="arriving Brighton (BTN) at 20:07" alt="arriving Brighton (BTN) at 20:07" src="http://images.telltrains.com/images/rightbluebar.png" width="5"
+/><img class="train" style="left: 55px;" title="leaving Reading (RDG) at 17:45" alt="leaving at 17:45" src="http://images.telltrains.com/images/bluebar.png" width="20"
+/><img class="underground" style="left: 75px;" title="leaving London Paddington (PAD) at 18:15" alt="leaving at 18:15" src="http://images.telltrains.com/images/bluebar.png" width="47"
+/><img class="train" style="left: 122px;" title="leaving London Victoria (VIC) at 19:02" alt="leaving at 19:02" src="http://images.telltrains.com/images/bluebar.png" width="65"
+/><img class="change" style="left: 75px;" title="London Paddington (PAD)" alt="London Paddington (PAD)" src="http://images.telltrains.com/images/change.png" width="0"
+/><img class="change" style="left: 122px;" title="London Victoria (VIC)" alt="London Victoria (VIC)" src="http://images.telltrains.com/images/change.png" width="0"
+/></div
+><div class="red" id="13" style="top: 37em; left: 734px; width: 336px;"
+  ><div class="deptime"
+    >6:04 PM</div
+  ><div class="arrtime" style="left: 191px;"
+    >8:20 PM</div
+  ><div class="duration" style="left: 191px;"
+    >2 hours, 16 min</div
+  ><img class="train" title="Train from Reading (RDG)" alt="Train from Reading (RDG)" src="http://images.telltrains.com/images/leftbluebar.png" width="5"
+/><img class="train" style="left: 181px;" title="arriving Brighton (BTN) at 20:20" alt="arriving Brighton (BTN) at 20:20" src="http://images.telltrains.com/images/rightbluebar.png" width="5"
+/><img class="train" style="left: 55px;" title="leaving Reading (RDG) at 18:04" alt="leaving at 18:04" src="http://images.telltrains.com/images/bluebar.png" width="69"
+/><img class="train" style="left: 130px;" title="leaving Redhill (RDH) at 19:29" alt="leaving at 19:29" src="http://images.telltrains.com/images/bluebar.png" width="14"
+/><img class="train" style="left: 151px;" title="leaving Three Bridges (TBD) at 19:50" alt="leaving at 19:50" src="http://images.telltrains.com/images/bluebar.png" width="30"
+/><img class="change" style="left: 124px;" title="Redhill (RDH)" alt="Redhill (RDH)" src="http://images.telltrains.com/images/change.png" width="6"
+/><img class="change" style="left: 144px;" title="Three Bridges (TBD)" alt="Three Bridges (TBD)" src="http://images.telltrains.com/images/change.png" width="7"
+/></div
+><div class="red" id="14" style="top: 40em; left: 741px; width: 339px;"
+  ><div class="deptime"
+    >6:11 PM</div
+  ><div class="arrtime" style="left: 194px;"
+    >8:30 PM</div
+  ><div class="duration" style="left: 194px;"
+    >2 hours, 19 min</div
+  ><img class="train" title="Train from Reading (RDG)" alt="Train from Reading (RDG)" src="http://images.telltrains.com/images/leftbluebar.png" width="5"
+/><img class="train" style="left: 55px;" title="leaving at 18:11" alt="leaving at 18:11" src="http://images.telltrains.com/images/bluebar.png" width="129"
+/><img class="train" style="left: 184px;" title="arriving Brighton (BTN) at 20:30" alt="arriving Brighton (BTN) at 20:30" src="http://images.telltrains.com/images/rightbluebar.png" width="5"
+/></div
+></div
+          ></div
+        ></div
+      ><div id="now" style="left: 0px; width: 63px;"
+        ></div
+      ><div id="lines" style="left: 180px;"
+  ><div
+    ><div class="even" style="left: -180px;"
+  ></div
+><div class="odd" style="left: -120px;"
+  ></div
+><div class="even" style="left: -60px;"
+  ></div
+><div class="odd" style="left: 0px;"
+  ></div
+><div class="even" style="left: 60px;"
+  ></div
+><div class="odd" style="left: 120px;"
+  ></div
+><div class="even" style="left: 180px;"
+  ></div
+><div class="odd" style="left: 240px;"
+  ></div
+><div class="even" style="left: 300px;"
+  ></div
+><div class="odd" style="left: 360px;"
+  ></div
+><div class="even" style="left: 420px;"
+  ></div
+><div class="odd" style="left: 480px;"
+  ></div
+><div class="even" style="left: 540px;"
+  ></div
+><div class="odd" style="left: 600px;"
+  ></div
+><div class="even" style="left: 660px;"
+  ></div
+><div class="odd" style="left: 720px;"
+  ></div
+><div class="even" style="left: 780px;"
+  ></div
+><div class="odd" style="left: 840px;"
+  ></div
+></div
+  ></div
+></div
+    ></body
+  ><script type="text/javascript"
+    >// <![CDATA[
+                                   var values = new Array();
+                                   for (var i = 0; i < 53; i++)
+                                       values[i]=i;
+                                   arriving = new Control.Slider(
+                                                     ['handleleavingstart','handleleavingend','handlearrivingstart','handlearrivingend'], 
+                                                     'tracktime', 
+                                                     {axis: 'horizontal',
+                                                      range: $R(0,52), values: values,
+                                                      sliderValue: [6, 16, 13, 26],
+                                                      onChange: function (values) {
+                                                               var journeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'];
+                                                               var starts = [6, 6, 7, 8, 8, 10, 10, 11, 12, 14, 14, 15, 16, 16];
+                                                               var ends = [13, 16, 16, 16, 17, 17, 20, 20, 21, 21, 24, 24, 25, 26];
+                                                               for (var i=0; i< 14; i++) {
+                                                                  var journey = $(journeys[i]);
+                                                                  if (!(ends[i]>=values[2] && ends[i]<=values[3] &&
+                                                                        starts[i]>=values[0] && starts[i]<=values[1]) ) {
+                                                                      new Effect.Fade(journey, {to:0.2});
+                                                                  } 
+                                                                  else if (journey.style.opacity == 0.2) {
+                                                                      new Effect.Appear (journey, {duration: 1});
+                                                                  }
+                                                               }
+                                                               new Effect.Highlight('timeline');
+                                                       }
+                                 });
+                                 // ]]></script
+  ></html
+>

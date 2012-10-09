@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+		<title>One Slider Controlling Multiple Sliders Demo</title>
+		<script src="javascripts/prototype.js" type="text/javascript"></script>
+		<script src="javascripts/slider.js" type="text/javascript"></script>
+	</head>
+	<body>
+	  <div>
+		<h2>Master Horizontal Slider</h2> 
+		<div id="track1" style="width:200px; background-color:#ccc; height:10px;">
+			<div id="handle1" style="width:10px; height:15px; background-color:#f00; cursor:move;"></div>
+		</div>
+		<p id="debug1">&nbsp;</p>
+		
+		<h2>Slave Horizontal Slider</h2> 
+		<div id="track2" style="width:200px; background-color:#ccc; height:10px;">
+			<div id="handle2" style="width:10px; height:15px; background-color:#f00; cursor: not-allowed;"></div>
+		</div>
+		<p id="debug2">&nbsp;</p>
+
+		<h2>Slave Vertical Slider</h2>
+		<div id="track3" style="height:100px; background-color:#ccc; width:10px;">
+			<div id="handle3" style="width:15px; height:10px; background-color:#f00; cursor: not-allowed;"></div>
+		</div>
+		<p id="debug3">&nbsp;</p>
+		</div>
+		<script type="text/javascript" language="javascript">
+		// <![CDATA[
+		
+			// master horizontal slider control
+			var slider1 = new Control.Slider('handle1', 'track1', {
+				onSlide: function(v) { $('debug1').innerHTML = 'slide: ' + v; slider2.setValue(v); slider3.setValue(v); },
+				onChange: function(v) { $('debug1').innerHTML = 'changed: ' + v; slider2.setValue(v); slider3.setValue(v); }
+			});
+			
+			var slider2 = new Control.Slider('handle2', 'track2', {
+				disabled: true,
+				onChange: function(v) { $('debug2').innerHTML = 'changed: ' + v }
+			});
+		
+			// vertical slider control
+			var slider3 = new Control.Slider('handle3', 'track3', {
+				disabled: true,
+				axis: 'vertical',
+				onChange: function(v){ $('debug3').innerHTML = 'changed: ' + v }
+			});
+
+		// ]]>
+		</script>
+	
+		<p><a href="index.html">Back to the main demo page</a></p>
+
+		<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+		</script>
+		<script type="text/javascript">
+		_uacct = "UA-247334-1";
+		urchinTracker();
+		</script>
+	</body>
+</html>

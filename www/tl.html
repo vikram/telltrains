@@ -1,0 +1,116 @@
+<html>
+<head>
+  <link rel="stylesheet" href="stylesheets/timeline.css"/>
+  <link rel="icon" href="transparent.ico"/>
+  <script type="text/javascript" src="javascripts/timeline.js"></script>
+</head>
+<body onload="init();">
+<div style="position: absolute; top: 0px; left: 50%; margin-left: -150px;" >
+<img src="images/logo.png">
+</div>
+<div id="outerDiv" style="position: relative; overflow: hidden; top: 100px; left: 50%; margin-left: -375px; width: 780px; height: 600px; border: 1px solid #e5e5e5;">
+  <div id="markers" style="top: 0px; height: 13px; left: 120px; width: 7455px; position:relative; z-index: 4;">
+    <div class="odd" style="left: -180px;">2am</div>
+    <div class="even" style="left: -120px;">3am</div>
+    <div class="odd" style="left: -60px;">4am</div>
+    <div class="even" style="left: 0px;">5am</div>
+    <div class="odd" style="left: 60px;">6am</div>
+    <div class="even" style="left: 120px;">7am</div>
+    <div class="odd" style="left: 180px;">8am</div>
+    <div class="even" style="left: 240px;">9am</div>
+    <div class="odd" style="left: 300px;">10am</div>
+    <div class="even" style="left: 360px;">11am</div>
+    <div class="odd" style="left: 420px;">Noon</div>
+    <div class="even" style="left: 480px;">1pm</div>
+    <div class="odd" style="left: 540px;">2pm</div>
+    <div class="even" style="left: 600px;">3pm</div>
+    <div class="odd" style="left: 660px;">4pm</div>
+    <div class="even" style="left: 720px;">5pm</div>
+</div>
+    <div id="lines" style="z-index: 2; top: 0px; height: 1200px; left: 120px; width: 7455px; position: absolute;">
+      <div class="even" style="left: -180px;"></div>
+      <div class="odd" style="left: -120px;"></div>
+      <div class="even" style="left: -60px;"></div>
+      <div class="odd" style="left: 0px;"></div>
+      <div class="even" style="left: 60px;"></div>
+      <div class="odd" style="left: 120px;"></div>
+      <div class="even" style="left: 180px;"></div>
+      <div class="odd" style="left: 240px;"></div>
+      <div class="even" style="left: 300px;"></div>
+      <div class="odd" style="left: 360px;"></div>
+      <div class="even" style="left: 420px;"></div>
+      <div class="odd" style="left: 480px;"></div>
+      <div class="even" style="left: 540px;"></div>
+      <div class="odd" style="left: 600px;"></div>
+      <div class="even" style="left: 660px;"></div>
+      <div class="odd" style="left: 720px;"></div>
+      <div class="even" style="left: 780px;"></div>
+    </div>
+
+<div id="container">
+  <div id="timeline" style="top: 0px; height: 1200px; left: 120px; width: 7455px; position:relative; z-index: 3;">
+    <div id="trains">
+      <div class="red" style="top: 2em; left: -35px; width: 423px;">
+	<div class="deptime">5:15</div>
+	<div class="arrtime" style="left: 278px;">08:58</div>
+	<div class="changeat" style="left: 55px;">Paddington</div>
+	<div class="changeat" style="left: 135px;">King's Cross</div>
+	<div class="duration" style="left: 278px;">3 hours, 43 min</div>
+	<img class="train" src="images/leftbluebar.png" width="5">
+	<img class="train" src="images/bluebar.png" width="58" style="left: 55px;">
+	<img class="change" src="images/change.png" width="7" style="left: 113px;">
+	<img class="underground" src="images/tube.png" width="13" style="left: 120px;">
+	<img class="change" src="images/change.png" width="47" style="left: 133px;">
+	<img class="train" src="images/brownbar.png" width="88" style="left: 180px;">
+	<img class="train" src="images/rightbrownbar.png" width="5" style="left: 268px;">
+
+      </div>
+      <div class="red" style="top: 4.5em; left: 11px; width: 383px;">
+	<div class="deptime">06:01</div>
+	<div class="arrtime" style="left: 240px;">09:04</div>
+	<div class="changeat" style="left: 55px;">Paddington</div>
+	<div class="changeat" style="left: 145px;">King's Cross</div>
+	<div class="duration" style="left: 239px;">3 hours, 3 min</div>
+	<img class="train" src="images/leftbluebar.png" width="5">
+	<img class="train" src="images/bluebar.png" width="173" style="left: 55px;">
+	<img class="train" src="images/rightbluebar.png" width="5" style="left: 228px;">
+      </div>
+      <div class="red" style="top: 7em; left: 20px; width: 434px;">
+	<div class="deptime">06:10</div>
+	<div class="arrtime" style="left: 290px;">10:04</div>
+	<div class="changeat" style="left: 55px;">Paddington</div>
+	<div class="changeat" style="left: 145px;">King's Cross</div>
+	<div class="duration" style="left: 289px;">3 hours, 54 min</div>
+	<img class="train" src="images/leftbluebar.png" width="5">
+	<img class="train" src="images/bluebar.png" width="224" style="left: 55px;">
+	<img class="train" src="images/rightbluebar.png" width="5" style="left: 279px;">
+      </div>
+      <div class="red" style="top: 9.5em; left: 50px; width: 415px;">
+	<div class="deptime">06:40</div>
+	<div class="arrtime" style="left: 270px;">10:15</div>
+	<div class="changeat" style="left: 125px;">Bham</div>
+	<div class="duration" style="left: 271px;">3 hours, 35 min</div>
+	<img class="train" src="images/leftbluebar.png" width="5">
+	<img class="train" src="images/bluebar.png" width="75" style="left: 55px;">
+	<img class="change" src="images/change.png" width="10" style="left: 130px;">
+	<img class="train" src="images/brownbar.png" width="120" style="left: 140px;">
+	<img class="train" src="images/rightbrownbar.png" width="5" style="left: 260px;">
+      </div>
+      <div class="red" style="top: 12em; left: 80px; width: 404px;">
+	<div class="deptime">07:10</div>
+	<div class="arrtime" style="left: 289px;">11:04</div>
+	<div class="changeat" style="left: 145px;">Sheffield</div>
+	<div class="duration" style="left: 289px;">3 hours, 54 min</div>
+	<img class="train" src="images/leftbluebar.png" width="5">
+	<img class="train" src="images/bluebar.png" width="119" style="left: 55px;">
+	<img class="change" src="images/change.png" width="10" style="left: 174px;">
+	<img class="train" src="images/brownbar.png" width="95" style="left: 184px;">
+	<img class="train" src="images/rightbrownbar.png" width="5" style="left: 279px;">
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+</body>
+</html>

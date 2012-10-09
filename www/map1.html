@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html
+  ><head
+    ><title
+      >telltrains: easiest way to find and compare uk trains and fares</title
+    ><link href="/stylesheets/sheet.css" rel="stylesheet"
+    /><link href="/images/transparent.ico" rel="icon"
+    /><script type="text/javascript" src="/javascripts/prototype.js"
+      ></script
+    ><script type="text/javascript" src="/javascripts/scriptaculous.js"
+      ></script
+    >
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAfzASmKvmIGhgVZBphgbIMhSbOCASmIHfcyCoxgLWrOePWQVFNhScF6BwHPam3my7bT67NmWM1eTM4g"
+      type="text/javascript"></script>
+<script type="text/javascript" src="/javascripts/gmlightbox/gmlightbox.js"
+      ></script
+    ></head
+  ><body
+    ><h2 id="header" title="easiest way to find and compare uk trains and fares"
+      ><span
+        ></span
+      ></h2
+    ><div id="bottom" style="position:relative; top: 15px; left: 50%; margin-left: -180px;"
+      ><form action="/times.html" method="POST"
+  ><input name="_s" type="hidden" value="_qLaNgTTbxlLMqqUPbdPQKHddULWySDeMlHekhzqZ"
+/><input name="_f" type="hidden" value="_VWQzQSUsTBVcsrcgeSFb"
+/><input id="_BhutYpkhIP" name="_a" type="hidden" value="_BhutYpkhIP"
+/><table
+    ><tr
+      ><td
+        ><label for="from"
+          >From (city or station)</label
+        ></td
+      ><td
+        ><input id="fromstation" style="width: 200px" name="from" type="text" value="" autocomplete="off"
+/></td
+      ></tr
+    ><tr
+      ><td
+        ><label for="to"
+          >To (city or station)</label
+        ></td
+      ><td
+        ><input id="tostation" style="width: 200px" name="to" type="text" value="" autocomplete="off"
+/></td
+      ></tr
+    ></table
+  ><input style="position: absolute; top: 75px; left: 170px;" name="find trains" src="/images/image015.png" type="image"
+  /></form
+><div class="auto_complete" id="fromstation_values" style="display: none; z-index: 1;"
+        ></div
+      ></div
+    ></body
+  ><script type="text/javascript"
+    >new Ajax.Autocompleter('fromstation', 'fromstation_values',
+                                                'suggest-stations', {frequency: 0.4, minChars: 2});new Ajax.Autocompleter('tostation', 'fromstation_values',
+                                                'suggest-stations', {frequency: 0.4, minChars: 2});</script
+  ></html
+>

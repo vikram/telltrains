@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: gr.html
+Disallow: /errorfeedback
+Disallow: /givefeedback
+Disallow: /addjourney
+Disallow: /journeystops
+
+

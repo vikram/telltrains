@@ -1,0 +1,12 @@
+# download the free Google Video Player from http://video.google.com/
+gvp_version:1.1
+url:http://vp.video.google.com/videodownload?version=0&secureurl=ugAAAD7oeA2Nte5wnO586xul_3sAiIFnNt3IyRvq5vfGFq1bTPmf-iFjIYNyUlasEBksABeOvfqRhyV-M-0tn26_-Z1-eQYMwu2bIYmqGW06c0PnL0ImNzykL-23TgP3DqyZC2TPZgoI2cS8LnUtxu50XHax3yp_33c911ZbVvCf8k1-XxdztGQfLv09_QfH8XgMEP_4JqpAT4zGNyJsE_7iWj1EfPVpK6E-x6Qi1FkawZqPFfGOvMmeT25I25UZvwu73g&sigh=_RPiV_HK2Sq2wJ1LdF83ap_Tkyo&begin=0&len=2668724&docid=-288473283307306160
+docid:-288473283307306160
+duration:2668724
+title:Advanced Topics in Programming Languages Series: Python Design Patterns (part 2)
+description:Google Tech Talks
+description:April 4, 2007
+description:
+description:ABSTRACT
+description:
+description:Design Patterns must be studied in the context on the language in which they'll get implemented (the Gang of Four made that point very strongly in their book, though almost everybody else seems not to have noticed:-). This talk explores several categories of classic "elementary" DPs in a Python context -- Creational, Masquerading, Adaptation, and Template.

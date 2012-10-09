@@ -1,0 +1,241 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+<title>Find trains</title>
+
+<!-- Meta Tags -->
+<meta name="robots" content="index, follow" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="description" content="Telltrains is an uk train information search engine that helps anyone find the perfect journey home, so that they can get there in time." />
+<meta name="keywords" content="telltrains, trains, train, train times, train fare, fare, rail, uk, british rail, graphical view, timetable, uk rail travel, railway, train timetable, train information, uk trains, uk railway, fares enquiry, ticket purchase, train running information, commuter, liesure, business, local information" />
+
+<script type="text/javascript" src="/javascripts/jscalendar-1.0/calendar.js"></script>
+  <script type="text/javascript" src="/javascripts/jscalendar-1.0/lang/calendar-en.js"></script>
+
+  <!-- the following script defines the Calendar.setup helper function, which makes
+       adding a calendar a matter of 1 or 2 lines of code. -->
+  <script type="text/javascript" src="/javascripts/jscalendar-1.0/calendar-setup.js"></script>
+  <script type="text/javascript" src="/javascripts/prototype.js"></script>
+  <script type="text/javascript" src="/javascripts/scriptaculous.js"></script>
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+
+<!-- CSS -->
+<link rel="stylesheet" href="/stylesheets/sheet.css"/>
+
+
+<!--[if IE 7]>
+<link rel="stylesheet" href="/css/ie7.css" type="text/css" />
+<![endif]-->
+
+</head>
+
+<body>
+
+  <div id="container">
+    <h1><a>Telltrains</a></h1>
+    <form enctype="multipart/form-data" method="post" action="/">
+    <div class="info">
+      <h2>Journey details</h2>
+      <p/>
+    </div>
+    <div id="journey">
+      <ul class="fromto">
+	<li class="formlist">
+
+	  <span class="formlist">
+	    <input id="fromstation"
+		   name="from"
+		   class="field text"
+		   size="22"
+		   type="text"
+		   maxlength="50"
+		   value=""  />
+	    <label for="from">From (city or station)</label>
+	    </span>
+	  <span class="formlist">
+	    <input id="tostation"
+		   name="to"
+		   class="field text"
+		   size="22"
+		   type="text"
+		   maxlength="50"
+		   value=""  />
+	    <label for="to">To (city or station)</label>
+	 </span>
+	  <span class="formlist">
+<input id="leaving"
+name="leaving"
+class="field text"
+size="10"
+type="text"
+maxlength="50"
+value=""  />
+<label for="leaving">DD/MM/YYYY</label>
+</span>
+<a id="pickdate" class="button"><img class="icon" src="/images/calendar.gif" alt="Pick date." /></a>
+	  <div class="auto_complete"
+	       id="fromstation_values"
+	       style="display: none; z-index: 1;"/>
+	  <script type="text/javascript">
+	    <!--
+		new Ajax.Autocompleter('fromstation', 'fromstation_values',
+                'suggest-stations', {frequency: 0.4, minChars: 2});
+		new Ajax.Autocompleter('tostation', 'fromstation_values',
+                'suggest-stations', {frequency: 0.4, minChars: 2});
+    Calendar.setup({
+        inputField     :    "leaving",     // id of the input field
+        ifFormat       :    "%d/%m/%Y",     // format of the input field (even if hidden, this format will be honored)
+        button         :    "pickdate",  // trigger button (well, IMG in our case)
+	weekNumbers    :    false,
+        singleClick    :    true
+    });
+	      -->
+	    </script>
+	  </li>
+<div id="options" style="display: none;">
+<li class="formlist" id="fo16li4">
+<label for="Field4" id="title4" class="desc">Changes<span class="req" id="req_4"> </span></label>
+<div class="formlist">
+<select id="Field4" 
+   name="Field4" 
+   class="field select" >
+<option value="-1" selected="selected">Any number</option>
+<option value="0">Direct</option>
+<option value="1">1 change</option>
+<option value="2">2 changes</option>
+<option value="3">3 changes</option>
+</select>
+</div>
+</li>
+<li class="formlist" id="fiod">
+<div>
+<span class="formlist">
+<input id="Field5" 
+       name="Field5" 
+       class="field checkbox" 
+       type="checkbox" 
+       checked="checked"
+       value="checked" />
+<label class="choice" for="field5">Include stopping services</label>
+</span>
+<span class="formlist">
+<input id="Field6" 
+       name="Field6" 
+       class="field checkbox" 
+       type="checkbox" 
+       checked="checked"
+       value="checked" />
+<label class="choice" for="field6">Include peak time journeys</label>
+</span>
+</div>
+</li>
+
+<li class="formlist">
+<div>
+<label class="desc" id="title12" for="Field12">Routes (Reading to Manchester)<span id="req_12" class="req"> </span></label>
+<span class="formlist">
+<input id="Field12" 
+   name="Field12" 
+   class="field checkbox" 
+   checked="checked"
+   type="checkbox" value="checked" 
+ />
+<label class="choice" for="field12">Direct train</label>
+</span>
+
+<span class="formlist">
+<input id="Field13" 
+   name="Field13" 
+   class="field checkbox" 
+   type="checkbox" value="checked" 
+   checked="checked"
+ /> 
+<label class="choice" for="field13">Change at Warrington Bank Quay</label>
+</span>
+
+<span class="formlist">
+<input id="Field14" 
+   name="Field14" 
+   class="field checkbox" 
+   type="checkbox" value="checked" 
+   checked="checked"
+/> 
+<label class="choice" for="field14">Change first at Birmingham New street then at Warrington Bank Quay</label>
+</span>
+</li>
+<li class="formlist">
+<div class="left">
+<label class="desc" id="title11" for="Field11">Departing between<span id="req_11" class="req"> </span></label>
+
+<span class="formlist">
+<select id="Field11" 
+   name="Field11" 
+   class="field select" >
+<option value="6" selected="selected">6 am</option>
+<option value="7">7 am</option>
+<option value="8">8 am</option>
+<option value="9">9 am</option>
+<option value="10">10 am</option>
+</select> and
+</span>
+
+<span class="formlist">
+<select id="Field11-1" 
+   name="Field11-1" 
+   class="field select" >
+<option value="7" selected="selected">7 am</option>
+<option value="8">8 am</option>
+<option value="9">9 am</option>
+<option value="10">10 am</option>
+<option value="11">11 am</option>
+</select>
+</span>
+</div>
+</li>
+
+<li class="formlist">
+<div class="left">
+<label class="desc" id="title11" for="Field11">Arriving between<span id="req_11" class="req"> </span></label>
+
+<span class="formlist">
+<select id="Field12" 
+   name="Field12" 
+   class="field select medium" >
+<option value="6" selected="selected">6 am</option>
+<option value="7">7 am</option>
+<option value="8">8 am</option>
+<option value="9">9 am</option>
+<option value="10">10 am</option>
+</select>
+ and 
+</span>
+
+<span class="formlist">
+<select id="Field12-1" 
+   name="Field12-1" 
+   class="field select medium" >
+<option value="7" selected="selected">7 am</option>
+<option value="8">8 am</option>
+<option value="9">9 am</option>
+<option value="10">10 am</option>
+<option value="11">11 am</option>
+</select>
+</span>
+</div>
+</li>
+</div>
+<li class="buttons">
+  <input id="saveForm" class="btTxt" type="submit" value="Search"/>
+  <a href="#" onclick="new Effect.BlindDown ('options', {duration: 0.2}); return false;">more options</a>
+</li>
+</ul>
+</form>
+</div>
+</div>
+</body>
+</html>

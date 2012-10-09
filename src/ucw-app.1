@@ -1,0 +1,276 @@
+(in-package :com.sondesh.database)
+
+(ucw:defcomponent homepage (ucw:simple-window-component)
+  ((user :initarg :user :accessor user :initform nil))
+  (:default-initargs :title "telltrains: easiest way to find and compare uk trains and fares"
+    :stylesheet `(("autosuggest.css")
+		  ("sheet.css"))
+    :content-type "text/html; charset=utf-8;"
+    :icon       '("transparent.ico")
+    :javascript `((:src "sheet.js")
+		  (:src "autosuggest.js")
+		  (:src "tutorial.js")))
+  (:render ()
+	   (with-slots (user) homepage
+	     (<:h2 :id "header" :title "easiest way to find and compare uk trains and fares"
+		   (<:span))
+	     (<:div :id "bottom" :style "position:relative; top: 15px; left: 50%; margin-left: -180px;"
+		    (let ((from "") (to "") (leaving "") (travelers 1) (leaving-time ""))
+		      (<ucw:simple-form :method "POST"
+				 :action (find-single-fares homepage from to leaving travelers leaving-time)
+				 (<:table
+				  (<:tr (<:td (<:label :for "from" "From (city or station)"))
+					(<:td (<ucw:text :name "from" :id "fromstation" :style "width: 200px" :accessor from)))
+				  (<:tr (<:td (<:label :for "to" "To (city or station)"))
+					(<:td (<ucw:text :name "to" :id "tostation" :style "width: 200px" :accessor to))))
+				 (<:input :type "image" :name "find trains" :src "image015.png" :style "position: absolute; top: 75px; left: 170px;"))))
+	     (<:div :id "footer" :style "position:relative; top: 300px; left: 50%; margin-left: -100px;"
+		    (<:p (<:a :title "About telltrains.com" :href "/about" "About")
+			    (<:as-is " . ")
+			    (<:a :title "Official telltrains Blog" :href "http://telltrains.wordpress.com" "Blog")
+			    (<:as-is " . ")
+			    (<:a :title "telltrains Terms of service" :href "/terms" "Terms")
+			    (<:as-is " . ")
+			    (<:a :title "Contact Us" :href "/feedback" "Contact")))
+		(<:script :type "text/javascript"
+			  (<:as-is
+			   "var options = { script:\"suggest-stations.ucw?\",
+		                        varname:\"input\",
+                                        json:true
+		                   };
+		                  var as_xml2 = new AutoSuggest('tostation', options);
+		                  var as_xml = new AutoSuggest('fromstation', options);"))
+		)))
+
+(ucw:defcomponent suggest-stations (ucw:standard-component)
+  ((input :initarg :input :accessor input :initform ""))
+  (:default-initargs :content-type "text/xml;")
+  (:render ()
+	   (with-slots (input) suggest-stations
+	     (let ((first t))
+	       (<:as-is "{ results: [")
+	       (dolist (result (find-station-code input))
+		 (progn
+		   (if first
+		       (setf first nil)
+		       (<:as-is ","))
+		   (<:as-is (format nil "{ id: \"~A\", value: \"~A\", info: \"~A\"}" 
+				    (station-code result) 
+				    (station-name result) 
+				    (station-length result)))))
+	     (<:as-is "] }")))))
+
+(ucw:defaction find-single-fares ((homepage homepage) from to leaving travelers leaving-time)
+  (ucw:call 'timeline :from from :to to :leaving leaving :leaving-time leaving-time))
+
+(defmacro timebar (start end left)
+  `(<:div :id "markers" :style (format nil "top: 0px; height: 13px; left: ~Apx; width: 7455px; position:relative; z-index: 4;" ,left)
+	  ,@(map1-n #'(lambda (n) 
+			`(<:div :class (if (oddp ,n) 
+					    "odd"
+					    "even")
+				:style ,(format nil "left: ~Apx;" (* 60 (- n 4)))
+				(<:as-is ,(let ((hour (mod (+ start n) 24)))
+					       (cond ((= hour 12) "noon")
+						     ((< hour 12) (format nil "~Aam" hour))
+						     ((and (> hour 12) (< hour 24)) (format nil "~Apm" (- hour 12)))
+						     (t "midnight"))))))
+		    (- end start))))
+
+(defmacro journey (train-number deptime arrtime duration changes)
+  (with-gensyms (durlen tn)
+    `(let ((,durlen (round (timedifference ,duration "00:00")))
+	   (,tn ,train-number))
+       (declare (fixnum ,tn ,durlen))
+       (<:div :class "red" :style (format nil "top: ~Aem; left: ~Apx; width: ~Apx;" 
+					  (+ 2 (* 2.5 (- ,tn 1))) ;train number
+					  (ALIGN-TIME ,deptime)
+					  (+ 200 ,durlen))
+	      (<:div :class "deptime" (<:as-is ,deptime))
+	      (<:div :class "arrtime" :style (left-indent (+ ,durlen 55)) (<:as-is ,arrtime))
+	      (<:div :class "duration" :style (left-indent (+ ,durlen 55)) (<:as-is ,duration))
+	      (if (> ,durlen 9)
+		  (list (<:img :class "train" :src "leftbluebar.png" :alt "" :width "5")
+			(<:img :class "train" :src "bluebar.png" :alt "" :width (format nil "~A" (- ,durlen 10)) :style "left: 55px;")
+			(<:img :class "train" :src "rightbluebar.png" :alt "" :width "5" :style (left-indent (- (+ ,durlen 50) 5))))
+		  (list (<:img :class "train" :src "bluebar.png" :alt "" :width (format nil "~A" ,durlen))))))))
+
+(defmacro train-journeys (results)
+  (with-gensyms (train-number result train changes)
+    `(let ((,train-number 1))
+       (dolist (,result ,results)
+	 (let* ((,train (car ,result))
+		(,changes (getchanges (eighth ,train) (parse-integer (sixth ,train)))))
+	   (JOURNEY ,train-number (third ,train) (fourth ,train) (fifth ,train) ,changes)
+	   (incf ,train-number))))))
+
+(defun journey-duration (trains)
+  (labels ((add-times (x y)
+	     (let ((1hour (parse-integer (first (cl-ppcre:split ":" x))))
+		   (1min (parse-integer (second (cl-ppcre:split ":" x))))
+		   (2hour (parse-integer (first (cl-ppcre:split ":" y))))
+		   (2min (parse-integer (second (cl-ppcre:split ":" y)))))
+	       (aif (> (+ 1min 2min) 60)
+		    (format nil "~2,'0d:~2,'0d" (+ 1hour 2hour 1) (- (+ 1min 2min) 60))
+		    (format nil "~2,'0d:~2,'0d" (+ 1hour 2hour) (+ 1min 2min))))))
+    (reduce #'add-times
+	    trains
+	    :key #'sixth)))
+
+(defmacro train-journeys-with-changes (results)
+  (with-gensyms (result train-number)
+    `(let ((,train-number 1))
+       (dolist (,result ,results)
+	 (train-journey ,train-number (cadr ,result))
+	 (incf ,train-number)))))
+
+(defmacro train-journey (train-number trains)
+  (with-gensyms (durlen tn deptime duration arrtime)
+    `(let ((,tn ,train-number)
+	   (,duration (journey-duration ,trains))
+	   (,durlen (round (timedifference (journey-duration ,trains) "00:00")))
+	   (,deptime (second (first ,trains)))
+	   (,arrtime (fourth (car (last ,trains)))))
+	 (declare (fixnum ,tn ,durlen))
+	 (<:div :class "red" :style (format nil "top: ~Aem; left: ~Apx; width: ~Apx;" 
+					  (+ 2 (* 2.5 (- ,tn 1))) ;train number
+					  (ALIGN-TIME ,deptime)
+					  (+ 200 ,durlen))
+	      (<:div :class "deptime" (<:as-is ,deptime))
+	      (<:div :class "arrtime" :style (left-indent (+ ,durlen 55)) (<:as-is ,arrtime))
+	      (<:div :class "duration" :style (left-indent (+ ,durlen 55)) (<:as-is ,duration))
+	      (cond ((= (length ,trains) 1) (list (<:img :class "train" :src "leftbluebar.png" :alt "" :width "5")
+						  (<:img :class "train" :src "bluebar.png" :alt "" :width (format nil "~A" (- ,durlen 10)) :style "left: 55px;")
+						  (<:img :class "train" :src "rightbluebar.png" :alt "" :width "5" :style (left-indent (- (+ ,durlen 50) 5)))))
+		    (t (append (GRAPH-TRAINS-CHANGES ,trains ,deptime)
+			       (list (<:img :class "train" :src "leftbluebar.png" :alt "" :width "5")
+				     (<:img :class "train" :src "rightbluebar.png" :alt "" :width "5" :style (left-indent (- (+ ,durlen 50) 5)))))))))))
+
+(defun graph-trains-changes (trains deptime)
+  (append (mapcar #'(lambda (train) `(<:img :class "train" :src "bluebar.png" :alt "" 
+					    :width (format nil "~A" (- ,(round (timedifference (sixth train) "00:00")) 10)) 
+					    :style "left: 55px;"))
+		  trains)
+	  (mapcar #'(lambda (train) `(<:img :class ,(string-downcase (fifth train)) :src "bluebar.png" :alt "" 
+					    :width ,(format nil "~A" (- (round (timedifference (sixth train) "00:00")) 10)) 
+					    :style ,(format nil "left: ~Apx;" (+ 55 (round (timedifference (second train) deptime))))))
+		  trains)
+	  (MAP-SUBSEQUENT-TWO #'(lambda (t1 t2) `((<:img :class "change" :src "change.png" :alt ""
+							 :width ,(format nil "~A" (round (timedifference (second t2) (fourth t1))))
+							 :style ,(format nil "left: ~Apx;" (+ 55 (round (timedifference (fourth t1) deptime)))))
+						  (<:div :class "changeat" :style ,(format nil "left: ~Apx;" (+ 55 (round (timedifference (fourth t1) deptime))))
+							 (<:as-is ,(third t1)))))
+			      trains)))
+
+(defun map-subsequent-two (function list)
+  (cond ((null list) nil)
+	((null (cddr list)) (funcall function (first list) (second list)))
+	(t (append (funcall function (first list) (second list))
+		   (map-subsequent-two function (cdr list))))))
+
+
+(defun left-indent (pos)
+  (format nil "left: ~Apx;" pos))
+
+(defun align-time (time)
+  (- (round (timedifference time "05:00")) 50))
+
+(defmacro lines (s e left)
+  `(<:div :id "lines" :style (format nil "top: 0px; height: 1200px; left: ~Apx; width: 7455px; position: absolute; z-index: 2;" ,left)
+	  ,@(map1-n #'(lambda (n) 
+			`(<:div :class (if ,(oddp n)
+					   "even"
+					   "odd")
+				:style ,(format nil "left: ~Apx;" (* 60 (- n 4)))))
+		    (- e s))))
+
+(ucw:defcomponent timeline (ucw:standard-component)
+  ((user :initarg :user :accessor user)
+   (from :initarg :from :accessor from :initform "")
+   (to :initarg :to :accessor to :initform "")
+   (leaving :initarg :leaving :accessor leaving :initform "")
+   (leaving-time :initarg :leaving-time :accessor leaving-time :initform ""))
+  (:default-initargs :title "telltrains: rail fares made simple"
+    :stylesheet `(("timeline.css"))
+    :content-type "text/html; charset=utf-8;"
+    :icon       '("transparent.ico")
+    :javascript `((:src "timeline.js")))
+  (:render ()
+	   (with-slots (from to leaving leaving-time) timeline
+	     (multiple-value-bind (se mi ho da mo ye dd dst1 tz1)
+		 (decode-universal-time (get-universal-time) -1)
+	       (declare (ignore se mi ye dd dst1 tz1) (fixnum ho))
+	     (<:html
+	      (<:head
+	       (<:title (<:as-is (format nil "Trains from ~A to ~A" from to)))
+	       (<:link :rel "stylesheet" :href "timeline.css")
+	       (<:link :rel "icon" :href "transparent.ico")
+	       (<:script :type "text/javascript" :src "timeline.js"))
+	      (<:body :onload "init();"
+		      (<:h2 (<:as-is (format nil "Trains from ~A to ~A on ~A" from to (dttm->string (get-universal-time) :format :pretty))))
+		      (<:div :id "outerDiv" 
+			     :style "position: relative; overflow: hidden; border: 1px solid #e5e5e5; width: 780px; height: 300px; left: 50%; margin-left: -400px;"
+			     (timebar 1 18 (- 120 (* 60 (- ho 3))))
+			     (<:div :id "container"
+				    (<:div :id "timeline" 
+					   :style (format 
+						   nil 
+						   "top: 0px; height: 1200px; left: ~Apx; width: 7455px; position:relative; z-index: 3;" 
+						   (- 120 (* 60 (- ho 3))))
+					   (<:div :id "trains"
+						  (let ((day (format nil "~A" da))
+							(month (aref +month-names+ (1- mo)))
+							(start ho)
+							(end (+ 3 ho)))
+						    (train-journeys (get-unique-trains from 
+										       to
+										       day
+										       month
+										       start
+										       end))))))
+			     (lines 2 19 (- 120 (* 60 (- ho 3)))))))))))
+
+(ucw:defcomponent single-times-fares-hour-query (ucw:standard-component)
+  ((from :initarg :from :accessor from :initform "")
+   (to :initarg :to :accessor to :initform "")
+   (day :initarg :day :accessor day :initform "")
+   (month :initarg :month :accessor month :initform "")
+   (hour :initarg :hour :accessor hour :initform ""))
+  (:default-initargs :content-type "text/xml;")
+  (:render ()
+	   (with-slots (from to day month hour) single-times-fares-hour-query
+	     (let ((first t))
+	       (<:as-is "{ results: [")
+	       (dolist (result (get-fares from to day month (map0-n #'(lambda (n) (format nil "~A" (+ n (parse-integer hour)))) 2)))
+		 (if first
+		     (setf first nil)
+		     (<:as-is ","))
+		 (<:as-is "{ train: ")
+		 (let* ((train (car result))
+			(changes (getChanges (eighth train) (parse-integer (sixth train)))))
+		   (<:as-is (format nil "{ from: \"~A\", to: \"~A\", leaving: \"~A\", arriving: \"~A\", duration: \"~A\", changes: \"~A\", startem: \"~A\", durem: \"~A\", leavingnum: \"~A\", breaks: [" (find-station (first train)) (find-station (second train)) (third train) (fourth train) (fifth train) (sixth train) (round (timedifference (third train) "05:00")) (round (timedifference (fifth train) "00:00")) (timenum (third train))))
+		   (let ((first-change t))
+		     (dolist (change changes)
+		       (if first-change
+			   (setf first-change nil)
+			   (<:as-is ","))
+		       (<:as-is (format nil "{ start: \"~A\", leaving: \"~A\", type: \"~A\"}" (first change) (second change) (third change))))))
+		 (<:as-is "]}, fares: [")
+		 (let ((first-fare t))
+		   (dolist (fare (cdr result))
+		     (if first-fare
+			 (setf first-fare nil)
+			 (<:as-is ","))
+		     (<:as-is (format nil "{ type: \"~A\", price: ~S}" (first fare) (second fare)))))
+		 (<:as-is "] }"))
+	       (<:as-is "] }")))))
+
+(defmacro list->json (list results)
+  (with-gensyms (first-one var)
+    `(let ((,first-one t))
+       (dolist (,var ,results)
+	 (if ,first-one
+	     (setf ,first-one nil)
+	     (<:as-is ","))
+	 (<:as-is (format nil "{ ~A: \"~A\", ~A: ~S}" (first var) (second var)))))))
+

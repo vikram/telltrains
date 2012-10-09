@@ -1,0 +1,40 @@
+(require 'asdf)
+(asdf:oos 'asdf:load-op 'asdf-install)
+
+(defmethod asdf:perform :around ((o asdf:load-op)
+                                      (c asdf:cl-source-file))
+        (handler-case (call-next-method o c)
+           ;; If a fasl was stale, try to recompile and load (once).
+           (sb-ext:invalid-fasl ()
+              (asdf:perform (make-instance 'asdf:compile-op) c)
+              (call-next-method))))
+
+;sbcl source
+(setf (logical-pathname-translations "SYS")	
+      '(("SYS:SRC;**;*.*.*" #P"/home/vb/.sbcl/site/sbcl-0.9.16/src/**/*.*") 
+        ("SYS:CONTRIB;**;*.*.*" #P"/home/vb/.sbcl/site/sbcl-0.9.16/contrib/**/*.*")))
+
+; start swank
+(asdf:oos 'asdf:load-op 'swank)
+(setf swank:*use-dedicated-output-stream* nil)
+(swank:create-server :port 4005 :dont-close t :coding-system "utf-8")
+
+(setq *clocc-root* "/home/vb/.sbcl/site/clocc/") ; or whatever ...
+(load (compile-file "/home/vb/.sbcl/site/clocc/clocc.lisp"))
+(load (compile-file "/home/vb/.sbcl/site/clocc/src/defsystem/defsystem.lisp"))
+
+;; * compile some systems
+(dolist (l '("clocc:src;port;" "clocc:src;cllib;" "clocc:src;ext;queues;"
+             "clocc:src;port;configuration;" "clocc:src;port;environment;"
+             "clocc:src;ext;union-find;" "clocc:src;tools;metering;"
+             "clocc:src;f2cl;" "clocc:src;f2cl;packages;"))
+  (mk:add-registry-location (translate-logical-pathname l)))
+
+(mk:oos "cllib" :load)
+
+(setf *features* (cons :hunchentoot-no-ssl *features*))
+
+(asdf:oos 'asdf:load-op 'sondesh)
+
+(in-package :com.sondesh.database)
+

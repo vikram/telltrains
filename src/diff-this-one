@@ -1,0 +1,585 @@
+diff -r eaf1f41bbd14 sondesh/src/ads.lisp
+--- a/sondesh/src/ads.lisp	Tue Nov 13 14:42:10 2007
++++ b/sondesh/src/ads.lisp	Sun Nov 18 23:49:39 2007
+@@ -14,9 +14,23 @@
+ 	  (:script :type "text/javascript"
+ 		   :src "http://pagead2.googlesyndication.com/pagead/show_ads.js"))))
+ 
+-(defun side-of-timetable-page ()
++(defun left-side-of-timetable-page ()
+   (with-html-output (*standard-output*)
+     (:div :id "sideads" :style "width: 120px; height: 600px; float: left; top:100px; left: 680px;"
++	  (:script :type "text/javascript"
++"<!--
++google_ad_client = 'pub-0896530444245941';
++//120x600, created 13/11/07
++google_ad_slot = '9857024137';
++google_ad_width = 120;
++google_ad_height = 600;
++//-->")
++	  (:script :type "text/javascript"
++		   :src "http://pagead2.googlesyndication.com/pagead/show_ads.js"))))
++
++(defun right-side-of-timetable-page ()
++  (with-html-output (*standard-output*)
++    (:div :id "sideads" :style "width: 120px; height: 600px; float: right; top:100px; left: 680px;"
+ 	  (:script :type "text/javascript"
+ 		   "<!--
+                     google_ad_client = 'pub-0896530444245941';
+@@ -27,3 +41,17 @@
+                     //-->")
+ 	  (:script :type "text/javascript"
+ 		   :src "http://pagead2.googlesyndication.com/pagead/show_ads.js"))))
++
++(defun top-timetable-page ()
++  (with-html-output (*standard-output*)
++    (:div :id "topads" :style "width: 728px; height: 90px; position: relative;"
++	  (:script :type "text/javascript"
++		   "<!--
++                    google_ad_client = 'pub-0896530444245941';
++                    //728x90, created 13/11/07
++                    google_ad_slot = '4843276853';
++                    google_ad_width = 728;
++                    google_ad_height = 90;
++                    //-->")
++	  (:script :type "text/javascript"
++		   :src "http://pagead2.googlesyndication.com/pagead/show_ads.js"))))
+diff -r eaf1f41bbd14 sondesh/src/algorithms.lisp
+--- a/sondesh/src/algorithms.lisp	Tue Nov 13 14:42:10 2007
++++ b/sondesh/src/algorithms.lisp	Sun Nov 18 23:49:39 2007
+@@ -448,9 +448,10 @@
+ 	       (equal (mapcar #'display-train-summary j1)
+ 		      (mapcar #'display-train-summary j2)))))
+ 
+-(defun routeing-journeys-db (from to time)
++(defun routeing-journeys-db (from to time &key (ignore-shortest-p nil))
+   (if (and (position (station-crs-code from) *all-crses* :test #'string=)
+-	   (position (station-crs-code to) *all-crses* :test #'string=))
++	   (position (station-crs-code to) *all-crses* :test #'string=)
++	   (not ignore-shortest-p))
+       (decode-journeys (station-crs-code from) (station-crs-code to) (weekday :time time))
+       (journeys+directs-db
+        (remove-if
+@@ -632,7 +633,7 @@
+       (delete-file (sondesh-file-path (format nil "~A/~A-~A.gz" date timepoint (1+ i)))))))
+ 
+ (defun redo-preprocessed (&optional (time 3398382600))
+-  (dolist (i '(0 1 2 4 5 6))
++  (dolist (i '(0 1 2 3 4 5 6))
+     (repopulate-dijkstra (+ time (* 86400 i)))
+     (dijkstra-files->db (dttm->string (+ time (* 86400 i)) :format :caldate))
+     (cleanup-trains-folder (dttm->string (+ time (* 86400 i)) :format :caldate))))
+@@ -691,11 +692,11 @@
+                              (cons (cons journey (first result)) (second result)))))
+                    ends)))
+       (with-train-database
+-        (clsql:query (format nil
+-                             "select source,timepoint,day,trains from DIJKSTRA 
++	(clsql:query (format nil
++			     "select source,timepoint,day,trains from DIJKSTRA 
+                               where (~{source=~A~^ or ~}) and day=~A order by source,day,timepoint"
+-                             starts
+-                             day))))
++			     starts
++			     day))))
+      :test #'equal)))
+ 
+ (defun move-connections (&key (start-from nil))
+@@ -703,7 +704,10 @@
+ 			      (member start-from (combinations *all-crses*) :key #'car :test #'string=)
+ 			      (combinations *all-crses*)))
+     (let ((source (car source-targets)))
+-      (dolist (target (cadr source-targets))
++      (dolist (target (remove-if #'(lambda (crs)
++				     (string= (station-group-crs-code (find-station-by-code crs))
++					      (station-group-crs-code (find-station-by-code source))))
++				 (cadr source-targets)))
+ 	(dotimes (day 7)
+ 	  (with-train-database!
+ 	    (clsql:update-records-from-instance
+@@ -760,9 +764,9 @@
+ 				   (short-time->hrmins (second (display-train-summary train)))
+ 				   (short-time->hrmins (fourth (display-train-summary train)))))
+ 			      (cdr journey)))
+-		  (find-trains (find-station-by-code source)
+-			       (find-station-by-code target)
+-			       (timeline-date (dttm->string (+ 3402000001 (* 86400 day)) :format :caldate))))))
++		  (find-trains-to-encode (find-station-by-code source)
++					 (find-station-by-code target)
++					 (timeline-date (dttm->string (+ 3402000001 (* 86400 day)) :format :caldate))))))
+ 
+ (defun encode-journey-train (from-crs-index to-crs-index trainid start end)
+   (+ (* 100000000000000000 from-crs-index)
+diff -r eaf1f41bbd14 sondesh/src/database/station.details
+--- a/sondesh/src/database/station.details	Tue Nov 13 14:42:10 2007
++++ b/sondesh/src/database/station.details	Sun Nov 18 23:49:39 2007
+@@ -6150,7 +6150,7 @@
+  ("LHS" "LIMEHOUSE" "LIMEHOUSE" 6.938341e-4 ("Limehouse") "E14 7JD"
+   "Cornwall, South West England" "c2c" "Commercial Road, London, E14 7JD"
+   51.51263 -0.040189 ("LIMHSE ") "LHS" " 5" " " "010" NIL NIL NIL "7491" "7491"
+-  NIL ("G01" "G56") ("LHS") ("LIMHSE ") ("LHS"))
++  NIL ("G01" "WEH") ("LHS") ("LIMHSE ") ("LHS"))
+  ("LCN" "LINCOLN" "LINCOLN" 0.0012832253 ("LINCOLN" "Lincoln Central")
+   "LN5 7EW" "Lincolnshire, England" "Central Trains"
+   "St Marys Street, Lincoln, Lincolnshire, LN5 7EW" 53.22609 -0.539383
+@@ -10768,7 +10768,7 @@
+   ("CLJ" "G01" "GFD" "HAY") ("WEA") ("WEALING") ("WEA"))
+  ("WEH" "WEST HAM" "WEST HAM" 7.501795e-4 ("West Ham") "" "London"
+   "London Underground" "" 51.53496 0.00864 ("WHAMHL " "WHAM   ") "WEH" " 5" " "
+-  "010" NIL NIL NIL "7474" "7474" "G56" NIL ("WEH") ("WHAMHL " "WHAM   ")
++  "010" NIL NIL NIL "7474" "7474" NIL NIL ("WEH") ("WHAMHL " "WHAM   ")
+   ("WEH"))
+  ("WHD" "WEST HAMPSTEAD" "WEST HAMPSTEAD" 6.88836e-4
+   ("WEST HAMPSTEAD" "West End Lane") "NW6 2LJ" "Greater London" "Silverlink"
+diff -r eaf1f41bbd14 sondesh/src/db-defn.lisp
+--- a/sondesh/src/db-defn.lisp	Tue Nov 13 14:42:10 2007
++++ b/sondesh/src/db-defn.lisp	Sun Nov 18 23:49:39 2007
+@@ -11,25 +11,25 @@
+   (defparameter *process-db* (make-hash-table :test 'equal))
+ 
+   (defmacro with-train-database (&body body)
+-    (with-gensyms (db-var)
+-      (let ((result (gensym "result-")))
+-	`(let ((,db-var (get-train-database))
+-	       (,result nil))
++    (with-gensyms (db-var connected result)
++      `(multiple-value-bind (,db-var ,connected)
++	   (get-train-database)
++	 (let ((,result nil))
+ 	   (unwind-protect
+-	     (setf ,result (progn ,@body))
+-	     (remove-train-database ,db-var))
++		(setf ,result (progn ,@body))
++	     (unless ,connected (remove-train-database ,db-var)))
+ 	   ,result))))
+ 
+   (defmacro with-train-db ((db) &body body)
+-    (with-gensyms (db-var)
+-      (let ((result (gensym "result-")))
+-	`(let ((,db-var (get-train-database))
+-	       (,result nil))
++    (with-gensyms (db-var connected result)
++      `(multiple-value-bind (,db-var ,connected)
++	   (get-train-database)
++	 (let ((,result nil))
+ 	   (unwind-protect
+-	     (setf ,db ,db-var)
++		(setf ,db ,db-var)
+ 	     (setf ,result (progn ,@body))
+ 	     (setf ,db nil)
+-	     (remove-train-database ,db-var))
++	     (unless ,connected (remove-train-database ,db-var)))
+ 	   ,result))))
+ 
+   (defmacro with-train-transaction! (&body body)
+@@ -37,14 +37,14 @@
+        ,@body))
+ 
+   (defmacro with-train-database! (&body body)
+-    (with-gensyms (db-var)
+-      (let ((result (gensym "result-")))
+-	`(let ((,db-var (get-train-database))
+-	       (,result nil))
++    (with-gensyms (db-var connected result)
++      `(multiple-value-bind (,db-var ,connected)
++	   (get-train-database)
++	 (let ((,result nil))
+ 	   (unwind-protect
+-	     (clsql:with-transaction (:database ,db-var)
+-	       (setf ,result (progn ,@body)))
+-	     (remove-train-database ,db-var))
++		(clsql:with-transaction (:database ,db-var)
++		  (setf ,result (progn ,@body)))
++	     (unless ,connected (remove-train-database ,db-var)))
+ 	   ,result))))
+ 
+   (defun clear-all-connections ()
+@@ -69,13 +69,15 @@
+       (clsql:disconnect :database db)))
+ 
+   (defun get-train-database ()
+-    (awhen (clsql:connect *db*
+-			  :if-exists :old
+-			  :pool t
+-			  :make-default nil
+-			  :database-type (if *sqlite* :sqlite3 :mysql))
+-      (setup-database-for-current-process! it)
+-      it))
++    (aif (get-database-for-current-process)
++	 (values it t)
++	 (awhen (clsql:connect *db*
++			       :if-exists :old
++			       :pool t
++			       :make-default nil
++			       :database-type (if *sqlite* :sqlite3 :mysql))
++	   (setup-database-for-current-process! it)
++	   (values it nil))))
+ 
+   (defparameter *table-symbols* (make-hash-table :test 'equal))
+ 
+diff -r eaf1f41bbd14 sondesh/src/station-urls.lisp
+--- a/sondesh/src/station-urls.lisp	Tue Nov 13 14:42:10 2007
++++ b/sondesh/src/station-urls.lisp	Sun Nov 18 23:49:39 2007
+@@ -37,7 +37,7 @@
+ 				       (station-display-name (find-station-by-code crs))) 
+ 			 (fmt "train times & timetables from ~A" 
+ 			      (station-display-name (find-station-by-code crs))))))))))))
+-	       
++
+ (defun station-journeys ()
+   (let* ((from (first (break-as-parameters (request-uri))))
+ 	 (stn (first (find-station-by-letters from)))
+@@ -48,7 +48,8 @@
+ 					(member crs (cons (station-group-crs-code (find-station-by-code x))
+ 							  (station-all-crs-codes (find-station-by-code x)))
+ 						:test #'string=))
+-				    *all-crses*))))
++				    *all-crses*)))
++	 (how-many (random 3)))
+     (with-html
+       (:html
+        (:head
+@@ -63,37 +64,44 @@
+ 		 (format nil "_uacct = 'UA-1779260-1';
+                             urchinTracker();")))
+        (:body 
+-	(:h1 (fmt "Train times for most popular journey timetables from ~A" from))
+-	(:div :style "float: right;"
+-	 (:ul :style "list-style-type:none; left: -40px; position: relative;"
+-	      (:li :style "display: inline;" (fmt "Stations in ~A ..." from)
+-		   (loop for i from 0
+-		         for name in (mapcar (compose #'station-display-name #'find-station-by-code) 
+-					     (sort (copy-list (station-all-crs-codes stn))
+-						   #'> :key (compose #'station-rank #'find-station-by-code)))
+-            		 do (htm
+-			     (fmt "~A" (if (= i 0) "" ","))
+-			     (:li :style "padding:4px 5px 2px 9px; display: inline;"
+-				  (:a :href (format nil "/journeysfrom/~A" name)
+-				      (fmt "~A" name)))))))
+-	(:div (:a :href "/" (fmt "~A" "Home")))
+-	(:div :style "padding-left: 15px;" (fmt "~A" "=>") (:a :href "/stations" (fmt "~A" "Train times for most popular stations")))
+-	(:div :style "padding-left: 30px;" (fmt "~A" "=>") (fmt "~A" from))
+-	(:ol :style "padding-left: 60px;"
+-	     (loop for other-name in (mapcar (compose #'station-display-name #'find-station-by-code)
+-					     (sort rest-of-crses 
+-						   #'(lambda (crs1 crs2)
+-						       (let ((dt1 (direct-trains-count (station-crs-code stn) crs1))
+-							     (dt2 (direct-trains-count (station-crs-code stn) crs2)))
+-							 (if (= dt1 dt2) 
+-							     (> (+ (station-rank stn) (station-rank (find-station-by-code crs1)))
+-								(+ (station-rank stn) (station-rank (find-station-by-code crs2))))
+-							     (> dt1 dt2))))))
+-		  do (htm
+-		      (:li (:a :href (format nil "/timetable/~A/~A" my-name other-name)
+-			       (fmt "train times & timetable from ~A to ~A" my-name other-name)))))))
+-       (side-of-timetable-page)
+-       (:script :src "/javascripts/astrack.js" :type "text/javascript"))))))
++	(if (> how-many 1) (top-timetable-page))
++	(:h2 (fmt "Train times for most popular journey timetables from ~A" from))
++	(:div
++	       (:ul :style "list-style-type:none; left: -40px; position: relative;"
++		    (:li :style "display: inline;" (fmt "Stations in ~A ..." from)
++			 (loop for i from 0
++			    for name in (mapcar (compose #'station-display-name #'find-station-by-code) 
++						(sort (copy-list (station-all-crs-codes stn))
++						      #'> :key (compose #'station-rank #'find-station-by-code)))
++			    do (htm
++				(fmt "~A" (if (= i 0) "" ","))
++				(:li :style "padding:4px 5px 2px 9px; display: inline;"
++				     (:a :href (format nil "/journeysfrom/~A" name)
++					 (fmt "~A" name))))))))
++	(:div
++	 (:div :style (if (= how-many 0) "float: right;" "float: left;")
++	       (:div (:a :href "/" (fmt "~A" "Home")))
++	       (:div :style "padding-left: 15px;" (fmt "~A" "=>") (:a :href "/stations" (fmt "~A" "Train times for most popular stations")))
++	       (:div :style "padding-left: 30px;" (fmt "~A" "=>") (fmt "~A" from))
++	       (:ol :style "padding-left: 60px;"
++		    (loop for other-name in (mapcar (compose #'station-display-name #'find-station-by-code)
++						    (sort rest-of-crses 
++							  #'(lambda (crs1 crs2)
++							      (let ((dt1 (direct-trains-count (station-crs-code stn) crs1))
++								    (dt2 (direct-trains-count (station-crs-code stn) crs2)))
++								(if (= dt1 dt2) 
++								    (> (+ (station-rank stn) (station-rank (find-station-by-code crs1)))
++								       (+ (station-rank stn) (station-rank (find-station-by-code crs2))))
++								    (> dt1 dt2))))))
++		       do (htm
++			   (:li (:a :href (format nil "/timetable/~A/~A" my-name other-name)
++				    (fmt "train times & timetable from ~A to ~A" 
++					 (cl-ppcre:regex-replace-all " - any station" my-name "")
++					 (cl-ppcre:regex-replace-all " - any station" other-name ""))))))))
++	 (if (= how-many 0)
++	     (left-side-of-timetable-page)
++	     (right-side-of-timetable-page)))
++	(:script :src "/javascripts/astrack.js" :type "text/javascript"))))))
+ 
+ (defun suggest-stations ()
+   (with-html-output-to-string (*standard-output* nil :prologue nil)
+diff -r eaf1f41bbd14 sondesh/src/train-astar.lisp
+--- a/sondesh/src/train-astar.lisp	Tue Nov 13 14:42:10 2007
++++ b/sondesh/src/train-astar.lisp	Sun Nov 18 23:49:39 2007
+@@ -352,6 +352,12 @@
+ 					     journeys)
+ 			     (direct-display-trains end (station-crs-code to) time))))))))
+ 
++(defun find-trains-to-encode (from to time)
++  (cleanup-saved-trains-db
++   (remove-if #'not
++	      (routeing-journeys-db from to time :ignore-shortest-p t))
++   time))
++
+ (defun find-trains (from to &optional (time (now)))
+   (cleanup-saved-trains-db
+    (remove-if #'not
+diff -r eaf1f41bbd14 sondesh/src/train-reader.lisp
+--- a/sondesh/src/train-reader.lisp	Tue Nov 13 14:42:10 2007
++++ b/sondesh/src/train-reader.lisp	Sun Nov 18 23:49:39 2007
+@@ -1,6 +1,40 @@
+-(in-package :com.sondesh.database)
++M(in-package :com.sondesh.database)
+ 
+ (defparameter *all-crses*
++'("YRK" "WVH" "WOK" "WKM" "WIM" "WIJ" "WFJ" "TUH" "TON" "TBD" "TAU" "SYB" "SWI"
++ "SUR" "SUO" "STG" "SRA" "SPT" "SOT" "SNS" "SMK" "SLR" "SLO" "SHT" "SHR" "SBY"
++ "SAY" "SAL" "RUG" "RMD" "RGL" "RET" "PYG" "PTH" "PRE" "PMR" "PBO" "OXF" "OKM"
++ "NWP" "NUN" "NTN" "NRW" "NMP" "NCL" "MMO" "MIJ" "LWS" "LEI" "LDY" "LCN" "KNG"
++ "KMK" "KET" "IPS" "INV" "HUY" "HUL" "HRH" "HOO" "HNH" "HHY" "HFD" "HAZ" "HAY"
++ "HAV" "GUI" "GTW" "GRP" "GRA" "GOO" "GLD" "GFD" "RUN" "G71" "RUE" "G70" "HNX"
++ "LPY" "HTH" "HDG" "SYA" "G69" "WML" "MIA" "MSR" "G68" "RAM" "HLY" "G67" "MTH"
++ "SST" "G66" "SSD" "BAR" "CNF" "G64" "LAN" "SMR" "G63" "SGB" "G62" "BLY" "MKC"
++ "G61" "FOD" "LIT" "ELD" "G60" "RDH" "G58" "BAN" "KGS" "HKC" "G57" "HAC"
++ "WEH" "BHO" "WHC" "G55" "WMW" "SVS" "STO" "G54" "TOM" "G53" "HLD" "LPR" "G52"
++ "LBO" "BWS" "SIL" "G51" "KDY" "MNC" "GLT" "G50" "INK" "NQU" "WXC" "G49" "WRX"
++ "G48" "SCA" "SEM" "NCT" "G47" "NNG" "TRO" "G46" "WSB" "BAW" "FNB" "G45" "FNN"
++ "FKG" "G44" "FKK" "CMO" "ATB" "BEE" "G43" "NOT" "EAG" "G42" "MBR" "TBY" "DVY"
++ "G41" "MCN" "DHN" "G40" "HUD" "MIR" "G39" "HFX" "SOW" "GWN" "LLE" "G38" "SWA"
++ "GDP" "G37" "RMF" "YVJ" "G36" "YVP" "DTW" "WOF" "G35" "WOS" "WGN" "G34" "WGW"
++ "UPW" "G33" "WEY" "WHD" "G32" "WHP" "WBQ" "G31" "WAC" "WKK" "G30" "WKF" "NRB"
++ "SRS" "STE" "SRC" "G29" "SRH" "TTH" "HIT" "G28" "SVG" "SOC" "SOE" "G27" "SOV"
++ "MBK" "RDB" "SOU" "G26" "SOA" "SDN" "SWG" "DOR" "G25" "SHF" "MHS" "RDG" "G24"
++ "RDW" "BDH" "CSA" "FRM" "FTN" "HLS" "PTC" "PMH" "G23" "PMS" "CFD" "PFR" "PFM"
++ "G22" "POT" "GLH" "DPT" "DOC" "KEY" "G21" "PLY" "DGT" "MCO" "MAN" "G20" "MCV"
++ "SFD" "SLD" "MDB" "MDE" "G19" "MDW" "EDG" "BKQ" "LVJ" "LVC" "LIV" "MRF" "SDL"
++ "G18" "LVS" "G17" "LEW" "NWX" "SAJ" "CRG" "EGF" "GRF" "G16" "LDS" "MIK" "G15"
++ "HGS" "SLQ" "CNM" "G14" "GCR" "GLC" "GLQ" "SPR" "G13" "ASF" "EXC" "EXD" "G12"
++ "EXT" "SJP" "DAM" "G11" "EDB" "HYM" "SGL" "DKG" "DPD" "G10" "DKT" "GOM" "BLP"
++ "G09" "DBY" "DFI" "LGE" "PEA" "SPO" "G08" "ECR" "SCY" "WCY" "G07" "CTM" "GLM"
++ "RTR" "SOO" "BKL" "G06" "BMS" "ORP" "PET" "SRT" "BPW" "G05" "BRI" "LWH" "SRD"
++ "FIT" "G04" "BTN" "HOV" "BDQ" "G03" "BDI" "AST" "BMO" "BHM" "G02" "BSW" "DUD"
++ "BET" "BFR" "CST" "CHX" "EUS" "FST" "KGX" "KCM" "LST" "LBG" "MYB" "ZMG" "OLD"
++ "PAD" "STP" "VIC" "WAT" "G01" "WAE" "CTK" "FPK" "FAV" "ESL" "ERL" "EPS" "ELY"
++ "DVP" "DON" "DID" "DFD" "DEE" "DAR" "CYP" "CTR" "CRV" "CRS" "CRE" "CPM" "COV"
++ "COL" "CLY" "CLJ" "CHD" "CDF" "CBG" "CAR" "BTH" "BTG" "BTB" "BSK" "BON" "BNY"
++ "BKJ" "BKG" "BGN" "BFD" "BDM" "BBN" "AHV" "AFK" "ACT" "ABD"))
++
++|#
+   (union '("YRK" "WVH" "WOK" "WKM" "WIM" "WIJ" "WFJ" "TUH" "TON" "TBD" "TAU" "SYB" "SWI"
+  "SUR" "SUO" "STG" "SRA" "SPT" "SOT" "SNS" "SMK" "SLR" "SLO" "SHT" "SHR" "SBY"
+  "SAY" "SAL" "RUG" "RMD" "RGL" "RET" "PYG" "PTH" "PRE" "PMR" "PBO" "OXF" "OKM"
+@@ -11,6 +45,7 @@
+  "COV" "COL" "CLY" "CLJ" "CHD" "CDF" "CBG" "CAR" "BTH" "BTG" "BTB" "BSK" "BON"
+  "BNY" "BKJ" "BKG" "BGN" "BFD" "BDM" "BBN" "AHV" "AFK" "ACT" "ABD")
+ 	 (mapcar #'station-crs-code *station-groups*)))
++#|
+ 
+ (defparameter *fixed-modes*
+   '((1 . "METRO")
+@@ -101,6 +136,7 @@
+ (defparameter *station-links* nil)
+ (defparameter *permitted-routes* nil)
+ (defparameter *linked-stations* nil)
++(defparameter *permitted-route-trains* (make-hash-table :test 'equal :size 38000 :rehash-size 1.1))
+ (defparameter *tiploc->id* (make-hash-table :test 'equal :size 8000 :rehash-size 1.1))
+ (defparameter *id->tiploc* (make-hash-table :test 'equal :size 8000 :rehash-size 1.1))
+ (defparameter *schedules* (make-hash-table :test 'equal :size 8000 :rehash-size 1.1))
+@@ -108,7 +144,7 @@
+ (defparameter *train-uids* (make-hash-table :test 'equal :size 100000 :rehash-size 1.01))
+ (defparameter *uid-trains* (make-hash-table :test 'equal :size 100000 :rehash-size 1.01))
+ (defparameter *connectivity* (make-hash-table :test 'equal :size 110000 :rehash-size 1.1))
+-(defparameter *links* 0)
++(defparameter *links* 0
+ (defparameter *routeing-tiplocs* (make-hash-table))
+ 
+ (defparameter *neighbours* (make-array '(345) :element-type 'hash-table))
+@@ -796,47 +832,7 @@
+ 									 :maximum dur))))))
+ 	(stop-connectivity (first rest-of-stops) (rest rest-of-stops)))))
+ 
+-(defparameter *permitted-route-trains* (make-hash-table :test 'equal))
+-(defparameter *permitted-journeys-loaded* nil)
+ (defparameter *other-ways* (make-hash-table :test 'equal))
+-
+-(defun upload-permitted->db ()
+-  (progn
+-    (with-train-database!
+-      (clsql:execute-command "delete from permitted"))
+-    (dolist (crs-code (hash-keys *permitted-routes*))
+-      (let ((ht (make-hash-table :test 'equal))
+-	    (algorithm (if (member crs-code *aresults* :test #'string=)
+-			   "a*"
+-			   "bfs")))
+-	(print (cons "doing" crs-code))
+-	(load-permitted-trains crs-code ht)
+-	(with-train-database!
+-	  (maphash #'(lambda (k v)
+-		       (let ((id (next-id)))
+-			 (clsql:update-records-from-instance 
+-			  (make-instance 'permitted
+-					 :id id
+-					 :from-crs-code crs-code
+-					 :to-crs-code (subseq k 3 6)
+-					 :done-london nil
+-					 :algorithm algorithm
+-					 :answers (write-to-string v)
+-					 :timestamp (multiple-value-bind (se mi ho da mo ye) (decode-universal-time (now) -1)
+-						      (clsql:make-date :year ye :month mo :day da :hour ho :minute mi :second se))
+-					 :version 1))))
+-		   ht))))))
+-
+-(defun load-permitted-trains (from-crs-code &optional (ht *permitted-route-trains*))
+-  (with-open-file (in (sondesh-file-path (concatenate 'string "additional/" from-crs-code ".trains")))
+-    (dolist (trains (read in))
+-      (setf (gethash (concatenate 'string from-crs-code (first trains)) ht)
+-	    (car (rest trains))))))
+-
+-(defun load-all-permitted-trains ()
+-  (dolist (crs-code (hash-keys *permitted-routes*))
+-    (load-permitted-trains crs-code))
+-  (setf *permitted-journeys-loaded* t))
+ 
+ (defun init-hash (htable)
+   (dotimes (j 344)
+@@ -926,9 +922,7 @@
+ 	    (sorted-array *neighbours*)
+ 	    (init-neighbours *neighbours* *neighbours-consolidate*))
+ 	  (consolidate-train-uids))
+-	(read-processed))
+-    (when journeys
+-      (load-all-permitted-trains))))
++	(read-processed))))
+ 
+ (defun write-processed ()
+   (progn
+@@ -993,29 +987,6 @@
+ 	     60
+ 	     (float (/ total-time total-num))))))
+ 
+-(defun add-brackets (crs)
+-  (with-open-file (out (sondesh-file-path (concatenate 'string "additional/" crs ".1")) 
+-		       :direction :output :if-exists :supersede)
+-    (write-line "(" out)
+-    (with-open-file (in (sondesh-file-path (concatenate 'string "additional/" crs ".trains")) 
+-			:direction :input)
+-      (do ((line (read-line in nil)
+-		 (read-line in nil)))
+-	  ((null line))
+-	(when line
+-	  (write-line line out))))
+-    (write-line ")" out))
+-  (rename-file (sondesh-file-path (concatenate 'string "additional/" crs ".1"))
+-	       (sondesh-file-path (concatenate 'string "additional/" crs ".trains"))))
+-
+-(defun add-all-brackets ()
+-  (dolist (crs-code (hash-keys *permitted-routes*))
+-    (let ((pleasedo nil))
+-      (with-open-file (in (sondesh-file-path (concatenate 'string "additional/" crs-code ".trains")))
+-	(setf pleasedo (not (listp (first (read in))))))
+-      (when pleasedo
+-	(add-brackets crs-code)))))
+-
+ (defun train-details (trainid &key (routeing-p nil))
+   (awhen (gethash trainid *trains*)
+     (list (decode-train (first it))
+@@ -1049,6 +1020,6 @@
+ 
+ ;;(init :journeys nil :only-routeing t :only-next-two-days-p "10-09-2007")
+ 
+-(init :journeys nil :start-date "10-09-2007" :end-date "16-09-2007")
++(init :journeys nil :start-date "12-11-2007" :end-date "18-11-2007")
+ 
+ ;(read-processed)
+diff -r eaf1f41bbd14 sondesh/src/trains.lisp
+--- a/sondesh/src/trains.lisp	Tue Nov 13 14:42:10 2007
++++ b/sondesh/src/trains.lisp	Sun Nov 18 23:49:39 2007
+@@ -869,45 +869,6 @@
+ (defun journey-summary (journey)
+   (mapcar #'(lambda (train) (second train)) (cdr journey)))
+ 
+-(defun generate-permitted-trains (start end &key (fn #'generate-permitted-routes-trains-a*))
+-  (let ((permitted-routes (make-hash-table :test 'equal))
+-	(i 0))
+-    (maphash #'(lambda (k v)
+-		 (when (and (< i end) (>= i start))
+-		   (setf (gethash k permitted-routes) v))
+-		 (incf i))
+-	     *permitted-routes*)
+-    (funcall fn permitted-routes)))
+-   
+-(defun generate-permitted-routes-trains (routes)
+-  (maphash #'(lambda (start-crs-code value) 
+-	       (unless (member start-crs-code 
+-			       '()
+-			       :test #'string=)
+-		 (with-open-file (out (sondesh-file-path (concatenate 'string "additional/" start-crs-code ".trains"))
+-				      :direction :output 
+-				      :if-exists :supersede)
+-		   (dolist (route (group value :test #'string=))
+-		     (print (concatenate 'string start-crs-code " " (first route) " started") t)
+-		     (print (list (first route) 
+-				  (delete-duplicates 
+-				   (mapcar #'(lambda (journey) 
+-					       (mapcar #'(lambda (train) 
+-							   (let ((train-info (third train)))
+-							     (+ (* (first train-info) 1000000000000000)
+-								(* (convert-bit-string-to-integer (second train-info)) 1000000000000)
+-								(* (third train-info) 1000000)
+-								(fourth train-info))))
+-						       (cdr journey)))
+-					   (possible-journeys-routes-a* (find-station-by-code start-crs-code) 
+-									(find-station-by-code (first route))
+-									:time (string->dttm "2007-06-04 Mon 06:00:00 +0100 (BST)")
+-									:time-fn (make-time-test-fn2)))
+-				   :test #'equal)) 
+-			    out)
+-		     (print (concatenate 'string start-crs-code " " (first route) " done") t)))))
+-	   routes))
+-
+ (defparameter *aresults*
+   '("G08" "G07" "G06" "G05" "G04" "G03" "G02" "G01" "FPK" "FAV" "ESL" "ERL" "EPS"
+     "ELY" "DVP" "DON" "DID" "DFD" "DEE" "DAR" "CYP" "CTR" "CRV" "CRS" "CRE" "CPM"
+@@ -919,35 +880,6 @@
+     "G46" "G47" "G48" "G49" "G50" "G51" "G52" "G53" "G54" "G55" "G56" "G57" "G58"
+     "G59" "G60" "G61" "G62" "G63" "G64" "G65" "G66" "G67" "G68" "G69" "G70" "G71"
+     "GFD" "GLD" "GOO" "GRA" "GRP" "GTW" "GUI" "HAV" "G09"))
+-
+-(defun generate-permitted-routes-trains-a* (routes)
+-  (maphash #'(lambda (start-crs-code value) 
+-	       (unless (member start-crs-code 
+-			       *aresults*
+-			       :test #'string=)
+-		 (with-open-file (out (sondesh-file-path (concatenate 'string "additional/" start-crs-code ".trains"))
+-				      :direction :output 
+-				      :if-exists :supersede)
+-		   (dolist (route (group value :test #'string=))
+-		     (print (concatenate 'string start-crs-code " " (first route) " started") t)
+-		     (let ((results (delete-duplicates 
+-				   (mapcar #'(lambda (journey) 
+-					       (map-path #'(lambda (train) 
+-							     (let ((train-info (train-info train)))
+-							       (+ (* (first train-info) 1000000000000000)
+-								  (* (convert-bit-string-to-integer (second train-info)) 
+-								     1000000000000)
+-								  (* (third train-info) 1000000)
+-								  (fourth train-info))))
+-							 journey))
+-					   (possible-journeys-routes-a* (find-station-by-code start-crs-code) 
+-									(find-station-by-code (first route))
+-									:time now
+-									:time-fn (make-time-test-fn2)))
+-				   :test #'equal)))
+-		       (print (list (first route) results) out)
+-		       (print (cons (concatenate 'string start-crs-code " " (first route) " done") (length results)) t))))))
+-	   routes))
+ 
+ (defun make-time-test-fn (&key (time (get-universal-time)))
+   (multiple-value-bind (se mi ho da mo ye dw dst tz) (decode-universal-time time)

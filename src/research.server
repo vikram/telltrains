@@ -1,0 +1,37 @@
+simplecrawler
+
+DNSLookupCache
+
+urlserver
+
+indexer
+	htmlparser
+
+Textanalysis (evaluating the documents based on matching words, font size, proximity, and over 100 other factors)
+
+Anchors
+
+URL Resolver
+
+Links
+
+DocIndexer
+
+Sorter
+
+Pagerank
+
+Lexicon
+
+Repository
+
+Storeserver
+
+barrels
+
+reputation
+
+click-tracking
+
+what is pagerank in this?
+

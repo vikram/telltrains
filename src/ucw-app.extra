@@ -1,0 +1,163 @@
+
+;;some extra stuff
+
+#|
+ for (var i = 0; i < 288; i++)
+9 values[i]=i;
+10 var slider = new Control.Slider(
+11 ['handleleaving'],
+12 'tracktime',
+13 {axis: 'horizontal',
+14 range: $R(0,287), values: values,
+15 sliderValue: sliderValues,
+16 onSlide: function (values) {
+17 sliderValues = [values];
+18 scrollJourneys(values);
+19 }
+20 });
+
+		   (<:script :src "http://maps.google.com/maps?file=api&v=2&key=ABQIAAAAfzASmKvmIGhgVZBphgbIMhSbOCASmIHfcyCoxgLWrOePWQVFNhScF6BwHPam3my7bT67NmWM1eTM4g" :type "text/javascript")
+		   (<:script :src "http://www.google-analytics.com/urchin.js" :type "text/javascript")
+(<:script :type "text/javascript"  (<:as-is "_uacct='UA-1779260-1'; urchinTracker();"))
+
+			  (<:div :id "sliders"
+				 (<:div :id "tracktime" 
+					(<:div :id "handleleavingstart" :class "sliderhandle")
+					(<:div :id "handleleavingend" :class "sliderhandle") 
+					(<:div :id "handlearrivingstart" :class "sliderhandle")
+					(<:div :id "handlearrivingend" :class "sliderhandle")))
+
+                                   var values = new Array();
+                                   for (var i = 0; i < 53; i++)
+                                       values[i]=i;
+                                   var slider = new Control.Slider(
+                                                     ['handleleavingstart','handleleavingend','handlearrivingstart','handlearrivingend'], 
+                                                     'tracktime', 
+                                                     {axis: 'horizontal',
+                                                      range: $R(0,52), values: values,
+                                                      sliderValue: sliderValues,
+                                                      onChange: function (values) {
+                                                               sliderValues = values;
+                                                               filterJourneys();
+                                                       }
+                                 });
+	    (let ((now (or (and leaving (string/= leaving "") (not (and (> (- (now) (string->dttm leaving)) 0)
+									(< (- (now) (string->dttm leaving)) 86400)))
+				(string->dttm leaving)) (now)))
+		  (leaving-date (or leaving (dttm->string (now) :format :caldate))))
+
+;;options does elaborate filtering
+
+          (<:li :class "formlist"
+		(<:label :class "desc" "Filter results"))
+	       (<:li :id "routeli" :class "formlist"
+		     (<:div :class "left big"
+			    :title "Pick a route to see which trains are available"
+                	 (<:span :class "formlist"
+			     (<:select :id "route" 
+				       :name "route"
+				       :class "field select"
+				       :onchange "filterJourneys();"
+				       (append (list (<:option :value "9999" :selected "selected" "All routes"))
+					       (mapcar #'(lambda (route)
+							   (<:option :value (car route)
+								     (<:as-is (cdr route))))
+						       (route-text (routes trains)))))
+			     (<:label :for "route"
+				      (<:as-is (format nil "Routes (~A to ~A)" from to)))))
+	       (<:div :class "right small"
+		      :title "Select to include stopping trains"
+		      (<:input :id "stopping" :name "stopping" :class "field checkbox" 
+			       :onclick "filterJourneys();"
+			       :type "checkbox" :checked "checked" :value "checked")
+		      (<:label :class "choice" 
+			       :for "stopping" "Stopping trains"))
+		(<:div :class "right small"
+		       :title "Select to include peak time trains"
+			(<:input :id "peak" :name "peak" :class "field checkbox" 
+				 :onclick "filterJourneys();"
+				 :type "checkbox" :checked "checked" :value "checked")
+			(<:label :class "choice" 
+				 :for "peak" "Peak time journeys")))
+	       (<:li :id "changeli" :class "formlist" 
+		     (<:div :class "left middle" :style "width: 20%"
+			    :title "Pick the number of changes acceptable to you"
+			    (<:label :class "desc" 
+				     :for "changesSelect" "Changes")
+			    (<:select :id "changesSelect" :name "changesSelect" :class"field select"
+				      :onchange "filterJourneys();"
+				      (append (list (<:option :value "9999" :selected "selected" "Any number"))
+					      (mapcar #'(lambda (pair) (<:option :value (car pair) (<:as-is (cdr pair))))
+						      (changes-list trains)))))
+	       (<:div :class "left middle"
+		      :title "Pick the departure times acceptable to you"
+		      (<:label :class "desc" 
+			       :for "Departing_start" "Departure between")
+		      (time-options (cleanup-hour-range (start-range-trains trains ho)) "Departing" ho))
+	       (<:div :class "left middle"
+		      :title "Pick the arrival times acceptable to you"
+		      (<:label :class "desc" 
+			       :for "Arriving_start" "Arrival between")
+		      (time-options (cleanup-hour-range (end-range-trains trains ho)) "Arriving" ho)))
+	       (<:li :class "formlist"
+		     (<:a :href "#" 
+			  :id "resetoptions"
+			  :onclick "resetOptions(); return false;"
+			  "reset options"))
+
+                                 if (GBrowserIsCompatible()) {
+                                    var map = new GMap2(document.getElementById('map'));
+                                    map.setCenter(new GLatLng(~A,~A), 13);
+                                    var marker = new GMarker(new GLatLng(~A, ~A),G_DEFAULT_ICON,false);
+                                    GEvent.addListener(marker, 'click', function() {
+                                       
+                                         marker.openInfoWindowHtml('~A');});
+                                    map.addOverlay(marker);
+                                 }
+      (<:table :class "stops"
+	     (mapcar #'(lambda (display-train)
+			 (let ((summary (display-train-summary display-train))
+			       (start (first (display-train-stops display-train)))
+			       (end (car (last (display-train-stops display-train)))))
+			   (incf i)
+			   (<:tbody
+			    (<:tr :class "selected"
+				  (<:td (<:as-is (format nil "~A leaving " (fifth summary)))
+					(<:a :class "map" :tabindex (cdr (assoc (fifth start) tiploc-loc :test #'string=))
+					     (<:as-is (string-capitalize (first summary))))
+					(<:as-is (format nil " at ~A arriving " (time-ampm (second summary))))
+					(<:a :class "map" :tabindex (cdr (assoc (fifth end) tiploc-loc :test #'string=))
+					     (<:as-is (string-capitalize (third summary))))
+					(<:as-is (format nil " at ~A" (time-ampm (fourth summary)))))
+				  (<:td (<:as-is (time-hrmin (sixth summary)))))
+			    (mapcar #'(lambda (stop)
+					(incf i)
+					(<:tr :class (if (oddp i) "odd" "even")
+					      (<:td
+					       (<:as-is
+						"Arrives at ")
+						(<:a :class "map" :tabindex (cdr (assoc (fifth stop) tiploc-loc :test #'string=)) :href "#"
+						     (<:as-is (string-capitalize (tiploc->station-name (fifth stop))))))
+					      (<:td
+					       (<:as-is
+							 (time-ampm (multiple-value-bind (hr min)
+									(floor (fourth stop) 100)
+								      (format nil "~A:~A" hr min)))))))
+				    (rest (display-train-stops display-train))))))
+		     display-trains))
+
+(defun send-pdf-example ()
+  (let ((network-stream
+         (ucw::network-stream (context.response ucw:*context*)))
+         (file #P"/tmp/file.pdf"))
+    (with-open-file (s file :element-type '(unsigned-byte 8))
+      (let ((seq (make-array (file-length s) :element-type '(unsigned-byte 8))))
+        (read-sequence seq s)
+        (write-sequence seq network-stream)))))
+
+
+/*    
+
+*/
+
+|#

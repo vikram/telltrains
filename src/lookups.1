@@ -1,0 +1,458 @@
+(in-package :com.sondesh.database)
+
+(defparameter *results* (make-hash-table))
+
+(defparameter *default-database* "/home/vb/database/")
+
+(defun read-table (tablename)
+  (let* ((name (if (symbolp tablename)
+		   (string-downcase (symbol-name tablename))
+		   tablename))
+	 (path (make-pathname :directory *default-database* :name name)))
+    (if (probe-file path)
+	(read-hashtable path)
+	(make-hash-table :test 'equal))))
+
+(defun write-table (tablename table)
+  (let* ((name (if (symbolp tablename)
+		   (string-downcase (symbol-name tablename))
+		   tablename))
+	 (path (make-pathname :directory *default-database* :name name)))
+    (write-hashtable path table)))
+
+#|
+(defun create-table-field (table field)
+  `(setf (symbol-function ',(make-logic-symbol (concatenate 'string (symbol-name table) "-" (symbol-name field))))
+	#'(lambda (alist) 
+	    (cdr (assoc ',field alist)))))
+
+;;table defs
+
+(defmacro def-table (table &rest fields)
+  `(progn
+     (setf (symbol-function ',(make-logic-symbol (concatenate 'string "make-" (symbol-name table))))
+	   #'(lambda (,@fields)
+	       (list ,@(mapcar #'(lambda (field) `(cons ',field ,field)) fields))))
+     ,@(mapcar #'(lambda (field) (create-table-field table field)) fields)))
+
+(def-table id last-id)
+|#
+
+(defstruct (station (:type list)) code length downcase-name name)
+
+(defparameter *stations* 
+  (with-open-file (in "/home/vb/sondesh/src/database/station.codes" :direction :input)
+    (mapcar #'(lambda (pair) (make-station :code (car pair) 
+					   :length (length (cdr pair)) 
+					   :downcase-name (string-downcase (cdr pair))
+					   :name (cdr pair)))
+	    (read in))))
+
+(defmemoize find-station-code #'equal (station-name)
+  (let ((len (length station-name))
+	(lower-station-name (string-downcase station-name)))
+    (remove-if-not #'(lambda (station) (or (string= lower-station-name (third station))
+					   (and (> (second station) len)
+						(string= (subseq (third station) 0 len) lower-station-name))))
+		   *stations*)))
+
+(defun find-station (code)
+  (aif (assoc (make-logic-symbol code) *stations*)
+       (car (last it))
+       ""))
+
+(defun get-timetable-with-fares (from to day month hour)
+  (let ((cookie-jar (make-instance 'drakma:cookie-jar)))
+      (drakma:http-request "http://ojp.nationalrail.co.uk/"
+			  :method :get
+			  :cookie-jar cookie-jar)
+     (let ((cookie (car (drakma:cookie-jar-cookies cookie-jar))))
+       (setf (drakma:cookie-jar-cookies cookie-jar) 
+	     (list cookie
+		   (make-instance 'drakma:cookie :name "s_cc" :value "true" :domain (drakma:cookie-domain cookie))
+		   (make-instance 'drakma:cookie :name "s_sq" :value "%5B%5BB%5D%5D" :domain (drakma:cookie-domain cookie))))
+       (drakma:http-request (format nil "http://~A/en/pj/jp" (drakma:cookie-domain cookie))
+			    :method :get
+			    :cookie-jar cookie-jar)
+       (drakma:http-request (format nil "http://~A/en/pj/jp/" (drakma:cookie-domain cookie))
+			    :method :post
+			    :parameters `(("IsJavaScriptEnabled" . "false")
+					  ("referer" . "kb_homepage")
+					  ("from.searchTerm" . ,from)
+					  ("to.searchTerm" . ,to)
+					  ("via.searchTerm" . "")
+					  ("timeOfOutwardJourney.day" . ,day)
+					  ("timeOfOutwardJourney.month" . ,month)
+					  ("hidYear" . "")
+					  ("timeOfOutwardJourney.hour" . ,hour)
+					  ("timeOfOutwardJourney.minute" . "00")
+					  ("timeOfOutwardJourney.arrivalOrDeparture" . "DEPART")
+					  ("timeOfOutwardJourney.firstOrLast" . "FIRST")
+					  ("timeOfReturnJourney.day" . "")
+					  ("timeOfReturnJourney.month" . "")
+					  ("timeOfReturnJourney.hour" . "00")
+					  ("timeOfReturnJourney.minute" . "15")
+					  ("timeOfReturnJourney.arrivalOrDeparture" . "DEPART")
+					  ("timeOfReturnJourney.firstOrLast" . "FIRST")
+					  ("maxChanges" . "-1")
+					  ("planjourney" . "SEARCH"))
+			    :cookie-jar cookie-jar)
+       (drakma:http-request (format nil "http://~A/en/pj/tt" (drakma:cookie-domain cookie))
+			    :method :get
+			    :cookie-jar cookie-jar)
+       (drakma:http-request (format nil "http://~A/en/pj/tt" (drakma:cookie-domain cookie))
+			    :method :post
+			    :parameters '(("buttonPressed" . "GET_FARE_OPTIONS")
+					  ("postByParam" . "CHECK FARES")
+					  ("fareEnquiry.numberOfAdults" . "1")
+					  ("fareEnquiry.numberOfChildren" . "0")
+					  ("fareEnquiry.railcardCode" . "")
+					  ("fareEnquiry.numberOfRailcards" . "1")
+					  ("fareEnquiry.totalRailcards" . "0")
+					  ("fareEnquiry.fareClass" . "ANY")
+					  ("fareEnquiry.searchStrategy" . "FASTEST"))
+			    :cookie-jar cookie-jar)
+       (drakma:http-request (format nil "http://~A/en/pj/fa" (drakma:cookie-domain cookie))
+			    :method :get
+			    :cookie-jar cookie-jar)
+       (sleep 5)
+       (drakma:http-request (format nil "http://~A/en/pj/fa?uniqueId=~A" (drakma:cookie-domain cookie) (floor (* (random 0.1) 100000001)))
+			    :method :get
+			    :cookie-jar cookie-jar))))
+
+(defun get-timetable (from to day month hour)
+  (let ((cookie-jar (make-instance 'drakma:cookie-jar)))
+      (drakma:http-request "http://ojp.nationalrail.co.uk/"
+			  :method :get
+			  :cookie-jar cookie-jar)
+     (let ((cookie (car (drakma:cookie-jar-cookies cookie-jar))))
+       (setf (drakma:cookie-jar-cookies cookie-jar) 
+	     (list cookie
+		   (make-instance 'drakma:cookie :name "s_cc" :value "true" :domain (drakma:cookie-domain cookie))
+		   (make-instance 'drakma:cookie :name "s_sq" :value "%5B%5BB%5D%5D" :domain (drakma:cookie-domain cookie))))
+       (drakma:http-request (format nil "http://~A/en/pj/jp" (drakma:cookie-domain cookie))
+			    :method :get
+			    :cookie-jar cookie-jar)
+       (drakma:http-request (format nil "http://~A/en/pj/jp/" (drakma:cookie-domain cookie))
+			    :method :post
+			    :parameters `(("IsJavaScriptEnabled" . "false")
+					  ("referer" . "kb_homepage")
+					  ("from.searchTerm" . ,from)
+					  ("to.searchTerm" . ,to)
+					  ("via.searchTerm" . "")
+					  ("timeOfOutwardJourney.day" . ,day)
+					  ("timeOfOutwardJourney.month" . ,month)
+					  ("hidYear" . "")
+					  ("timeOfOutwardJourney.hour" . ,hour)
+					  ("timeOfOutwardJourney.minute" . "00")
+					  ("timeOfOutwardJourney.arrivalOrDeparture" . "DEPART")
+					  ("timeOfOutwardJourney.firstOrLast" . "FIRST")
+					  ("timeOfReturnJourney.day" . "")
+					  ("timeOfReturnJourney.month" . "")
+					  ("timeOfReturnJourney.hour" . "00")
+					  ("timeOfReturnJourney.minute" . "15")
+					  ("timeOfReturnJourney.arrivalOrDeparture" . "DEPART")
+					  ("timeOfReturnJourney.firstOrLast" . "FIRST")
+					  ("maxChanges" . "-1")
+					  ("planjourney" . "SEARCH"))
+			    :cookie-jar cookie-jar)
+       (drakma:http-request (format nil "http://~A/en/pj/tt" (drakma:cookie-domain cookie))
+			    :method :get
+			    :cookie-jar cookie-jar))))
+
+(defun get-timetable-changes (from to day month hour)
+  (let ((cookie-jar (make-instance 'drakma:cookie-jar)))
+      (drakma:http-request "http://ojp.nationalrail.co.uk/"
+			  :method :get
+			  :cookie-jar cookie-jar)
+     (let ((cookie (car (drakma:cookie-jar-cookies cookie-jar))))
+       (setf (drakma:cookie-jar-cookies cookie-jar) 
+	     (list cookie
+		   (make-instance 'drakma:cookie :name "s_cc" :value "true" :domain (drakma:cookie-domain cookie))
+		   (make-instance 'drakma:cookie :name "s_sq" :value "%5B%5BB%5D%5D" :domain (drakma:cookie-domain cookie))))
+       (drakma:http-request (format nil "http://~A/en/pj/jp" (drakma:cookie-domain cookie))
+			    :method :get
+			    :cookie-jar cookie-jar)
+       (drakma:http-request (format nil "http://~A/en/pj/jp/" (drakma:cookie-domain cookie))
+			    :method :post
+			    :parameters `(("IsJavaScriptEnabled" . "false")
+					  ("referer" . "kb_homepage")
+					  ("from.searchTerm" . ,from)
+					  ("to.searchTerm" . ,to)
+					  ("via.searchTerm" . "")
+					  ("timeOfOutwardJourney.day" . ,day)
+					  ("timeOfOutwardJourney.month" . ,month)
+					  ("hidYear" . "")
+					  ("timeOfOutwardJourney.hour" . ,hour)
+					  ("timeOfOutwardJourney.minute" . "00")
+					  ("timeOfOutwardJourney.arrivalOrDeparture" . "DEPART")
+					  ("timeOfOutwardJourney.firstOrLast" . "FIRST")
+					  ("timeOfReturnJourney.day" . "")
+					  ("timeOfReturnJourney.month" . "")
+					  ("timeOfReturnJourney.hour" . "00")
+					  ("timeOfReturnJourney.minute" . "15")
+					  ("timeOfReturnJourney.arrivalOrDeparture" . "DEPART")
+					  ("timeOfReturnJourney.firstOrLast" . "FIRST")
+					  ("maxChanges" . "-1")
+					  ("planjourney" . "SEARCH"))
+			    :cookie-jar cookie-jar)
+       (drakma:http-request (format nil "http://~A/en/pj/tt" (drakma:cookie-domain cookie))
+			    :method :get
+			    :cookie-jar cookie-jar)
+       (drakma:http-request (format nil "http://~A/en/pj/jd2" (drakma:cookie-domain cookie))
+			    :method :get
+			    :cookie-jar cookie-jar))))
+       
+
+(defun element= (list tag class id)
+  (labels ((element-part (element part)
+	     (aif (member part element)
+		  (cadr it)
+		  "")))
+    (cond ((atom list) nil)
+	  ((atom (car list)) (and (eql tag (car list))
+				  (string= "" class)
+				  (string= "" id)
+				  list))
+	  (t (and (eql tag (caar list))
+		  (or (string= "" class) (string= (element-part (car list) :class) class))
+		  (or (string= "" id) (string= (element-part (car list) :id) id))
+		  list)))))
+	
+(defun element-p (list)
+  (and list
+       (not (atom list))
+       (or (and (atom (car list)) (symbolp (car list)))
+	   (not (remove-if #'atom (car list))))
+       (cdr list)))
+
+(defun find-html-node (html-list tag &key (class "") (id ""))
+  (cond ((null html-list) nil)
+	((element-p html-list) 
+	 (or (element= html-list tag class id)
+	     (some #'(lambda (part) (find-html-node part tag :class class :id id))
+		   (cdr html-list))))
+	(t nil)))
+
+(defun remove-html-node-if-not (html-list test)
+  (labels ((remove-html-rec (list accumulator)
+	     (cond ((null list) accumulator)
+		   ((element-p list)
+		    (if (funcall test list)
+			(cons list accumulator)
+			(let ((result accumulator))
+			  (dolist (element (cdr list))
+			    (setf result (remove-html-rec element result)))
+			  result)))
+		   (t accumulator))))
+    (nreverse (remove-html-rec html-list '()))))
+
+(defun single-fares (html-list)
+  (mapcar #'(lambda (element) 
+	      (aif (find-html-node element :a)
+		   (string-trim '(#\space #\return #\tab #\Newline) (cadr it))))
+	  (remove-html-node-if-not
+	   (find-html-node html-list :table :id "singleFareTable")
+	   #'(lambda (element) (element= element :td "borderCell" "")))))
+
+(defun time-table (html-list)
+  (mapcar #'(lambda (element) (cadr element))
+	(remove-html-node-if-not
+	 (find-html-node 
+	  html-list :table :id "ResultsTable")
+	 #'(lambda (element) (element= element :td "borderCell singleCellwidth" "")))))
+
+(defun merge-times-with-fares (fares times)
+  (let ((time-table (group-by-nth times 5))
+	(counter 0)
+	(results (make-hash-table :test 'equal)))
+    (dolist (fare fares)
+      (when fare
+	(setf (gethash fare results) (cons (list (cond ((< counter 5) 'advance)
+						       ((< counter 10) 'saver)
+						       (t 'open))
+						 (nth (mod counter 5) time-table))
+					   (gethash fare results))))
+      (incf counter))
+    (cdr (hash-table->alist results))))
+
+(defun single-times-fares (from to day month hour)
+  (let ((html-results (net.html.parser:parse-html (get-timetable-with-fares from to day month hour))))
+    (merge-fares-times
+     (single-fares html-results)
+     (time-table html-results))))
+
+(defun train-name (from to day month hour)
+  (make-logic-symbol (concatenate 'string from to day month hour)))
+
+
+(defun extract-all-options (html-list)
+  (let ((train-number 0))
+    (mapcar #'(lambda (optionBox) (list (incf train-number)
+					(mapcar #'extract-option-leg 
+						(remove-html-node-if-not optionBox #'(lambda (element) (element= element :div "optionSummary" ""))))))
+	  (remove-html-node-if-not
+	   html-list
+	   #'(lambda (element) (element= element :div "optionBox" ""))))))
+
+(defun extract-option-leg (html-list)
+  (aif (remove-html-node-if-not
+	html-list
+	#'(lambda (element) (element= element :td "bold" "")))
+       (list (second (third (first it))) 
+	     (subseq (string-trim '(#\Space #\Tab #\Return #\linefeed) (second (first it))) 0 5)
+	     (second (third (second it))) 
+	     (subseq (string-trim '(#\Space #\Tab #\Return #\linefeed) (second (second it))) 0 5)
+	     (string-trim '(#\Space #\Tab #\Return #\linefeed) (second (third it)))
+	     (second (fourth it)))))
+
+(defun single-times (from to day month hour)
+  (let* ((slot (train-name from to day month hour))
+	 (html-results (net.html.parser:parse-html 
+		       (aif (gethash slot *results*)
+			    it
+			    (setf (gethash slot *results*) (get-timetable from to day month hour))))))
+    (group-by-nth 
+     (time-table html-results)
+     5)))
+
+(defun single-times-changes (from to day month hour)
+  (let* ((slot (train-name from to day month hour))
+	 (html-results (net.html.parser:parse-html 
+		       (aif (gethash slot *results*)
+			    it
+			    (setf (gethash slot *results*) (get-timetable from to day month hour))))))
+    (extract-all-options html-results)))
+
+(defun group-by-nth (source n &optional (counter 0) (accumulator '()))
+  (if (or (null source)
+	  (atom source))
+      (mapcar #'reverse accumulator)
+      (progn
+	(aif (nth (mod counter n) accumulator)
+	     (setf (nth (mod counter n) accumulator) (cons (car source) (nth (mod counter n) accumulator)))
+	     (push (list (car source)) accumulator))
+	(group-by-nth (cdr source) n (+ 1 counter) accumulator))))
+
+(defun merge-fares-times (fares times)
+  (let ((time-table (group-by-nth times 5))
+	(counter -1))
+    (labels ((add-fare (fare init-value type train)
+	       (progn
+		 (setf (gethash train init-value) (cons (list type fare)
+						    (gethash train init-value)))
+		 init-value)))
+      (cdr (hash-table->alist
+	    (reduce #'(lambda (init fare)
+			(progn
+			  (incf counter)
+			  (if fare
+			      (add-fare fare 
+					init
+					(cond ((< counter 5) 'advance)
+					      ((< counter 10) 'saver)
+					      (t 'open))
+					(nth (mod counter 5) time-table))
+			      init)))
+		    fares :initial-value (make-hash-table :test 'equal)))))))
+
+(defun get-oneway-allday-timetable (from to day month)
+  (cdr (hash-table->alist
+	(reduce #'(lambda (init fare-trains)
+		    (progn
+		      (setf (gethash (car fare-trains) init)
+			    (append (cdr fare-trains) (gethash (car fare-trains) init)))
+		      init))
+		(mappend #'(lambda (hour) (single-times-fares from to day month (format nil "~A" hour)))
+			 '(05 06 07 08 09 10 11 12 15 16 17 19 21))
+		:initial-value (make-hash-table :test 'equal)))))
+
+(defun get-unique-trains (from to day month start end)
+  (sort 
+   (delete-duplicates 
+    (get-trains from to day month (map0-n #'(lambda (n) 
+					      (format nil "~A" (+ start n))) 
+					  (- end start)))
+    :test #'(lambda (a b) (string= (third (car a)) (third (car b)))))
+   #'string< :key #'(lambda (x) (third (car x)))))
+
+(defun get-unique-trains-changes (from to day month start end)
+  (mapcar #'car
+	  (sort 
+	   (delete-duplicates 
+	    (get-trains-changes from to day month (map0-n #'(lambda (n) 
+						      (format nil "~A" (+ start n))) 
+						  (- end start)))
+	    :test #'(lambda (a b) (equal a b)))
+	   #'string< :key #'(lambda (x) (second (caadar x))))))
+
+(defun get-fares (from to day month hours)
+  (let ((results (make-hash-table :test 'equal))
+	(processes (length hours)))
+    (dolist (hr hours)
+      (acl-compat.mp:process-run-function 
+       "single" 
+       #'(lambda (hour) 
+	   (dolist (result (single-times-fares from to day month (format nil "~A" hour)))
+	     (print hr t)
+	     (when (not (gethash (car result) results))
+	       (setf (gethash (car result) results) (cdr result))))
+	   (decf processes))
+       hr))
+    (while (> processes 0)
+      (sleep 1))
+    (cdr (hash-table->alist results))))
+
+(defun get-trains (from to day month hours)
+  (let ((results (make-hash-table :test 'equal))
+	(processes (length hours)))
+    (dolist (hr hours)
+      (acl-compat.mp:process-run-function 
+       "single" 
+       #'(lambda (hour) 
+	   (dolist (result (single-times from to day month (format nil "~A" hour)))
+	     (when (not (gethash result results))
+	       (setf (gethash result results) nil)))
+	   (decf processes))
+       hr))
+    (while (> processes 0)
+      (sleep 1))
+    (cdr (hash-table->alist results))))
+
+(defun timedifference (time1 time2)
+  (round 
+   (*
+    (time-diff 
+     (string->dttm 
+      (format nil "2007-04-02 Mon ~A:38 +0000 (GMT)" time1))
+     (string->dttm 
+      (format nil "2007-04-02 Mon ~A:38 +0000 (GMT)" time2)))
+    (/ 50.0 3))))
+
+(defun timenum (time)
+  (format nil "~A~A" (subseq time 0 2) (subseq time 3 5)))
+
+(defun extract-url-parameter (parameter-name url)
+  (aif (cl-ppcre:all-matches-as-strings (format nil "[?&]~A=[^&]+(&|$)" parameter-name) url)
+       (unless (string= "" (car it))
+	 (if (string= "&" (subseq (car it) (1- (length (car it))) (length (car it))))
+	     (subseq (car it) (+ 2 (length parameter-name)) (1- (length (car it))))
+	     (subseq (car it) (+ 2 (length parameter-name)) (length (car it)))))))
+
+(defun getChanges (changes number-of-changes)
+  (unless (equal '("-") changes)
+    (let ((changesURL (third (car (second (second changes))))))
+      (map0-n #'(lambda (n) 
+		  (if (= n number-of-changes)
+		      (list (format-nr-time (extract-url-parameter (format nil "ddt~A" (1+ n)) changesURL))
+			    (find-station (extract-url-parameter (format nil "ol~A" (1+ n)) changesURL))
+			    (extract-url-parameter (format nil "tm~A" (1+ n)) changesURL))
+		      (list (format-nr-time (extract-url-parameter (format nil "ddt~A" (1+ n)) changesURL))
+			    (find-station (extract-url-parameter (format nil "ol~A" (1+ n)) changesURL))
+			    (extract-url-parameter (format nil "tm~A" (1+ n)) changesURL))))
+	      number-of-changes))))
+
+(defun format-nr-time (nrTime)
+  (if (>= 12 (length nrTime))
+      "00:00"
+      (format nil "~A:~A" (subseq nrTime 9 11) (subseq nrTime 11 13))))

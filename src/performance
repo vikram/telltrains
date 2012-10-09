@@ -1,0 +1,2265 @@
+(sb-profile:profile possible-journeys readjust-train journey-leg->trains best-journey far-along-on-route 
+		    journey-summary date-matches-p filter-legs train-with-changes sort-result-summarize possible-journeys-routes possible-journeys
+		    find-direct-trains-all-stops stops->info simple-decode-train-stop decode-train find-simple-direct-trains find-trains-from-to
+		    possible-journeys-a* a*-search journey-cost average-time-path average-time-stops readjust-train-a* direct-trains stop= 
+		    direct-trains->path journey-summary-a* sort-result-summarize-a* possible-journeys-routes-a*
+		    timedifference-nd date2time yymmdd->simple-date journey< current-short-time validate-readjusted-train-p)
+
+(time (possible-journeys-a* "reading" "brighton" :time (string->dttm "2007-06-07 Thu 17:00:00 +0100 (BST)") :summary-sorted-p t))
+
+Evaluation took:
+  14.205 seconds of real time
+  8.400525 seconds of user run time
+  3.240202 seconds of system run time
+  [Run times include 2.537 seconds GC run time.]
+  0 calls to %EVAL
+  0 page faults and
+  1,554,029,504 bytes consed.
+((("READING" "17:04" "REDHILL" "18:31" "Train" "01:27")
+  ("REDHILL" "18:46" "GATWICK AIRPORT" "18:58" "Train" "00:12")
+  ("GATWICK AIRPORT" "19:26" "BRIGHTON" "20:00" "Train" "00:34"))
+ (("READING" "17:07" "BASINGSTOKE" "17:31" "Train" "00:24")
+  ("BASINGSTOKE" "17:36" "PORTSMOUTH HARBOUR" "18:51" "Train" "01:15")
+  ("PORTSMOUTH HARBOUR" "19:15" "HAVANT" "19:33" "Train" "00:18")
+  ("HAVANT" "20:26" "BRIGHTON" "21:43" "Train" "01:17"))
+ (("READING" "17:34" "GATWICK AIRPORT" "19:07" "Train" "01:33")
+  ("GATWICK AIRPORT" "19:26" "BRIGHTON" "20:00" "Train" "00:34"))
+ (("READING" "17:39" "BASINGSTOKE" "18:03" "Train" "00:24")
+  ("BASINGSTOKE" "18:24" "PORTSMOUTH HARBOUR" "19:46" "Train" "01:22")
+  ("PORTSMOUTH HARBOUR" "20:28" "BRIGHTON" "22:10" "Train" "01:42"))
+ (("READING" "17:45" "BASINGSTOKE" "18:08" "Train" "00:23")
+  ("BASINGSTOKE" "18:24" "PORTSMOUTH HARBOUR" "19:46" "Train" "01:22")
+  ("PORTSMOUTH HARBOUR" "20:28" "BRIGHTON" "22:10" "Train" "01:42"))
+ (("READING" "18:04" "REDHILL" "19:35" "Train" "01:31")
+  ("REDHILL" "19:46" "GATWICK AIRPORT" "19:58" "Train" "00:12")
+  ("GATWICK AIRPORT" "20:11" "BRIGHTON" "20:48" "Train" "00:37"))
+ (("READING" "18:07" "BASINGSTOKE" "18:32" "Train" "00:25")
+  ("BASINGSTOKE" "18:54" "PORTSMOUTH HARBOUR" "20:23" "Train" "01:29")
+  ("PORTSMOUTH HARBOUR" "20:28" "BRIGHTON" "22:10" "Train" "01:42"))
+ (("READING" "18:11" "BRIGHTON" "20:30" "Train" "02:19"))
+ (("READING" "18:34" "GATWICK AIRPORT" "19:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "20:09" "BRIGHTON" "20:52" "Train" "00:43"))
+ (("READING" "18:39" "BASINGSTOKE" "19:04" "Train" "00:25")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "21:35" "HAVANT" "21:56" "Train" "00:21")
+  ("HAVANT" "22:00" "BRIGHTON" "23:20" "Train" "01:20"))
+ (("READING" "18:45" "BASINGSTOKE" "19:08" "Train" "00:23")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "21:35" "HAVANT" "21:56" "Train" "00:21")
+  ("HAVANT" "22:00" "BRIGHTON" "23:20" "Train" "01:20"))
+ (("READING" "19:01" "BRIGHTON" "21:13" "Train" "02:12"))
+ (("READING" "19:07" "BASINGSTOKE" "19:31" "Train" "00:24")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "21:35" "HAVANT" "21:56" "Train" "00:21")
+  ("HAVANT" "22:00" "BRIGHTON" "23:20" "Train" "01:20"))
+ (("READING" "19:34" "GATWICK AIRPORT" "20:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "21:09" "BRIGHTON" "21:50" "Train" "00:41"))
+ (("READING" "19:39" "BASINGSTOKE" "20:03" "Train" "00:24")
+  ("BASINGSTOKE" "21:00" "PORTSMOUTH HARBOUR" "22:18" "Train" "01:18")
+  ("PORTSMOUTH HARBOUR" "22:35" "HAVANT" "22:55" "Train" "00:20")
+  ("HAVANT" "23:01" "BRIGHTON" "00:25" "Train" "01:24"))
+ (("READING" "20:07" "BASINGSTOKE" "20:31" "Train" "00:24")
+  ("BASINGSTOKE" "21:00" "PORTSMOUTH HARBOUR" "22:18" "Train" "01:18")
+  ("PORTSMOUTH HARBOUR" "22:35" "HAVANT" "22:55" "Train" "00:20")
+  ("HAVANT" "23:01" "BRIGHTON" "00:25" "Train" "01:24"))
+ (("READING" "20:34" "GATWICK AIRPORT" "22:04" "Train" "01:30")
+  ("GATWICK AIRPORT" "22:39" "BRIGHTON" "23:15" "Train" "00:36"))
+ (("READING" "20:39" "BASINGSTOKE" "21:03" "Train" "00:24")
+  ("BASINGSTOKE" "21:36" "EASTLEIGH" "22:01" "Train" "00:25")
+  ("EASTLEIGH" "22:27" "BRIGHTON" "00:25" "Train" "01:58"))
+ (("READING" "20:45" "BASINGSTOKE" "21:08" "Train" "00:23")
+  ("BASINGSTOKE" "21:36" "EASTLEIGH" "22:01" "Train" "00:25")
+  ("EASTLEIGH" "22:27" "BRIGHTON" "00:25" "Train" "01:58"))
+ (("READING" "21:07" "BASINGSTOKE" "21:31" "Train" "00:24")
+  ("BASINGSTOKE" "21:36" "EASTLEIGH" "22:01" "Train" "00:25")
+  ("EASTLEIGH" "22:27" "BRIGHTON" "00:25" "Train" "01:58"))
+ (("READING" "21:34" "GATWICK AIRPORT" "22:59" "Train" "01:25")
+  ("GATWICK AIRPORT" "23:11" "BRIGHTON" "23:48" "Train" "00:37")))
+
+measuring PROFILE overhead..done
+  seconds  |     consed    |   calls   |  sec/call  |  name  
+---------------------------------------------------------------
+     6.004 |   166,224,432 |       100 |   0.060037 | FIND-SIMPLE-DIRECT-TRAINS
+     2.774 |   584,766,536 | 3,095,300 |   0.000001 | SIMPLE-DECODE-TRAIN-STOP
+     0.938 |    50,385,056 |    36,745 |   0.000026 | STOPS->INFO
+     0.779 |   311,452,856 |       506 |   0.001540 | FIND-DIRECT-TRAINS-ALL-STOPS
+     0.651 |   203,444,328 |    10,668 |   0.000061 | DATE-MATCHES-P
+     0.502 |    82,275,584 |     1,020 |   0.000492 | JOURNEY-COST
+     0.143 |       278,280 |        28 |   0.005098 | FIND-TRAINS-FROM-TO
+     0.041 |     6,844,136 |    22,176 |   0.000002 | DECODE-TRAIN
+     0.027 |     1,817,808 |     2,165 |   0.000012 | AVERAGE-TIME-STOPS
+     0.008 |     3,111,744 |         1 |   0.007953 | SORT-RESULT-SUMMARIZE-A*
+     0.008 |             0 |        33 |   0.000241 | JOURNEY-SUMMARY-A*
+     0.000 |    13,441,960 |         1 |   0.000000 | POSSIBLE-JOURNEYS-A*
+     0.000 |   202,809,352 |       414 |   0.000000 | A*-SEARCH
+     0.000 |       138,464 |     3,277 |   0.000000 | AVERAGE-TIME-PATH
+     0.000 |       198,416 |       271 |   0.000000 | READJUST-TRAIN-A*
+     0.000 |       358,672 |       506 |   0.000000 | DIRECT-TRAINS
+     0.000 |             0 |       250 |   0.000000 | STOP=
+     0.000 |     2,607,728 |         3 |   0.000000 | DIRECT-TRAINS->PATH
+     0.000 |         8,192 |         1 |   0.000000 | POSSIBLE-JOURNEYS-ROUTES-A*
+---------------------------------------------------------------
+    11.876 | 1,630,163,544 | 3,173,465 |            | Total
+
+estimated total profiling overhead: 2.82 seconds
+overhead estimation parameters:
+  8.000001e-9s/call, 8.8800005e-7s total profiling, 4.8e-7s internal profiling
+
+These functions were not called:
+ BEST-JOURNEY FAR-ALONG-ON-ROUTE FILTER-LEGS JOURNEY-LEG->TRAINS
+ JOURNEY-SUMMARY POSSIBLE-JOURNEYS POSSIBLE-JOURNEYS-ROUTES READJUST-TRAIN
+ SORT-RESULT-SUMMARIZE TRAIN-WITH-CHANGES
+; No value
+
+(time (possible-journeys "reading" "brighton" :time (string->dttm "2007-06-07 Thu 17:00:00 +0100 (BST)") :summary-sorted-p t))
+
+Evaluation took:
+  9.603 seconds of real time
+  4.508282 seconds of user run time
+  2.796175 seconds of system run time
+  [Run times include 1.472 seconds GC run time.]
+  0 calls to %EVAL
+  0 page faults and
+  933,471,352 bytes consed.
+((("READING" "17:04" "REDHILL" "18:31" "Train" "01:27")
+  ("REDHILL" "20:01" "BRIGHTON" "20:52" "Train" "00:51"))
+ (("READING" "17:07" "BASINGSTOKE" "17:31" "Train" "00:24")
+  ("BASINGSTOKE" "17:36" "PORTSMOUTH HARBOUR" "18:51" "Train" "01:15")
+  ("PORTSMOUTH HARBOUR" "19:26" "BRIGHTON" "21:10" "Train" "01:44"))
+ (("READING" "17:34" "GATWICK AIRPORT" "19:07" "Train" "01:33")
+  ("GATWICK AIRPORT" "22:11" "BRIGHTON" "22:48" "Train" "00:37"))
+ (("READING" "17:39" "BASINGSTOKE" "18:03" "Train" "00:24")
+  ("BASINGSTOKE" "18:24" "PORTSMOUTH HARBOUR" "19:46" "Train" "01:22")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "17:45" "BASINGSTOKE" "18:08" "Train" "00:23")
+  ("BASINGSTOKE" "18:24" "PORTSMOUTH HARBOUR" "19:46" "Train" "01:22")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "18:04" "REDHILL" "19:35" "Train" "01:31")
+  ("REDHILL" "22:31" "BRIGHTON" "23:15" "Train" "00:44"))
+ (("READING" "18:07" "BASINGSTOKE" "18:32" "Train" "00:25")
+  ("BASINGSTOKE" "18:54" "PORTSMOUTH HARBOUR" "20:23" "Train" "01:29")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "18:11" "BRIGHTON" "20:30" "Train" "02:19"))
+ (("READING" "18:34" "GATWICK AIRPORT" "19:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "22:11" "BRIGHTON" "22:48" "Train" "00:37"))
+ (("READING" "18:39" "BASINGSTOKE" "19:04" "Train" "00:25")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "18:45" "BASINGSTOKE" "19:08" "Train" "00:23")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "19:01" "BRIGHTON" "21:13" "Train" "02:12"))
+ (("READING" "19:07" "BASINGSTOKE" "19:31" "Train" "00:24")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "19:34" "GATWICK AIRPORT" "20:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "22:11" "BRIGHTON" "22:48" "Train" "00:37"))
+ (("READING" "20:34" "GATWICK AIRPORT" "22:04" "Train" "01:30")
+  ("GATWICK AIRPORT" "22:39" "BRIGHTON" "23:15" "Train" "00:36"))
+ (("READING" "21:04" "GATWICK AIRPORT" "22:32" "Train" "01:28")
+  ("GATWICK AIRPORT" "22:49" "HOVE" "23:20" "Train" "00:31"))
+ (("READING" "21:34" "GATWICK AIRPORT" "22:59" "Train" "01:25")
+  ("GATWICK AIRPORT" "23:11" "BRIGHTON" "23:48" "Train" "00:37")))
+
+  seconds  |    consed   |   calls   |  sec/call  |  name  
+-------------------------------------------------------------
+     1.699 | 366,591,736 | 1,951,254 |   0.000001 | SIMPLE-DECODE-TRAIN-STOP
+     1.329 | 100,632,840 |        65 |   0.020449 | FIND-SIMPLE-DIRECT-TRAINS
+     0.697 |  44,677,248 |     6,126 |   0.000114 | STOPS->INFO
+     0.660 |  94,609,312 |       104 |   0.006343 | FILTER-LEGS
+     0.632 | 104,411,920 |        42 |   0.015057 | BEST-JOURNEY
+     0.602 | 229,039,592 |       214 |   0.002812 | FIND-DIRECT-TRAINS-ALL-STOPS
+     0.104 |   3,657,392 |     5,053 |   0.000020 | READJUST-TRAIN
+     0.068 |  14,940,664 |       776 |   0.000087 | DATE-MATCHES-P
+     0.048 |   4,987,096 |    16,129 |   0.000003 | DECODE-TRAIN
+     0.037 |     104,552 |        23 |   0.001618 | FIND-TRAINS-FROM-TO
+     0.021 |           0 |     5,442 |   0.000004 | FAR-ALONG-ON-ROUTE
+     0.008 |   2,253,616 |         1 |   0.007987 | SORT-RESULT-SUMMARIZE
+     0.004 |   1,244,064 |        51 |   0.000075 | A*-SEARCH
+     0.000 |  13,447,424 |         1 |   0.000000 | POSSIBLE-JOURNEYS
+     0.000 |     162,088 |       107 |   0.000000 | JOURNEY-LEG->TRAINS
+     0.000 |     142,560 |     3,348 |   0.000000 | JOURNEY-SUMMARY
+     0.000 |      17,064 |         3 |   0.000000 | TRAIN-WITH-CHANGES
+     0.000 |           0 |         1 |   0.000000 | POSSIBLE-JOURNEYS-ROUTES
+-------------------------------------------------------------
+     5.909 | 980,919,168 | 1,988,740 |            | Total
+
+estimated total profiling overhead: 1.77 seconds
+overhead estimation parameters:
+  8.000001e-9s/call, 8.8800005e-7s total profiling, 4.8e-7s internal profiling
+
+These functions were not called:
+ AVERAGE-TIME-PATH AVERAGE-TIME-STOPS DIRECT-TRAINS DIRECT-TRAINS->PATH
+ JOURNEY-COST JOURNEY-SUMMARY-A* POSSIBLE-JOURNEYS-A*
+ POSSIBLE-JOURNEYS-ROUTES-A* READJUST-TRAIN-A* SORT-RESULT-SUMMARIZE-A*
+ STOP=
+; No value
+
+(time (possible-journeys "reading" "brighton" :time (string->dttm "2007-06-04 Mon 05:00:00 +0100 (BST)")
+				   :time-fn (make-time-test-fn2) :summary-sorted-p t))
+
+  seconds  |     consed    |   calls   |  sec/call  |  name  
+---------------------------------------------------------------
+     4.821 |   689,554,808 |    21,663 |   0.000223 | JOURNEY<
+     2.287 |   382,045,392 | 2,018,157 |   0.000001 | SIMPLE-DECODE-TRAIN-STOP
+     2.069 |    72,340,640 |   207,212 |   0.000010 | STOPS->INFO
+     1.622 |   157,727,832 |   204,363 |   0.000008 | READJUST-TRAIN
+     1.271 |   296,165,016 |   127,182 |   0.000010 | YYMMDD->SIMPLE-DATE
+     1.157 |   102,979,760 |        67 |   0.017275 | FIND-SIMPLE-DIRECT-TRAINS
+     0.836 |   220,101,064 |    23,384 |   0.000036 | DATE-MATCHES-P
+     0.828 |    33,156,400 |       684 |   0.001210 | FILTER-LEGS
+     0.414 |    30,134,792 |   254,870 |   0.000002 | TIMEDIFFERENCE
+     0.378 |    98,056,080 |    20,479 |   0.000018 | CURRENT-SHORT-TIME
+     0.194 |             0 |    63,162 |   0.000003 | FAR-ALONG-ON-ROUTE
+     0.118 |             0 |   204,361 |   0.000001 | VALIDATE-READJUSTED-TRAIN-P
+     0.070 |     7,616,336 |         1 |   0.069740 | SORT-RESULT-SUMMARIZE
+     0.064 |     4,905,864 |    16,823 |   0.000004 | DECODE-TRAIN
+     0.055 |     2,726,960 |   127,182 |  0.0000004 | DATE2TIME
+     0.042 |     4,943,384 |   249,445 |  0.0000002 | TIMEDIFFERENCE-ND
+     0.022 |     8,060,600 |       421 |   0.000051 | BEST-JOURNEY
+     0.016 |       116,392 |        24 |   0.000683 | FIND-TRAINS-FROM-TO
+     0.008 |     1,241,456 |        51 |   0.000153 | A*-SEARCH
+     0.000 |   104,386,408 |     1,374 |   0.000000 | FIND-DIRECT-TRAINS-ALL-STOPS
+     0.000 |             0 |         1 |   0.000000 | POSSIBLE-JOURNEYS-ROUTES
+     0.000 |       123,192 |         3 |   0.000000 | TRAIN-WITH-CHANGES
+     0.000 |     1,150,776 |    43,662 |   0.000000 | JOURNEY-SUMMARY
+     0.000 |     7,745,648 |       687 |   0.000000 | JOURNEY-LEG->TRAINS
+     0.000 |    13,451,440 |         1 |   0.000000 | POSSIBLE-JOURNEYS
+---------------------------------------------------------------
+    16.271 | 2,238,730,240 | 3,585,259 |            | Total
+
+estimated total profiling overhead: 3.18 seconds
+overhead estimation parameters:
+  8.000001e-9s/call, 8.8800005e-7s total profiling, 4.8e-7s internal profiling
+
+These functions were not called:
+ AVERAGE-TIME-PATH AVERAGE-TIME-STOPS DIRECT-TRAINS DIRECT-TRAINS->PATH
+ JOURNEY-COST JOURNEY-SUMMARY-A* POSSIBLE-JOURNEYS-A*
+ POSSIBLE-JOURNEYS-ROUTES-A* READJUST-TRAIN-A* SORT-RESULT-SUMMARIZE-A*
+ STOP=
+; No value
+
+Evaluation took:
+  70.457 seconds of real time
+  35.81824 seconds of user run time
+  18.285145 seconds of system run time
+  [Run times include 8.076 seconds GC run time.]
+  0 calls to %EVAL
+  0 page faults and
+  7,125,096,952 bytes consed.
+
+Evaluation took:
+  39.601 seconds of real time
+  18.941183 seconds of user run time
+  8.468529 seconds of system run time
+  [Run times include 4.252 seconds GC run time.]
+  0 calls to %EVAL
+  0 page faults and
+  3,125,046,512 bytes consed.
+
+Evaluation took:
+  38.739 seconds of real time
+  20.625288 seconds of user run time
+  7.508469 seconds of system run time
+  [Run times include 4.628 seconds GC run time.]
+  0 calls to %EVAL
+  0 page faults and
+  3,128,421,000 bytes consed.
+
+Evaluation took:
+  29.241 seconds of real time
+  15.032939 seconds of user run time
+  6.056378 seconds of system run time
+  [Run times include 3.532 seconds GC run time.]
+  0 calls to %EVAL
+  0 page faults and
+  2,238,730,240 bytes consed.
+((("READING" "05:34" "GATWICK AIRPORT" "06:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "07:11" "BRIGHTON" "07:49" "Train" "00:38"))
+ (("READING" "05:34" "GATWICK AIRPORT" "06:58" "Train" "01:24")
+  ("GATWICK AIRPORT" "07:12" "BRIGHTON" "07:51" "Train" "00:39"))
+ (("READING" "05:37" "BASINGSTOKE" "06:01" "Train" "00:24")
+  ("BASINGSTOKE" "08:27" "BRIGHTON" "10:14" "Train" "01:47"))
+ (("READING" "05:50" "REDHILL" "07:23" "Train" "01:33")
+  ("REDHILL" "08:49" "BRIGHTON" "09:24" "Train" "00:35"))
+ (("READING" "06:04" "GATWICK AIRPORT" "07:28" "Train" "01:24")
+  ("GATWICK AIRPORT" "07:50" "BRIGHTON" "08:24" "Train" "00:34"))
+ (("READING" "06:04" "REDHILL" "07:23" "Train" "01:19")
+  ("REDHILL" "07:49" "THREE BRIDGES" "08:03" "Train" "00:14")
+  ("THREE BRIDGES" "08:15" "BRIGHTON" "08:51" "Train" "00:36"))
+ (("READING" "06:07" "BASINGSTOKE" "06:32" "Train" "00:25")
+  ("BASINGSTOKE" "07:24" "BRIGHTON" "09:12" "Train" "01:48"))
+ (("READING" "06:07" "BASINGSTOKE" "06:31" "Train" "00:24")
+  ("BASINGSTOKE" "08:27" "BRIGHTON" "10:14" "Train" "01:47"))
+ (("READING" "06:34" "GATWICK AIRPORT" "07:54" "Train" "01:20")
+  ("GATWICK AIRPORT" "08:12" "BRIGHTON" "08:51" "Train" "00:39"))
+ (("READING" "06:34" "GATWICK AIRPORT" "07:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "08:11" "BRIGHTON" "08:51" "Train" "00:40"))
+ (("READING" "06:39" "BASINGSTOKE" "07:03" "Train" "00:24")
+  ("BASINGSTOKE" "07:24" "BRIGHTON" "09:12" "Train" "01:48"))
+ (("READING" "06:39" "BASINGSTOKE" "07:03" "Train" "00:24")
+  ("BASINGSTOKE" "08:27" "BRIGHTON" "10:14" "Train" "01:47"))
+ (("READING" "06:56" "BRIGHTON" "09:23" "Train" "02:27"))
+ (("READING" "07:00" "REDHILL" "08:25" "Train" "01:25")
+  ("REDHILL" "08:49" "BRIGHTON" "09:24" "Train" "00:35"))
+ (("READING" "07:02" "GATWICK AIRPORT" "08:28" "Train" "01:26")
+  ("GATWICK AIRPORT" "08:50" "BRIGHTON" "09:24" "Train" "00:34"))
+ (("READING" "07:04" "REDHILL" "08:24" "Train" "01:20")
+  ("REDHILL" "08:31" "THREE BRIDGES" "08:45" "Train" "00:14")
+  ("THREE BRIDGES" "09:15" "BRIGHTON" "09:51" "Train" "00:36"))
+ (("READING" "07:07" "BASINGSTOKE" "07:32" "Train" "00:25")
+  ("BASINGSTOKE" "08:24" "BRIGHTON" "10:12" "Train" "01:48"))
+ (("READING" "07:07" "BASINGSTOKE" "07:31" "Train" "00:24")
+  ("BASINGSTOKE" "08:27" "BRIGHTON" "10:14" "Train" "01:47"))
+ (("READING" "07:27" "BASINGSTOKE" "07:51" "Train" "00:24")
+  ("BASINGSTOKE" "08:50" "EASTLEIGH" "09:19" "Train" "00:29")
+  ("EASTLEIGH" "09:26" "PORTSMOUTH HARBOUR" "10:16" "Train" "00:50")
+  ("PORTSMOUTH HARBOUR" "11:14" "BRIGHTON" "13:00" "Train" "01:46"))
+ (("READING" "07:34" "GATWICK AIRPORT" "08:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "09:11" "BRIGHTON" "09:51" "Train" "00:40"))
+ (("READING" "07:34" "GATWICK AIRPORT" "09:02" "Train" "01:28")
+  ("GATWICK AIRPORT" "09:14" "BRIGHTON" "09:52" "Train" "00:38"))
+ (("READING" "07:39" "BASINGSTOKE" "08:03" "Train" "00:24")
+  ("BASINGSTOKE" "08:24" "BRIGHTON" "10:12" "Train" "01:48"))
+ (("READING" "07:39" "BASINGSTOKE" "08:03" "Train" "00:24")
+  ("BASINGSTOKE" "08:27" "BRIGHTON" "10:14" "Train" "01:47"))
+ (("READING" "07:45" "BASINGSTOKE" "08:08" "Train" "00:23")
+  ("BASINGSTOKE" "08:27" "BRIGHTON" "10:14" "Train" "01:47"))
+ (("READING" "08:03" "GATWICK AIRPORT" "09:29" "Train" "01:26")
+  ("GATWICK AIRPORT" "09:50" "BRIGHTON" "10:24" "Train" "00:34"))
+ (("READING" "08:04" "REDHILL" "09:29" "Train" "01:25")
+  ("REDHILL" "09:40" "BRIGHTON" "10:40" "Train" "01:00"))
+ (("READING" "08:04" "REDHILL" "09:23" "Train" "01:19")
+  ("REDHILL" "09:31" "THREE BRIDGES" "09:45" "Train" "00:14")
+  ("THREE BRIDGES" "10:15" "BRIGHTON" "10:51" "Train" "00:36"))
+ (("READING" "08:07" "BASINGSTOKE" "08:31" "Train" "00:24")
+  ("BASINGSTOKE" "09:20" "BRIGHTON" "11:12" "Train" "01:52"))
+ (("READING" "08:07" "BASINGSTOKE" "08:31" "Train" "00:24")
+  ("BASINGSTOKE" "09:24" "BRIGHTON" "11:12" "Train" "01:48"))
+ (("READING" "08:27" "BASINGSTOKE" "08:51" "Train" "00:24")
+  ("BASINGSTOKE" "09:50" "EASTLEIGH" "10:19" "Train" "00:29")
+  ("EASTLEIGH" "10:26" "PORTSMOUTH HARBOUR" "11:16" "Train" "00:50")
+  ("PORTSMOUTH HARBOUR" "12:14" "BRIGHTON" "14:00" "Train" "01:46"))
+ (("READING" "08:34" "GATWICK AIRPORT" "09:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "10:11" "BRIGHTON" "10:51" "Train" "00:40"))
+ (("READING" "08:34" "GATWICK AIRPORT" "09:55" "Train" "01:21")
+  ("GATWICK AIRPORT" "10:11" "BRIGHTON" "10:51" "Train" "00:40"))
+ (("READING" "08:39" "BASINGSTOKE" "09:03" "Train" "00:24")
+  ("BASINGSTOKE" "09:20" "BRIGHTON" "11:12" "Train" "01:52"))
+ (("READING" "08:39" "BASINGSTOKE" "09:03" "Train" "00:24")
+  ("BASINGSTOKE" "09:24" "BRIGHTON" "11:12" "Train" "01:48"))
+ (("READING" "08:45" "BASINGSTOKE" "09:08" "Train" "00:23")
+  ("BASINGSTOKE" "09:20" "BRIGHTON" "11:12" "Train" "01:52"))
+ (("READING" "08:45" "BASINGSTOKE" "09:08" "Train" "00:23")
+  ("BASINGSTOKE" "09:24" "BRIGHTON" "11:12" "Train" "01:48"))
+ (("READING" "09:01" "GATWICK AIRPORT" "10:32" "Train" "01:31")
+  ("GATWICK AIRPORT" "10:42" "BRIGHTON" "11:05" "Train" "00:23"))
+ (("READING" "09:04" "REDHILL" "10:24" "Train" "01:20")
+  ("REDHILL" "10:31" "THREE BRIDGES" "10:45" "Train" "00:14")
+  ("THREE BRIDGES" "11:15" "BRIGHTON" "11:51" "Train" "00:36"))
+ (("READING" "09:04" "REDHILL" "10:24" "Train" "01:20")
+  ("REDHILL" "10:31" "THREE BRIDGES" "10:46" "Train" "00:15")
+  ("THREE BRIDGES" "11:15" "BRIGHTON" "11:51" "Train" "00:36"))
+ (("READING" "09:07" "BASINGSTOKE" "09:31" "Train" "00:24")
+  ("BASINGSTOKE" "11:24" "BRIGHTON" "13:12" "Train" "01:48"))
+ (("READING" "09:27" "BASINGSTOKE" "09:51" "Train" "00:24")
+  ("BASINGSTOKE" "10:48" "EASTLEIGH" "11:17" "Train" "00:29")
+  ("EASTLEIGH" "11:24" "PORTSMOUTH HARBOUR" "12:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "13:14" "BRIGHTON" "15:00" "Train" "01:46"))
+ (("READING" "09:34" "GATWICK AIRPORT" "10:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "11:11" "BRIGHTON" "11:51" "Train" "00:40"))
+ (("READING" "09:39" "BASINGSTOKE" "10:03" "Train" "00:24")
+  ("BASINGSTOKE" "11:24" "BRIGHTON" "13:12" "Train" "01:48"))
+ (("READING" "09:56" "BRIGHTON" "12:09" "Train" "02:13"))
+ (("READING" "10:02" "BRIGHTON" "12:12" "Train" "02:10"))
+ (("READING" "10:03" "GATWICK AIRPORT" "11:29" "Train" "01:26")
+  ("GATWICK AIRPORT" "11:42" "BRIGHTON" "12:05" "Train" "00:23"))
+ (("READING" "10:04" "BRIGHTON" "12:12" "Train" "02:08"))
+ (("READING" "10:04" "REDHILL" "11:24" "Train" "01:20")
+  ("REDHILL" "11:31" "THREE BRIDGES" "11:45" "Train" "00:14")
+  ("THREE BRIDGES" "12:15" "BRIGHTON" "12:51" "Train" "00:36"))
+ (("READING" "10:04" "REDHILL" "11:24" "Train" "01:20")
+  ("REDHILL" "11:31" "THREE BRIDGES" "11:46" "Train" "00:15")
+  ("THREE BRIDGES" "12:15" "BRIGHTON" "12:51" "Train" "00:36"))
+ (("READING" "10:07" "BASINGSTOKE" "10:32" "Train" "00:25")
+  ("BASINGSTOKE" "11:24" "BRIGHTON" "13:12" "Train" "01:48"))
+ (("READING" "10:07" "BASINGSTOKE" "10:31" "Train" "00:24")
+  ("BASINGSTOKE" "11:24" "BRIGHTON" "13:12" "Train" "01:48"))
+ (("READING" "10:27" "BASINGSTOKE" "10:51" "Train" "00:24")
+  ("BASINGSTOKE" "11:48" "EASTLEIGH" "12:17" "Train" "00:29")
+  ("EASTLEIGH" "12:24" "PORTSMOUTH HARBOUR" "13:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "14:14" "BRIGHTON" "16:00" "Train" "01:46"))
+ (("READING" "10:34" "GATWICK AIRPORT" "11:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "12:11" "BRIGHTON" "12:51" "Train" "00:40"))
+ (("READING" "10:39" "BASINGSTOKE" "11:03" "Train" "00:24")
+  ("BASINGSTOKE" "11:24" "BRIGHTON" "13:12" "Train" "01:48"))
+ (("READING" "10:45" "BASINGSTOKE" "11:08" "Train" "00:23")
+  ("BASINGSTOKE" "11:24" "BRIGHTON" "13:12" "Train" "01:48"))
+ (("READING" "10:50" "BASINGSTOKE" "11:08" "Train" "00:18")
+  ("BASINGSTOKE" "11:48" "EASTLEIGH" "12:17" "Train" "00:29")
+  ("EASTLEIGH" "12:24" "PORTSMOUTH HARBOUR" "13:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "14:14" "BRIGHTON" "16:00" "Train" "01:46"))
+ (("READING" "11:01" "GATWICK AIRPORT" "12:29" "Train" "01:28")
+  ("GATWICK AIRPORT" "12:42" "BRIGHTON" "13:05" "Train" "00:23"))
+ (("READING" "11:04" "REDHILL" "12:24" "Train" "01:20")
+  ("REDHILL" "12:31" "THREE BRIDGES" "12:45" "Train" "00:14")
+  ("THREE BRIDGES" "13:15" "BRIGHTON" "13:51" "Train" "00:36"))
+ (("READING" "11:07" "BASINGSTOKE" "11:31" "Train" "00:24")
+  ("BASINGSTOKE" "12:24" "BRIGHTON" "14:12" "Train" "01:48"))
+ (("READING" "11:07" "BASINGSTOKE" "11:31" "Train" "00:24")
+  ("BASINGSTOKE" "12:24" "BRIGHTON" "14:14" "Train" "01:50"))
+ (("READING" "11:08" "BRIGHTON" "13:15" "Train" "02:07"))
+ (("READING" "11:13" "BRIGHTON" "13:38" "Train" "02:25"))
+ (("READING" "11:27" "BASINGSTOKE" "11:51" "Train" "00:24")
+  ("BASINGSTOKE" "12:48" "EASTLEIGH" "13:17" "Train" "00:29")
+  ("EASTLEIGH" "13:24" "PORTSMOUTH HARBOUR" "14:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "15:14" "BRIGHTON" "17:00" "Train" "01:46"))
+ (("READING" "11:34" "GATWICK AIRPORT" "12:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "13:11" "BRIGHTON" "13:51" "Train" "00:40"))
+ (("READING" "11:39" "BASINGSTOKE" "12:03" "Train" "00:24")
+  ("BASINGSTOKE" "12:24" "BRIGHTON" "14:12" "Train" "01:48"))
+ (("READING" "11:39" "BASINGSTOKE" "12:03" "Train" "00:24")
+  ("BASINGSTOKE" "12:24" "BRIGHTON" "14:14" "Train" "01:50"))
+ (("READING" "11:45" "BASINGSTOKE" "12:08" "Train" "00:23")
+  ("BASINGSTOKE" "12:24" "BRIGHTON" "14:12" "Train" "01:48"))
+ (("READING" "11:45" "BASINGSTOKE" "12:08" "Train" "00:23")
+  ("BASINGSTOKE" "12:24" "BRIGHTON" "14:14" "Train" "01:50"))
+ (("READING" "11:50" "BASINGSTOKE" "12:08" "Train" "00:18")
+  ("BASINGSTOKE" "12:48" "EASTLEIGH" "13:17" "Train" "00:29")
+  ("EASTLEIGH" "13:24" "PORTSMOUTH HARBOUR" "14:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "15:14" "BRIGHTON" "17:00" "Train" "01:46"))
+ (("READING" "12:03" "GATWICK AIRPORT" "13:29" "Train" "01:26")
+  ("GATWICK AIRPORT" "13:42" "BRIGHTON" "14:05" "Train" "00:23"))
+ (("READING" "12:04" "REDHILL" "13:23" "Train" "01:19")
+  ("REDHILL" "13:31" "THREE BRIDGES" "13:45" "Train" "00:14")
+  ("THREE BRIDGES" "14:15" "BRIGHTON" "14:51" "Train" "00:36"))
+ (("READING" "12:07" "BASINGSTOKE" "12:31" "Train" "00:24")
+  ("BASINGSTOKE" "15:24" "BRIGHTON" "17:12" "Train" "01:48"))
+ (("READING" "12:27" "BASINGSTOKE" "12:51" "Train" "00:24")
+  ("BASINGSTOKE" "13:48" "EASTLEIGH" "14:17" "Train" "00:29")
+  ("EASTLEIGH" "14:24" "PORTSMOUTH HARBOUR" "15:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "16:14" "BRIGHTON" "18:00" "Train" "01:46"))
+ (("READING" "12:34" "GATWICK AIRPORT" "13:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "14:11" "BRIGHTON" "14:51" "Train" "00:40"))
+ (("READING" "12:39" "BASINGSTOKE" "13:03" "Train" "00:24")
+  ("BASINGSTOKE" "15:24" "BRIGHTON" "17:12" "Train" "01:48"))
+ (("READING" "12:45" "BASINGSTOKE" "13:08" "Train" "00:23")
+  ("BASINGSTOKE" "15:24" "BRIGHTON" "17:12" "Train" "01:48"))
+ (("READING" "12:50" "BASINGSTOKE" "13:08" "Train" "00:18")
+  ("BASINGSTOKE" "13:48" "EASTLEIGH" "14:17" "Train" "00:29")
+  ("EASTLEIGH" "14:24" "PORTSMOUTH HARBOUR" "15:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "16:14" "BRIGHTON" "18:00" "Train" "01:46"))
+ (("READING" "12:56" "BRIGHTON" "15:09" "Train" "02:13"))
+ (("READING" "13:01" "GATWICK AIRPORT" "14:29" "Train" "01:28")
+  ("GATWICK AIRPORT" "14:42" "BRIGHTON" "15:05" "Train" "00:23"))
+ (("READING" "13:01" "BRIGHTON" "15:12" "Train" "02:11"))
+ (("READING" "13:04" "REDHILL" "14:24" "Train" "01:20")
+  ("REDHILL" "14:31" "THREE BRIDGES" "14:45" "Train" "00:14")
+  ("THREE BRIDGES" "15:15" "BRIGHTON" "15:51" "Train" "00:36"))
+ (("READING" "13:04" "REDHILL" "14:24" "Train" "01:20")
+  ("REDHILL" "17:01" "BRIGHTON" "17:48" "Train" "00:47"))
+ (("READING" "13:07" "BASINGSTOKE" "13:31" "Train" "00:24")
+  ("BASINGSTOKE" "15:24" "BRIGHTON" "17:12" "Train" "01:48"))
+ (("READING" "13:27" "BASINGSTOKE" "13:51" "Train" "00:24")
+  ("BASINGSTOKE" "14:48" "EASTLEIGH" "15:17" "Train" "00:29")
+  ("EASTLEIGH" "15:24" "PORTSMOUTH HARBOUR" "16:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "17:14" "BRIGHTON" "19:00" "Train" "01:46"))
+ (("READING" "13:34" "GATWICK AIRPORT" "14:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "15:11" "BRIGHTON" "15:51" "Train" "00:40"))
+ (("READING" "13:39" "BASINGSTOKE" "14:03" "Train" "00:24")
+  ("BASINGSTOKE" "15:24" "BRIGHTON" "17:12" "Train" "01:48"))
+ (("READING" "13:45" "BASINGSTOKE" "14:08" "Train" "00:23")
+  ("BASINGSTOKE" "15:24" "BRIGHTON" "17:12" "Train" "01:48"))
+ (("READING" "13:50" "BASINGSTOKE" "14:07" "Train" "00:17")
+  ("BASINGSTOKE" "14:48" "EASTLEIGH" "15:17" "Train" "00:29")
+  ("EASTLEIGH" "15:24" "PORTSMOUTH HARBOUR" "16:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "17:14" "BRIGHTON" "19:00" "Train" "01:46"))
+ (("READING" "14:03" "GATWICK AIRPORT" "15:29" "Train" "01:26")
+  ("GATWICK AIRPORT" "15:42" "BRIGHTON" "16:05" "Train" "00:23"))
+ (("READING" "14:04" "REDHILL" "15:23" "Train" "01:19")
+  ("REDHILL" "15:31" "THREE BRIDGES" "15:45" "Train" "00:14")
+  ("THREE BRIDGES" "16:15" "BRIGHTON" "16:51" "Train" "00:36"))
+ (("READING" "14:04" "REDHILL" "15:25" "Train" "01:21")
+  ("REDHILL" "17:01" "BRIGHTON" "17:48" "Train" "00:47"))
+ (("READING" "14:07" "BASINGSTOKE" "14:31" "Train" "00:24")
+  ("BASINGSTOKE" "15:24" "BRIGHTON" "17:12" "Train" "01:48"))
+ (("READING" "14:27" "BASINGSTOKE" "14:51" "Train" "00:24")
+  ("BASINGSTOKE" "15:48" "EASTLEIGH" "16:17" "Train" "00:29")
+  ("EASTLEIGH" "16:24" "PORTSMOUTH HARBOUR" "17:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "20:14" "BRIGHTON" "21:55" "Train" "01:41"))
+ (("READING" "14:34" "GATWICK AIRPORT" "15:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "16:11" "BRIGHTON" "16:51" "Train" "00:40"))
+ (("READING" "14:39" "BASINGSTOKE" "15:03" "Train" "00:24")
+  ("BASINGSTOKE" "15:24" "BRIGHTON" "17:12" "Train" "01:48"))
+ (("READING" "14:44" "BASINGSTOKE" "15:08" "Train" "00:24")
+  ("BASINGSTOKE" "15:24" "BRIGHTON" "17:12" "Train" "01:48"))
+ (("READING" "14:45" "BASINGSTOKE" "15:08" "Train" "00:23")
+  ("BASINGSTOKE" "15:24" "BRIGHTON" "17:12" "Train" "01:48"))
+ (("READING" "14:50" "BASINGSTOKE" "15:08" "Train" "00:18")
+  ("BASINGSTOKE" "15:48" "EASTLEIGH" "16:17" "Train" "00:29")
+  ("EASTLEIGH" "16:24" "PORTSMOUTH HARBOUR" "17:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "20:14" "BRIGHTON" "21:55" "Train" "01:41"))
+ (("READING" "15:00" "GATWICK AIRPORT" "16:29" "Train" "01:29")
+  ("GATWICK AIRPORT" "16:42" "BRIGHTON" "17:05" "Train" "00:23"))
+ (("READING" "15:04" "REDHILL" "16:26" "Train" "01:22")
+  ("REDHILL" "17:01" "BRIGHTON" "17:48" "Train" "00:47"))
+ (("READING" "15:04" "REDHILL" "16:24" "Train" "01:20")
+  ("REDHILL" "16:31" "THREE BRIDGES" "16:45" "Train" "00:14")
+  ("THREE BRIDGES" "17:15" "BRIGHTON" "17:51" "Train" "00:36"))
+ (("READING" "15:07" "BASINGSTOKE" "15:31" "Train" "00:24")
+  ("BASINGSTOKE" "16:00" "PORTSMOUTH HARBOUR" "17:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "20:04" "BRIGHTON" "21:43" "Train" "01:39"))
+ (("READING" "15:07" "BASINGSTOKE" "15:31" "Train" "00:24")
+  ("BASINGSTOKE" "16:00" "PORTSMOUTH HARBOUR" "17:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "20:28" "BRIGHTON" "22:10" "Train" "01:42"))
+ (("READING" "15:27" "BASINGSTOKE" "15:51" "Train" "00:24")
+  ("BASINGSTOKE" "16:48" "EASTLEIGH" "17:17" "Train" "00:29")
+  ("EASTLEIGH" "17:24" "PORTSMOUTH HARBOUR" "18:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "20:14" "BRIGHTON" "21:55" "Train" "01:41"))
+ (("READING" "15:28" "GATWICK AIRPORT" "17:00" "Train" "01:32")
+  ("GATWICK AIRPORT" "19:50" "HOVE" "20:20" "Train" "00:30"))
+ (("READING" "15:34" "GATWICK AIRPORT" "16:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "19:49" "HOVE" "20:19" "Train" "00:30"))
+ (("READING" "15:39" "BASINGSTOKE" "16:03" "Train" "00:24")
+  ("BASINGSTOKE" "17:00" "PORTSMOUTH HARBOUR" "18:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "20:04" "BRIGHTON" "21:43" "Train" "01:39"))
+ (("READING" "15:39" "BASINGSTOKE" "16:03" "Train" "00:24")
+  ("BASINGSTOKE" "17:00" "PORTSMOUTH HARBOUR" "18:21" "Train" "01:21")
+  ("PORTSMOUTH HARBOUR" "20:28" "BRIGHTON" "22:10" "Train" "01:42"))
+ (("READING" "15:45" "BASINGSTOKE" "16:08" "Train" "00:23")
+  ("BASINGSTOKE" "17:00" "PORTSMOUTH HARBOUR" "18:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "20:04" "BRIGHTON" "21:43" "Train" "01:39"))
+ (("READING" "15:45" "BASINGSTOKE" "16:08" "Train" "00:23")
+  ("BASINGSTOKE" "17:00" "PORTSMOUTH HARBOUR" "18:21" "Train" "01:21")
+  ("PORTSMOUTH HARBOUR" "20:28" "BRIGHTON" "22:10" "Train" "01:42"))
+ (("READING" "15:50" "BASINGSTOKE" "16:08" "Train" "00:18")
+  ("BASINGSTOKE" "16:48" "EASTLEIGH" "17:17" "Train" "00:29")
+  ("EASTLEIGH" "17:24" "PORTSMOUTH HARBOUR" "18:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "20:14" "BRIGHTON" "21:55" "Train" "01:41"))
+ (("READING" "15:56" "BRIGHTON" "18:13" "Train" "02:17"))
+ (("READING" "16:02" "BRIGHTON" "18:12" "Train" "02:10"))
+ (("READING" "16:03" "GATWICK AIRPORT" "17:29" "Train" "01:26")
+  ("GATWICK AIRPORT" "19:50" "BRIGHTON" "20:24" "Train" "00:34"))
+ (("READING" "16:04" "BRIGHTON" "18:15" "Train" "02:11"))
+ (("READING" "16:04" "REDHILL" "17:31" "Train" "01:27")
+  ("REDHILL" "20:01" "BRIGHTON" "20:52" "Train" "00:51"))
+ (("READING" "16:04" "REDHILL" "17:23" "Train" "01:19")
+  ("REDHILL" "20:01" "THREE BRIDGES" "20:14" "Train" "00:13")
+  ("THREE BRIDGES" "20:33" "BRIGHTON" "21:07" "Train" "00:34"))
+ (("READING" "16:07" "BASINGSTOKE" "16:31" "Train" "00:24")
+  ("BASINGSTOKE" "17:00" "PORTSMOUTH HARBOUR" "18:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "20:04" "BRIGHTON" "21:43" "Train" "01:39"))
+ (("READING" "16:07" "BASINGSTOKE" "16:32" "Train" "00:25")
+  ("BASINGSTOKE" "17:00" "PORTSMOUTH HARBOUR" "18:21" "Train" "01:21")
+  ("PORTSMOUTH HARBOUR" "20:28" "BRIGHTON" "22:10" "Train" "01:42"))
+ (("READING" "16:27" "BASINGSTOKE" "16:51" "Train" "00:24")
+  ("BASINGSTOKE" "19:48" "EASTLEIGH" "20:17" "Train" "00:29")
+  ("EASTLEIGH" "20:24" "PORTSMOUTH HARBOUR" "21:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "21:43" "BRIGHTON" "23:25" "Train" "01:42"))
+ (("READING" "16:34" "GATWICK AIRPORT" "17:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "19:49" "HOVE" "20:19" "Train" "00:30"))
+ (("READING" "16:34" "GATWICK AIRPORT" "17:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "19:50" "HOVE" "20:20" "Train" "00:30"))
+ (("READING" "16:39" "BASINGSTOKE" "17:03" "Train" "00:24")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "16:39" "BASINGSTOKE" "17:03" "Train" "00:24")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "16:45" "BASINGSTOKE" "17:08" "Train" "00:23")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "16:45" "BASINGSTOKE" "17:08" "Train" "00:23")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "16:50" "BASINGSTOKE" "17:08" "Train" "00:18")
+  ("BASINGSTOKE" "19:48" "EASTLEIGH" "20:17" "Train" "00:29")
+  ("EASTLEIGH" "20:24" "PORTSMOUTH HARBOUR" "21:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "21:43" "BRIGHTON" "23:25" "Train" "01:42"))
+ (("READING" "17:00" "GATWICK AIRPORT" "18:29" "Train" "01:29")
+  ("GATWICK AIRPORT" "19:50" "BRIGHTON" "20:24" "Train" "00:34"))
+ (("READING" "17:04" "REDHILL" "18:31" "Train" "01:27")
+  ("REDHILL" "20:01" "BRIGHTON" "20:52" "Train" "00:51"))
+ (("READING" "17:04" "REDHILL" "18:24" "Train" "01:20")
+  ("REDHILL" "20:01" "THREE BRIDGES" "20:14" "Train" "00:13")
+  ("THREE BRIDGES" "20:33" "BRIGHTON" "21:07" "Train" "00:34"))
+ (("READING" "17:07" "BASINGSTOKE" "17:31" "Train" "00:24")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "17:07" "BASINGSTOKE" "17:31" "Train" "00:24")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "17:27" "BASINGSTOKE" "17:51" "Train" "00:24")
+  ("BASINGSTOKE" "19:48" "EASTLEIGH" "20:17" "Train" "00:29")
+  ("EASTLEIGH" "20:24" "PORTSMOUTH HARBOUR" "21:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "21:43" "BRIGHTON" "23:25" "Train" "01:42"))
+ (("READING" "17:34" "GATWICK AIRPORT" "18:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "19:49" "HOVE" "20:19" "Train" "00:30"))
+ (("READING" "17:34" "GATWICK AIRPORT" "19:07" "Train" "01:33")
+  ("GATWICK AIRPORT" "19:50" "HOVE" "20:20" "Train" "00:30"))
+ (("READING" "17:39" "BASINGSTOKE" "18:03" "Train" "00:24")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "17:39" "BASINGSTOKE" "18:03" "Train" "00:24")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "17:45" "BASINGSTOKE" "18:08" "Train" "00:23")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "17:45" "BASINGSTOKE" "18:08" "Train" "00:23")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "17:50" "BASINGSTOKE" "18:08" "Train" "00:18")
+  ("BASINGSTOKE" "19:48" "EASTLEIGH" "20:17" "Train" "00:29")
+  ("EASTLEIGH" "20:24" "PORTSMOUTH HARBOUR" "21:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "21:43" "BRIGHTON" "23:25" "Train" "01:42"))
+ (("READING" "18:03" "GATWICK AIRPORT" "19:29" "Train" "01:26")
+  ("GATWICK AIRPORT" "19:50" "BRIGHTON" "20:24" "Train" "00:34"))
+ (("READING" "18:04" "REDHILL" "19:35" "Train" "01:31")
+  ("REDHILL" "20:01" "BRIGHTON" "20:52" "Train" "00:51"))
+ (("READING" "18:04" "REDHILL" "19:23" "Train" "01:19")
+  ("REDHILL" "21:31" "BRIGHTON" "22:15" "Train" "00:44"))
+ (("READING" "18:07" "BASINGSTOKE" "18:32" "Train" "00:25")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "18:07" "BASINGSTOKE" "18:31" "Train" "00:24")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "18:11" "BRIGHTON" "20:30" "Train" "02:19"))
+ (("READING" "18:14" "BRIGHTON" "20:37" "Train" "02:23"))
+ (("READING" "18:27" "BASINGSTOKE" "18:51" "Train" "00:24")
+  ("BASINGSTOKE" "19:48" "EASTLEIGH" "20:17" "Train" "00:29")
+  ("EASTLEIGH" "20:24" "PORTSMOUTH HARBOUR" "21:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "21:43" "BRIGHTON" "23:25" "Train" "01:42"))
+ (("READING" "18:34" "GATWICK AIRPORT" "19:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "20:11" "BRIGHTON" "20:51" "Train" "00:40"))
+ (("READING" "18:34" "GATWICK AIRPORT" "19:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "20:09" "BRIGHTON" "20:52" "Train" "00:43"))
+ (("READING" "18:39" "BASINGSTOKE" "19:04" "Train" "00:25")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "18:39" "BASINGSTOKE" "19:03" "Train" "00:24")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "18:45" "BASINGSTOKE" "19:08" "Train" "00:23")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "18:45" "BASINGSTOKE" "19:08" "Train" "00:23")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "18:50" "BASINGSTOKE" "19:08" "Train" "00:18")
+  ("BASINGSTOKE" "19:48" "EASTLEIGH" "20:17" "Train" "00:29")
+  ("EASTLEIGH" "20:24" "PORTSMOUTH HARBOUR" "21:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "21:43" "BRIGHTON" "23:25" "Train" "01:42"))
+ (("READING" "18:56" "BRIGHTON" "21:09" "Train" "02:13"))
+ (("READING" "19:00" "GATWICK AIRPORT" "20:29" "Train" "01:29")
+  ("GATWICK AIRPORT" "20:42" "BRIGHTON" "21:05" "Train" "00:23"))
+ (("READING" "19:01" "BRIGHTON" "21:13" "Train" "02:12"))
+ (("READING" "19:02" "BRIGHTON" "21:13" "Train" "02:11"))
+ (("READING" "19:04" "REDHILL" "20:24" "Train" "01:20")
+  ("REDHILL" "21:31" "BRIGHTON" "22:15" "Train" "00:44"))
+ (("READING" "19:07" "BASINGSTOKE" "19:31" "Train" "00:24")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "19:07" "BASINGSTOKE" "19:31" "Train" "00:24")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "22:15" "BRIGHTON" "23:51" "Train" "01:36"))
+ (("READING" "19:11" "BRIGHTON" "21:19" "Train" "02:08"))
+ (("READING" "19:34" "GATWICK AIRPORT" "20:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "21:11" "BRIGHTON" "21:50" "Train" "00:39"))
+ (("READING" "19:34" "GATWICK AIRPORT" "20:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "21:09" "BRIGHTON" "21:50" "Train" "00:41"))
+ (("READING" "20:03" "GATWICK AIRPORT" "21:29" "Train" "01:26")
+  ("GATWICK AIRPORT" "21:50" "BRIGHTON" "22:24" "Train" "00:34"))
+ (("READING" "20:04" "REDHILL" "21:23" "Train" "01:19")
+  ("REDHILL" "21:31" "BRIGHTON" "22:15" "Train" "00:44"))
+ (("READING" "20:10" "GATWICK AIRPORT" "21:46" "Train" "01:36")
+  ("GATWICK AIRPORT" "22:12" "BRIGHTON" "22:50" "Train" "00:38"))
+ (("READING" "20:14" "GATWICK AIRPORT" "21:47" "Train" "01:33")
+  ("GATWICK AIRPORT" "22:11" "BRIGHTON" "22:50" "Train" "00:39"))
+ (("READING" "20:34" "GATWICK AIRPORT" "21:59" "Train" "01:25")
+  ("GATWICK AIRPORT" "22:11" "BRIGHTON" "22:50" "Train" "00:39"))
+ (("READING" "20:34" "GATWICK AIRPORT" "22:04" "Train" "01:30")
+  ("GATWICK AIRPORT" "22:39" "BRIGHTON" "23:15" "Train" "00:36"))
+ (("READING" "21:00" "GATWICK AIRPORT" "22:29" "Train" "01:29")
+  ("GATWICK AIRPORT" "22:50" "BRIGHTON" "23:24" "Train" "00:34"))
+ (("READING" "21:04" "GATWICK AIRPORT" "22:32" "Train" "01:28")
+  ("GATWICK AIRPORT" "22:49" "HOVE" "23:20" "Train" "00:31"))
+ (("READING" "21:34" "GATWICK AIRPORT" "22:59" "Train" "01:25")
+  ("GATWICK AIRPORT" "23:11" "BRIGHTON" "23:48" "Train" "00:37"))
+ (("READING" "21:34" "GATWICK AIRPORT" "23:03" "Train" "01:29")
+  ("GATWICK AIRPORT" "23:39" "BRIGHTON" "00:15" "Train" "00:36"))
+ (("READING" "22:03" "GATWICK AIRPORT" "23:29" "Train" "01:26")
+  ("GATWICK AIRPORT" "23:50" "BRIGHTON" "00:24" "Train" "00:34"))
+ (("READING" "22:34" "GATWICK AIRPORT" "00:10" "Train" "01:36")
+  ("GATWICK AIRPORT" "00:43" "HOVE" "01:22" "Train" "00:39"))
+ (("READING" "23:15" "GATWICK AIRPORT" "00:43" "Train" "01:28")
+  ("GATWICK AIRPORT" "01:47" "BRIGHTON" "02:20" "Train" "00:33"))
+ (("READING" "23:34" "GATWICK AIRPORT" "01:00" "Train" "01:26")
+  ("GATWICK AIRPORT" "01:47" "BRIGHTON" "02:32" "Train" "00:45"))
+ (("READING" "04:34" "GATWICK AIRPORT" "05:54" "Train" "01:20")
+  ("GATWICK AIRPORT" "06:08" "BRIGHTON" "06:47" "Train" "00:39"))
+ (("READING" "04:34" "GATWICK AIRPORT" "05:53" "Train" "01:19")
+  ("GATWICK AIRPORT" "06:20" "BRIGHTON" "06:53" "Train" "00:33")))
+
+(time (possible-journeys-a* "reading" "brighton" :time (string->dttm "2007-06-04 Mon 05:00:00 +0100 (BST)")
+				   :time-fn (make-time-test-fn2) :summary-sorted-p t))
+
+Evaluation took:
+  166.779 seconds of real time
+  89.13357 seconds of user run time
+  42.458652 seconds of system run time
+  [Run times include 20.442 seconds GC run time.]
+  0 calls to %EVAL
+  0 page faults and
+  21,640,420,392 bytes consed.
+
+Evaluation took:
+  92.641 seconds of real time
+  48.15101 seconds of user run time
+  26.913683 seconds of system run time
+  [Run times include 18.59 seconds GC run time.]
+  0 calls to %EVAL
+  1 page fault and
+  11,844,859,608 bytes consed.
+
+Evaluation took:
+  78.604 seconds of real time
+  36.730297 seconds of user run time
+  19.657228 seconds of system run time
+  [Run times include 14.368 seconds GC run time.]
+  0 calls to %EVAL
+  291 page faults and
+  7,112,986,832 bytes consed.
+
+Evaluation took:
+  34.703 seconds of real time
+  16.233013 seconds of user run time
+  10.192637 seconds of system run time
+  [Run times include 3.144 seconds GC run time.]
+  0 calls to %EVAL
+  0 page faults and
+  2,171,818,120 bytes consed.
+
+((("READING" "05:34" "GATWICK AIRPORT" "06:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "07:11" "BRIGHTON" "07:49" "Train" "00:38"))
+ (("READING" "05:34" "GATWICK AIRPORT" "06:58" "Train" "01:24")
+  ("GATWICK AIRPORT" "07:12" "BRIGHTON" "07:51" "Train" "00:39"))
+ (("READING" "05:37" "BASINGSTOKE" "06:01" "Train" "00:24")
+  ("BASINGSTOKE" "06:21" "EASTLEIGH" "06:47" "Train" "00:26")
+  ("EASTLEIGH" "07:02" "PORTSMOUTH HARBOUR" "07:48" "Train" "00:46")
+  ("FAREHAM" "08:44" "HOVE" "09:51" "Train" "01:07"))
+ (("READING" "05:50" "REDHILL" "07:23" "Train" "01:33")
+  ("REDHILL" "07:46" "THREE BRIDGES" "08:04" "Train" "00:18")
+  ("THREE BRIDGES" "08:42" "BRIGHTON" "09:08" "Train" "00:26"))
+ (("READING" "06:04" "GATWICK AIRPORT" "07:28" "Train" "01:24")
+  ("GATWICK AIRPORT" "07:50" "BRIGHTON" "08:24" "Train" "00:34"))
+ (("READING" "06:04" "REDHILL" "07:23" "Train" "01:19")
+  ("REDHILL" "07:27" "GATWICK AIRPORT" "07:34" "Train" "00:07")
+  ("GATWICK AIRPORT" "08:11" "BRIGHTON" "08:51" "Train" "00:40"))
+ (("READING" "06:07" "BASINGSTOKE" "06:32" "Train" "00:25")
+  ("BASINGSTOKE" "07:00" "PORTSMOUTH HARBOUR" "08:20" "Train" "01:20")
+  ("PORTSMOUTH HARBOUR" "09:10" "BRIGHTON" "10:40" "Train" "01:30"))
+ (("READING" "06:07" "BASINGSTOKE" "06:31" "Train" "00:24")
+  ("BASINGSTOKE" "07:00" "PORTSMOUTH HARBOUR" "08:16" "Train" "01:16")
+  ("PORTSMOUTH HARBOUR" "08:45" "HAVANT" "09:03" "Train" "00:18")
+  ("HAVANT" "09:08" "LITTLEHAMPTON" "09:48" "Train" "00:40")
+  ("LITTLEHAMPTON" "10:15" "BRIGHTON" "11:07" "Train" "00:52"))
+ (("READING" "06:34" "GATWICK AIRPORT" "07:54" "Train" "01:20")
+  ("GATWICK AIRPORT" "08:12" "BRIGHTON" "08:51" "Train" "00:39"))
+ (("READING" "06:34" "GATWICK AIRPORT" "07:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "08:11" "BRIGHTON" "08:51" "Train" "00:40"))
+ (("READING" "06:39" "BASINGSTOKE" "07:03" "Train" "00:24")
+  ("BASINGSTOKE" "07:24" "BRIGHTON" "09:12" "Train" "01:48"))
+ (("READING" "06:39" "BASINGSTOKE" "07:03" "Train" "00:24")
+  ("BASINGSTOKE" "08:00" "PORTSMOUTH HARBOUR" "09:18" "Train" "01:18")
+  ("PORTSMOUTH HARBOUR" "10:10" "BRIGHTON" "11:40" "Train" "01:30"))
+ (("READING" "06:56" "BRIGHTON" "09:23" "Train" "02:27"))
+ (("READING" "07:00" "REDHILL" "08:25" "Train" "01:25")
+  ("REDHILL" "08:32" "GATWICK AIRPORT" "08:39" "Train" "00:07")
+  ("GATWICK AIRPORT" "09:00" "BRIGHTON" "09:38" "Train" "00:38"))
+ (("READING" "07:02" "GATWICK AIRPORT" "08:28" "Train" "01:26")
+  ("GATWICK AIRPORT" "08:50" "BRIGHTON" "09:24" "Train" "00:34"))
+ (("READING" "07:04" "REDHILL" "08:24" "Train" "01:20")
+  ("REDHILL" "08:31" "GATWICK AIRPORT" "08:40" "Train" "00:09")
+  ("GATWICK AIRPORT" "09:11" "BRIGHTON" "09:51" "Train" "00:40"))
+ (("READING" "07:07" "BASINGSTOKE" "07:32" "Train" "00:25")
+  ("BASINGSTOKE" "08:00" "PORTSMOUTH HARBOUR" "09:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "10:10" "BRIGHTON" "11:40" "Train" "01:30"))
+ (("READING" "07:07" "BASINGSTOKE" "07:31" "Train" "00:24")
+  ("BASINGSTOKE" "08:00" "PORTSMOUTH HARBOUR" "09:18" "Train" "01:18")
+  ("PORTSMOUTH HARBOUR" "10:10" "BRIGHTON" "11:40" "Train" "01:30"))
+ (("READING" "07:27" "BASINGSTOKE" "07:51" "Train" "00:24")
+  ("BASINGSTOKE" "08:50" "EASTLEIGH" "09:19" "Train" "00:29")
+  ("EASTLEIGH" "09:26" "PORTSMOUTH HARBOUR" "10:16" "Train" "00:50")
+  ("PORTSMOUTH HARBOUR" "11:14" "BRIGHTON" "13:00" "Train" "01:46"))
+ (("READING" "07:34" "GATWICK AIRPORT" "08:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "09:11" "BRIGHTON" "09:51" "Train" "00:40"))
+ (("READING" "07:34" "GATWICK AIRPORT" "09:02" "Train" "01:28")
+  ("GATWICK AIRPORT" "09:14" "BRIGHTON" "09:52" "Train" "00:38"))
+ (("READING" "07:39" "BASINGSTOKE" "08:03" "Train" "00:24")
+  ("BASINGSTOKE" "08:24" "BRIGHTON" "10:12" "Train" "01:48"))
+ (("READING" "07:39" "BASINGSTOKE" "08:03" "Train" "00:24")
+  ("BASINGSTOKE" "08:27" "BRIGHTON" "10:14" "Train" "01:47"))
+ (("READING" "07:45" "BASINGSTOKE" "08:08" "Train" "00:23")
+  ("BASINGSTOKE" "08:27" "BRIGHTON" "10:14" "Train" "01:47"))
+ (("READING" "08:03" "GATWICK AIRPORT" "09:29" "Train" "01:26")
+  ("GATWICK AIRPORT" "09:50" "BRIGHTON" "10:24" "Train" "00:34"))
+ (("READING" "08:04" "REDHILL" "09:29" "Train" "01:25")
+  ("REDHILL" "09:40" "BRIGHTON" "10:40" "Train" "01:00"))
+ (("READING" "08:04" "REDHILL" "09:23" "Train" "01:19")
+  ("REDHILL" "09:31" "GATWICK AIRPORT" "09:40" "Train" "00:09")
+  ("GATWICK AIRPORT" "10:11" "BRIGHTON" "10:51" "Train" "00:40"))
+ (("READING" "08:07" "BASINGSTOKE" "08:31" "Train" "00:24")
+  ("BASINGSTOKE" "09:00" "PORTSMOUTH HARBOUR" "10:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "11:10" "BRIGHTON" "12:40" "Train" "01:30"))
+ (("READING" "08:27" "BASINGSTOKE" "08:51" "Train" "00:24")
+  ("BASINGSTOKE" "09:50" "EASTLEIGH" "10:19" "Train" "00:29")
+  ("EASTLEIGH" "10:26" "PORTSMOUTH HARBOUR" "11:16" "Train" "00:50")
+  ("FAREHAM" "12:06" "BRIGHTON" "13:28" "Train" "01:22"))
+ (("READING" "08:34" "GATWICK AIRPORT" "09:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "10:11" "BRIGHTON" "10:51" "Train" "00:40"))
+ (("READING" "08:34" "GATWICK AIRPORT" "09:55" "Train" "01:21")
+  ("GATWICK AIRPORT" "10:11" "BRIGHTON" "10:51" "Train" "00:40"))
+ (("READING" "08:39" "BASINGSTOKE" "09:03" "Train" "00:24")
+  ("BASINGSTOKE" "09:24" "BRIGHTON" "11:12" "Train" "01:48"))
+ (("READING" "08:39" "BASINGSTOKE" "09:03" "Train" "00:24")
+  ("BASINGSTOKE" "09:20" "BRIGHTON" "11:12" "Train" "01:52"))
+ (("READING" "08:45" "BASINGSTOKE" "09:08" "Train" "00:23")
+  ("BASINGSTOKE" "09:24" "BRIGHTON" "11:12" "Train" "01:48"))
+ (("READING" "08:45" "BASINGSTOKE" "09:08" "Train" "00:23")
+  ("BASINGSTOKE" "09:20" "BRIGHTON" "11:12" "Train" "01:52"))
+ (("READING" "09:01" "GATWICK AIRPORT" "10:32" "Train" "01:31")
+  ("GATWICK AIRPORT" "10:50" "BRIGHTON" "11:24" "Train" "00:34"))
+ (("READING" "09:04" "REDHILL" "10:24" "Train" "01:20")
+  ("REDHILL" "10:31" "GATWICK AIRPORT" "10:40" "Train" "00:09")
+  ("GATWICK AIRPORT" "11:11" "BRIGHTON" "11:51" "Train" "00:40"))
+ (("READING" "09:07" "BASINGSTOKE" "09:31" "Train" "00:24")
+  ("BASINGSTOKE" "10:00" "PORTSMOUTH HARBOUR" "11:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "12:10" "BRIGHTON" "13:40" "Train" "01:30"))
+ (("READING" "09:27" "BASINGSTOKE" "09:51" "Train" "00:24")
+  ("BASINGSTOKE" "10:48" "EASTLEIGH" "11:17" "Train" "00:29")
+  ("EASTLEIGH" "11:24" "PORTSMOUTH HARBOUR" "12:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "13:14" "BRIGHTON" "15:00" "Train" "01:46"))
+ (("READING" "09:34" "GATWICK AIRPORT" "10:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "11:11" "BRIGHTON" "11:51" "Train" "00:40"))
+ (("READING" "09:39" "BASINGSTOKE" "10:03" "Train" "00:24")
+  ("BASINGSTOKE" "11:00" "PORTSMOUTH HARBOUR" "12:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "13:10" "BRIGHTON" "14:40" "Train" "01:30"))
+ (("READING" "09:45" "BASINGSTOKE" "10:08" "Train" "00:23")
+  ("BASINGSTOKE" "11:00" "PORTSMOUTH HARBOUR" "12:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "13:10" "BRIGHTON" "14:40" "Train" "01:30"))
+ (("READING" "09:56" "BRIGHTON" "12:09" "Train" "02:13"))
+ (("READING" "10:02" "BRIGHTON" "12:12" "Train" "02:10"))
+ (("READING" "10:03" "GATWICK AIRPORT" "11:29" "Train" "01:26")
+  ("GATWICK AIRPORT" "11:50" "BRIGHTON" "12:24" "Train" "00:34"))
+ (("READING" "10:04" "BRIGHTON" "12:12" "Train" "02:08"))
+ (("READING" "10:04" "REDHILL" "11:24" "Train" "01:20")
+  ("REDHILL" "11:31" "GATWICK AIRPORT" "11:40" "Train" "00:09")
+  ("GATWICK AIRPORT" "12:11" "BRIGHTON" "12:51" "Train" "00:40"))
+ (("READING" "10:07" "BASINGSTOKE" "10:31" "Train" "00:24")
+  ("BASINGSTOKE" "11:00" "PORTSMOUTH HARBOUR" "12:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "13:10" "BRIGHTON" "14:40" "Train" "01:30"))
+ (("READING" "10:07" "BASINGSTOKE" "10:32" "Train" "00:25")
+  ("BASINGSTOKE" "11:00" "PORTSMOUTH HARBOUR" "12:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "13:10" "BRIGHTON" "14:40" "Train" "01:30"))
+ (("READING" "10:27" "BASINGSTOKE" "10:51" "Train" "00:24")
+  ("BASINGSTOKE" "11:48" "EASTLEIGH" "12:17" "Train" "00:29")
+  ("EASTLEIGH" "12:24" "PORTSMOUTH HARBOUR" "13:13" "Train" "00:49")
+  ("FAREHAM" "13:34" "BRIGHTON" "15:06" "Train" "01:32"))
+ (("READING" "10:34" "GATWICK AIRPORT" "11:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "12:11" "BRIGHTON" "12:51" "Train" "00:40"))
+ (("READING" "10:39" "BASINGSTOKE" "11:03" "Train" "00:24")
+  ("BASINGSTOKE" "11:24" "BRIGHTON" "13:12" "Train" "01:48"))
+ (("READING" "10:45" "BASINGSTOKE" "11:08" "Train" "00:23")
+  ("BASINGSTOKE" "11:24" "BRIGHTON" "13:12" "Train" "01:48"))
+ (("READING" "10:50" "BASINGSTOKE" "11:08" "Train" "00:18")
+  ("BASINGSTOKE" "11:48" "EASTLEIGH" "12:17" "Train" "00:29")
+  ("EASTLEIGH" "12:24" "PORTSMOUTH HARBOUR" "13:13" "Train" "00:49")
+  ("FAREHAM" "13:34" "BRIGHTON" "15:06" "Train" "01:32"))
+ (("READING" "11:01" "GATWICK AIRPORT" "12:29" "Train" "01:28")
+  ("GATWICK AIRPORT" "12:50" "BRIGHTON" "13:24" "Train" "00:34"))
+ (("READING" "11:04" "REDHILL" "12:24" "Train" "01:20")
+  ("REDHILL" "12:31" "GATWICK AIRPORT" "12:40" "Train" "00:09")
+  ("GATWICK AIRPORT" "13:11" "BRIGHTON" "13:51" "Train" "00:40"))
+ (("READING" "11:07" "BASINGSTOKE" "11:31" "Train" "00:24")
+  ("BASINGSTOKE" "12:00" "PORTSMOUTH HARBOUR" "13:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "14:10" "BRIGHTON" "15:40" "Train" "01:30"))
+ (("READING" "11:07" "BASINGSTOKE" "11:31" "Train" "00:24")
+  ("BASINGSTOKE" "12:00" "PORTSMOUTH HARBOUR" "13:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "14:10" "BRIGHTON" "15:40" "Train" "01:30"))
+ (("READING" "11:08" "BRIGHTON" "13:15" "Train" "02:07"))
+ (("READING" "11:13" "BRIGHTON" "13:38" "Train" "02:25"))
+ (("READING" "11:27" "BASINGSTOKE" "11:51" "Train" "00:24")
+  ("BASINGSTOKE" "12:48" "EASTLEIGH" "13:17" "Train" "00:29")
+  ("EASTLEIGH" "13:24" "PORTSMOUTH HARBOUR" "14:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "15:14" "BRIGHTON" "17:00" "Train" "01:46"))
+ (("READING" "11:34" "GATWICK AIRPORT" "12:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "13:11" "BRIGHTON" "13:51" "Train" "00:40"))
+ (("READING" "11:39" "BASINGSTOKE" "12:03" "Train" "00:24")
+  ("BASINGSTOKE" "12:24" "BRIGHTON" "14:12" "Train" "01:48"))
+ (("READING" "11:39" "BASINGSTOKE" "12:03" "Train" "00:24")
+  ("BASINGSTOKE" "12:24" "BRIGHTON" "14:14" "Train" "01:50"))
+ (("READING" "11:45" "BASINGSTOKE" "12:08" "Train" "00:23")
+  ("BASINGSTOKE" "12:24" "BRIGHTON" "14:12" "Train" "01:48"))
+ (("READING" "11:45" "BASINGSTOKE" "12:08" "Train" "00:23")
+  ("BASINGSTOKE" "12:24" "BRIGHTON" "14:14" "Train" "01:50"))
+ (("READING" "11:50" "BASINGSTOKE" "12:08" "Train" "00:18")
+  ("BASINGSTOKE" "12:48" "EASTLEIGH" "13:17" "Train" "00:29")
+  ("EASTLEIGH" "13:24" "PORTSMOUTH HARBOUR" "14:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "15:14" "BRIGHTON" "17:00" "Train" "01:46"))
+ (("READING" "12:03" "GATWICK AIRPORT" "13:29" "Train" "01:26")
+  ("GATWICK AIRPORT" "13:50" "BRIGHTON" "14:24" "Train" "00:34"))
+ (("READING" "12:04" "REDHILL" "13:23" "Train" "01:19")
+  ("REDHILL" "13:31" "GATWICK AIRPORT" "13:40" "Train" "00:09")
+  ("GATWICK AIRPORT" "14:11" "BRIGHTON" "14:51" "Train" "00:40"))
+ (("READING" "12:07" "BASINGSTOKE" "12:31" "Train" "00:24")
+  ("BASINGSTOKE" "13:00" "PORTSMOUTH HARBOUR" "14:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "15:10" "BRIGHTON" "16:40" "Train" "01:30"))
+ (("READING" "12:07" "BASINGSTOKE" "12:31" "Train" "00:24")
+  ("BASINGSTOKE" "13:00" "PORTSMOUTH HARBOUR" "14:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "14:28" "HAVANT" "14:44" "Train" "00:16")
+  ("HAVANT" "16:07" "LITTLEHAMPTON" "16:44" "Train" "00:37")
+  ("LITTLEHAMPTON" "16:52" "BRIGHTON" "17:34" "Train" "00:42"))
+ (("READING" "12:27" "BASINGSTOKE" "12:51" "Train" "00:24")
+  ("BASINGSTOKE" "13:48" "EASTLEIGH" "14:17" "Train" "00:29")
+  ("EASTLEIGH" "14:24" "PORTSMOUTH HARBOUR" "15:13" "Train" "00:49")
+  ("FAREHAM" "15:51" "BRIGHTON" "17:05" "Train" "01:14"))
+ (("READING" "12:34" "GATWICK AIRPORT" "13:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "14:11" "BRIGHTON" "14:51" "Train" "00:40"))
+ (("READING" "12:39" "BASINGSTOKE" "13:03" "Train" "00:24")
+  ("BASINGSTOKE" "14:00" "PORTSMOUTH HARBOUR" "15:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "15:28" "HAVANT" "15:44" "Train" "00:16")
+  ("HAVANT" "16:07" "LITTLEHAMPTON" "16:44" "Train" "00:37")
+  ("LITTLEHAMPTON" "16:52" "BRIGHTON" "17:34" "Train" "00:42"))
+ (("READING" "12:39" "BASINGSTOKE" "13:03" "Train" "00:24")
+  ("BASINGSTOKE" "14:00" "PORTSMOUTH HARBOUR" "15:24" "Train" "01:24")
+  ("PORTSMOUTH HARBOUR" "16:10" "BRIGHTON" "17:40" "Train" "01:30"))
+ (("READING" "12:45" "BASINGSTOKE" "13:08" "Train" "00:23")
+  ("BASINGSTOKE" "14:00" "PORTSMOUTH HARBOUR" "15:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "15:28" "HAVANT" "15:44" "Train" "00:16")
+  ("HAVANT" "16:07" "LITTLEHAMPTON" "16:44" "Train" "00:37")
+  ("LITTLEHAMPTON" "16:52" "BRIGHTON" "17:34" "Train" "00:42"))
+ (("READING" "12:45" "BASINGSTOKE" "13:08" "Train" "00:23")
+  ("BASINGSTOKE" "14:00" "PORTSMOUTH HARBOUR" "15:24" "Train" "01:24")
+  ("PORTSMOUTH HARBOUR" "16:10" "BRIGHTON" "17:40" "Train" "01:30"))
+ (("READING" "12:50" "BASINGSTOKE" "13:08" "Train" "00:18")
+  ("BASINGSTOKE" "13:48" "EASTLEIGH" "14:17" "Train" "00:29")
+  ("EASTLEIGH" "14:24" "PORTSMOUTH HARBOUR" "15:13" "Train" "00:49")
+  ("FAREHAM" "15:51" "BRIGHTON" "17:05" "Train" "01:14"))
+ (("READING" "12:56" "BRIGHTON" "15:09" "Train" "02:13"))
+ (("READING" "13:01" "BRIGHTON" "15:12" "Train" "02:11"))
+ (("READING" "13:01" "GATWICK AIRPORT" "14:29" "Train" "01:28")
+  ("GATWICK AIRPORT" "14:50" "BRIGHTON" "15:24" "Train" "00:34"))
+ (("READING" "13:04" "REDHILL" "14:24" "Train" "01:20")
+  ("REDHILL" "14:31" "GATWICK AIRPORT" "14:40" "Train" "00:09")
+  ("GATWICK AIRPORT" "15:11" "BRIGHTON" "15:51" "Train" "00:40"))
+ (("READING" "13:07" "BASINGSTOKE" "13:31" "Train" "00:24")
+  ("BASINGSTOKE" "14:00" "PORTSMOUTH HARBOUR" "15:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "15:28" "HAVANT" "15:44" "Train" "00:16")
+  ("HAVANT" "16:07" "LITTLEHAMPTON" "16:44" "Train" "00:37")
+  ("LITTLEHAMPTON" "16:52" "BRIGHTON" "17:34" "Train" "00:42"))
+ (("READING" "13:07" "BASINGSTOKE" "13:31" "Train" "00:24")
+  ("BASINGSTOKE" "14:00" "PORTSMOUTH HARBOUR" "15:24" "Train" "01:24")
+  ("PORTSMOUTH HARBOUR" "16:10" "BRIGHTON" "17:40" "Train" "01:30"))
+ (("READING" "13:27" "BASINGSTOKE" "13:51" "Train" "00:24")
+  ("BASINGSTOKE" "14:48" "EASTLEIGH" "15:17" "Train" "00:29")
+  ("EASTLEIGH" "15:24" "PORTSMOUTH HARBOUR" "16:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "17:14" "BRIGHTON" "19:00" "Train" "01:46"))
+ (("READING" "13:34" "GATWICK AIRPORT" "14:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "15:11" "BRIGHTON" "15:51" "Train" "00:40"))
+ (("READING" "13:39" "BASINGSTOKE" "14:03" "Train" "00:24")
+  ("BASINGSTOKE" "14:24" "FAREHAM" "15:08" "Train" "00:44")
+  ("FAREHAM" "15:44" "HOVE" "16:50" "Train" "01:06"))
+ (("READING" "13:39" "BASINGSTOKE" "14:03" "Train" "00:24")
+  ("BASINGSTOKE" "14:24" "FAREHAM" "15:07" "Train" "00:43")
+  ("FAREHAM" "15:44" "HOVE" "16:50" "Train" "01:06"))
+ (("READING" "13:45" "BASINGSTOKE" "14:08" "Train" "00:23")
+  ("BASINGSTOKE" "14:24" "FAREHAM" "15:08" "Train" "00:44")
+  ("FAREHAM" "15:44" "HOVE" "16:50" "Train" "01:06"))
+ (("READING" "13:45" "BASINGSTOKE" "14:08" "Train" "00:23")
+  ("BASINGSTOKE" "14:24" "FAREHAM" "15:07" "Train" "00:43")
+  ("FAREHAM" "15:44" "HOVE" "16:50" "Train" "01:06"))
+ (("READING" "13:50" "BASINGSTOKE" "14:07" "Train" "00:17")
+  ("BASINGSTOKE" "14:48" "EASTLEIGH" "15:17" "Train" "00:29")
+  ("EASTLEIGH" "15:24" "PORTSMOUTH HARBOUR" "16:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "17:14" "BRIGHTON" "19:00" "Train" "01:46"))
+ (("READING" "14:03" "GATWICK AIRPORT" "15:29" "Train" "01:26")
+  ("GATWICK AIRPORT" "15:50" "BRIGHTON" "16:24" "Train" "00:34"))
+ (("READING" "14:04" "REDHILL" "15:25" "Train" "01:21")
+  ("REDHILL" "15:31" "GATWICK AIRPORT" "15:40" "Train" "00:09")
+  ("GATWICK AIRPORT" "15:56" "BRIGHTON" "16:26" "Train" "00:30"))
+ (("READING" "14:04" "REDHILL" "15:23" "Train" "01:19")
+  ("REDHILL" "15:31" "GATWICK AIRPORT" "15:40" "Train" "00:09")
+  ("GATWICK AIRPORT" "16:11" "BRIGHTON" "16:51" "Train" "00:40"))
+ (("READING" "14:07" "BASINGSTOKE" "14:31" "Train" "00:24")
+  ("BASINGSTOKE" "15:00" "PORTSMOUTH HARBOUR" "16:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "16:28" "HAVANT" "16:44" "Train" "00:16")
+  ("HAVANT" "17:09" "BRIGHTON" "18:37" "Train" "01:28"))
+ (("READING" "14:07" "BASINGSTOKE" "14:31" "Train" "00:24")
+  ("BASINGSTOKE" "15:00" "PORTSMOUTH HARBOUR" "16:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "17:10" "BRIGHTON" "18:40" "Train" "01:30"))
+ (("READING" "14:27" "BASINGSTOKE" "14:51" "Train" "00:24")
+  ("BASINGSTOKE" "15:48" "EASTLEIGH" "16:17" "Train" "00:29")
+  ("EASTLEIGH" "16:24" "PORTSMOUTH HARBOUR" "17:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "18:14" "BRIGHTON" "20:00" "Train" "01:46"))
+ (("READING" "14:34" "GATWICK AIRPORT" "15:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "16:11" "BRIGHTON" "16:51" "Train" "00:40"))
+ (("READING" "14:39" "BASINGSTOKE" "15:03" "Train" "00:24")
+  ("BASINGSTOKE" "15:24" "BRIGHTON" "17:12" "Train" "01:48"))
+ (("READING" "14:44" "BASINGSTOKE" "15:08" "Train" "00:24")
+  ("BASINGSTOKE" "15:24" "BRIGHTON" "17:12" "Train" "01:48"))
+ (("READING" "14:45" "BASINGSTOKE" "15:08" "Train" "00:23")
+  ("BASINGSTOKE" "15:24" "BRIGHTON" "17:12" "Train" "01:48"))
+ (("READING" "14:50" "BASINGSTOKE" "15:08" "Train" "00:18")
+  ("BASINGSTOKE" "15:48" "EASTLEIGH" "16:17" "Train" "00:29")
+  ("EASTLEIGH" "16:24" "PORTSMOUTH HARBOUR" "17:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "18:14" "BRIGHTON" "20:00" "Train" "01:46"))
+ (("READING" "15:00" "GATWICK AIRPORT" "16:29" "Train" "01:29")
+  ("GATWICK AIRPORT" "16:50" "BRIGHTON" "17:24" "Train" "00:34"))
+ (("READING" "15:04" "REDHILL" "16:24" "Train" "01:20")
+  ("REDHILL" "16:31" "GATWICK AIRPORT" "16:40" "Train" "00:09")
+  ("GATWICK AIRPORT" "17:11" "BRIGHTON" "17:51" "Train" "00:40"))
+ (("READING" "15:04" "REDHILL" "16:26" "Train" "01:22")
+  ("REDHILL" "16:31" "THREE BRIDGES" "16:45" "Train" "00:14")
+  ("THREE BRIDGES" "17:29" "HOVE" "17:57" "Train" "00:28"))
+ (("READING" "15:07" "BASINGSTOKE" "15:31" "Train" "00:24")
+  ("BASINGSTOKE" "16:00" "PORTSMOUTH HARBOUR" "17:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "18:04" "BRIGHTON" "19:40" "Train" "01:36"))
+ (("READING" "15:07" "BASINGSTOKE" "15:31" "Train" "00:24")
+  ("BASINGSTOKE" "16:00" "PORTSMOUTH HARBOUR" "17:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "18:04" "BRIGHTON" "19:42" "Train" "01:38"))
+ (("READING" "15:27" "BASINGSTOKE" "15:51" "Train" "00:24")
+  ("BASINGSTOKE" "16:48" "EASTLEIGH" "17:17" "Train" "00:29")
+  ("EASTLEIGH" "17:24" "PORTSMOUTH HARBOUR" "18:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "19:14" "BRIGHTON" "21:00" "Train" "01:46"))
+ (("READING" "15:28" "GATWICK AIRPORT" "17:00" "Train" "01:32")
+  ("GATWICK AIRPORT" "17:09" "BRIGHTON" "17:48" "Train" "00:39"))
+ (("READING" "15:34" "GATWICK AIRPORT" "16:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "17:11" "BRIGHTON" "17:51" "Train" "00:40"))
+ (("READING" "15:39" "BASINGSTOKE" "16:03" "Train" "00:24")
+  ("BASINGSTOKE" "17:00" "PORTSMOUTH HARBOUR" "18:21" "Train" "01:21")
+  ("PORTSMOUTH HARBOUR" "18:28" "BRIGHTON" "20:10" "Train" "01:42"))
+ (("READING" "15:39" "BASINGSTOKE" "16:03" "Train" "00:24")
+  ("BASINGSTOKE" "17:00" "PORTSMOUTH HARBOUR" "18:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "18:28" "LITTLEHAMPTON" "19:20" "Train" "00:52")
+  ("LITTLEHAMPTON" "19:44" "HOVE" "20:20" "Train" "00:36"))
+ (("READING" "15:45" "BASINGSTOKE" "16:08" "Train" "00:23")
+  ("BASINGSTOKE" "17:00" "PORTSMOUTH HARBOUR" "18:21" "Train" "01:21")
+  ("PORTSMOUTH HARBOUR" "18:28" "BRIGHTON" "20:10" "Train" "01:42"))
+ (("READING" "15:45" "BASINGSTOKE" "16:08" "Train" "00:23")
+  ("BASINGSTOKE" "17:00" "PORTSMOUTH HARBOUR" "18:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "18:28" "LITTLEHAMPTON" "19:20" "Train" "00:52")
+  ("LITTLEHAMPTON" "19:44" "HOVE" "20:20" "Train" "00:36"))
+ (("READING" "15:50" "BASINGSTOKE" "16:08" "Train" "00:18")
+  ("BASINGSTOKE" "16:48" "EASTLEIGH" "17:17" "Train" "00:29")
+  ("EASTLEIGH" "17:24" "PORTSMOUTH HARBOUR" "18:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "19:14" "BRIGHTON" "21:00" "Train" "01:46"))
+ (("READING" "15:56" "BRIGHTON" "18:13" "Train" "02:17"))
+ (("READING" "16:02" "BRIGHTON" "18:12" "Train" "02:10"))
+ (("READING" "16:03" "GATWICK AIRPORT" "17:29" "Train" "01:26")
+  ("GATWICK AIRPORT" "17:50" "BRIGHTON" "18:24" "Train" "00:34"))
+ (("READING" "16:04" "BRIGHTON" "18:15" "Train" "02:11"))
+ (("READING" "16:04" "REDHILL" "17:23" "Train" "01:19")
+  ("REDHILL" "17:31" "GATWICK AIRPORT" "17:40" "Train" "00:09")
+  ("GATWICK AIRPORT" "18:11" "BRIGHTON" "18:51" "Train" "00:40"))
+ (("READING" "16:04" "REDHILL" "17:31" "Train" "01:27")
+  ("REDHILL" "17:46" "THREE BRIDGES" "18:04" "Train" "00:18")
+  ("THREE BRIDGES" "18:23" "HOVE" "18:57" "Train" "00:34"))
+ (("READING" "16:07" "BASINGSTOKE" "16:32" "Train" "00:25")
+  ("BASINGSTOKE" "17:00" "PORTSMOUTH HARBOUR" "18:21" "Train" "01:21")
+  ("PORTSMOUTH HARBOUR" "18:28" "BRIGHTON" "20:10" "Train" "01:42"))
+ (("READING" "16:07" "BASINGSTOKE" "16:31" "Train" "00:24")
+  ("BASINGSTOKE" "17:00" "PORTSMOUTH HARBOUR" "18:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "18:28" "LITTLEHAMPTON" "19:20" "Train" "00:52")
+  ("LITTLEHAMPTON" "19:44" "HOVE" "20:20" "Train" "00:36"))
+ (("READING" "16:27" "BASINGSTOKE" "16:51" "Train" "00:24")
+  ("BASINGSTOKE" "17:48" "EASTLEIGH" "18:17" "Train" "00:29")
+  ("EASTLEIGH" "18:24" "PORTSMOUTH HARBOUR" "19:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "20:14" "BRIGHTON" "21:55" "Train" "01:41"))
+ (("READING" "16:34" "GATWICK AIRPORT" "17:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "18:11" "BRIGHTON" "18:51" "Train" "00:40"))
+ (("READING" "16:34" "GATWICK AIRPORT" "17:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "17:59" "THREE BRIDGES" "18:04" "Train" "00:05")
+  ("THREE BRIDGES" "18:23" "HOVE" "18:57" "Train" "00:34"))
+ (("READING" "16:39" "BASINGSTOKE" "17:03" "Train" "00:24")
+  ("BASINGSTOKE" "18:00" "PORTSMOUTH HARBOUR" "19:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "20:04" "BRIGHTON" "21:43" "Train" "01:39"))
+ (("READING" "16:39" "BASINGSTOKE" "17:03" "Train" "00:24")
+  ("BASINGSTOKE" "17:36" "PORTSMOUTH HARBOUR" "18:51" "Train" "01:15")
+  ("PORTSMOUTH HARBOUR" "19:15" "HAVANT" "19:33" "Train" "00:18")
+  ("HAVANT" "20:26" "BRIGHTON" "21:43" "Train" "01:17"))
+ (("READING" "16:45" "BASINGSTOKE" "17:08" "Train" "00:23")
+  ("BASINGSTOKE" "18:00" "PORTSMOUTH HARBOUR" "19:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "20:04" "BRIGHTON" "21:43" "Train" "01:39"))
+ (("READING" "16:45" "BASINGSTOKE" "17:08" "Train" "00:23")
+  ("BASINGSTOKE" "17:36" "PORTSMOUTH HARBOUR" "18:51" "Train" "01:15")
+  ("PORTSMOUTH HARBOUR" "19:15" "HAVANT" "19:33" "Train" "00:18")
+  ("HAVANT" "20:26" "BRIGHTON" "21:43" "Train" "01:17"))
+ (("READING" "16:50" "BASINGSTOKE" "17:08" "Train" "00:18")
+  ("BASINGSTOKE" "17:48" "EASTLEIGH" "18:17" "Train" "00:29")
+  ("EASTLEIGH" "18:24" "PORTSMOUTH HARBOUR" "19:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "20:14" "BRIGHTON" "21:55" "Train" "01:41"))
+ (("READING" "17:00" "GATWICK AIRPORT" "18:29" "Train" "01:29")
+  ("GATWICK AIRPORT" "18:50" "BRIGHTON" "19:24" "Train" "00:34"))
+ (("READING" "17:04" "REDHILL" "18:24" "Train" "01:20")
+  ("REDHILL" "18:31" "GATWICK AIRPORT" "18:40" "Train" "00:09")
+  ("GATWICK AIRPORT" "19:11" "BRIGHTON" "19:51" "Train" "00:40"))
+ (("READING" "17:04" "REDHILL" "18:31" "Train" "01:27")
+  ("REDHILL" "18:46" "GATWICK AIRPORT" "18:58" "Train" "00:12")
+  ("GATWICK AIRPORT" "19:26" "BRIGHTON" "20:00" "Train" "00:34"))
+ (("READING" "17:07" "BASINGSTOKE" "17:31" "Train" "00:24")
+  ("BASINGSTOKE" "18:00" "PORTSMOUTH HARBOUR" "19:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "20:04" "BRIGHTON" "21:43" "Train" "01:39"))
+ (("READING" "17:07" "BASINGSTOKE" "17:31" "Train" "00:24")
+  ("BASINGSTOKE" "17:36" "PORTSMOUTH HARBOUR" "18:51" "Train" "01:15")
+  ("PORTSMOUTH HARBOUR" "19:15" "HAVANT" "19:33" "Train" "00:18")
+  ("HAVANT" "20:26" "BRIGHTON" "21:43" "Train" "01:17"))
+ (("READING" "17:27" "BASINGSTOKE" "17:51" "Train" "00:24")
+  ("BASINGSTOKE" "18:48" "EASTLEIGH" "19:17" "Train" "00:29")
+  ("EASTLEIGH" "19:24" "PORTSMOUTH HARBOUR" "20:13" "Train" "00:49")
+  ("FAREHAM" "20:34" "BRIGHTON" "22:00" "Train" "01:26"))
+ (("READING" "17:34" "GATWICK AIRPORT" "18:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "19:11" "BRIGHTON" "19:51" "Train" "00:40"))
+ (("READING" "17:34" "GATWICK AIRPORT" "19:07" "Train" "01:33")
+  ("GATWICK AIRPORT" "19:26" "BRIGHTON" "20:00" "Train" "00:34"))
+ (("READING" "17:39" "BASINGSTOKE" "18:03" "Train" "00:24")
+  ("BASINGSTOKE" "19:00" "PORTSMOUTH HARBOUR" "20:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "20:28" "BRIGHTON" "22:10" "Train" "01:42"))
+ (("READING" "17:39" "BASINGSTOKE" "18:03" "Train" "00:24")
+  ("BASINGSTOKE" "18:24" "PORTSMOUTH HARBOUR" "19:46" "Train" "01:22")
+  ("PORTSMOUTH HARBOUR" "20:28" "BRIGHTON" "22:10" "Train" "01:42"))
+ (("READING" "17:45" "BASINGSTOKE" "18:08" "Train" "00:23")
+  ("BASINGSTOKE" "19:00" "PORTSMOUTH HARBOUR" "20:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "20:28" "BRIGHTON" "22:10" "Train" "01:42"))
+ (("READING" "17:45" "BASINGSTOKE" "18:08" "Train" "00:23")
+  ("BASINGSTOKE" "18:24" "PORTSMOUTH HARBOUR" "19:46" "Train" "01:22")
+  ("PORTSMOUTH HARBOUR" "20:28" "BRIGHTON" "22:10" "Train" "01:42"))
+ (("READING" "17:50" "BASINGSTOKE" "18:08" "Train" "00:18")
+  ("BASINGSTOKE" "18:48" "EASTLEIGH" "19:17" "Train" "00:29")
+  ("EASTLEIGH" "19:24" "PORTSMOUTH HARBOUR" "20:13" "Train" "00:49")
+  ("FAREHAM" "20:34" "BRIGHTON" "22:00" "Train" "01:26"))
+ (("READING" "18:03" "GATWICK AIRPORT" "19:29" "Train" "01:26")
+  ("GATWICK AIRPORT" "19:50" "BRIGHTON" "20:24" "Train" "00:34"))
+ (("READING" "18:04" "REDHILL" "19:35" "Train" "01:31")
+  ("REDHILL" "19:46" "GATWICK AIRPORT" "19:58" "Train" "00:12")
+  ("GATWICK AIRPORT" "20:11" "BRIGHTON" "20:48" "Train" "00:37"))
+ (("READING" "18:04" "REDHILL" "19:23" "Train" "01:19")
+  ("REDHILL" "19:27" "GATWICK AIRPORT" "19:34" "Train" "00:07")
+  ("GATWICK AIRPORT" "20:11" "BRIGHTON" "20:51" "Train" "00:40"))
+ (("READING" "18:07" "BASINGSTOKE" "18:31" "Train" "00:24")
+  ("BASINGSTOKE" "19:00" "PORTSMOUTH HARBOUR" "20:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "20:28" "BRIGHTON" "22:10" "Train" "01:42"))
+ (("READING" "18:07" "BASINGSTOKE" "18:32" "Train" "00:25")
+  ("BASINGSTOKE" "18:54" "PORTSMOUTH HARBOUR" "20:23" "Train" "01:29")
+  ("PORTSMOUTH HARBOUR" "20:28" "BRIGHTON" "22:10" "Train" "01:42"))
+ (("READING" "18:11" "BRIGHTON" "20:30" "Train" "02:19"))
+ (("READING" "18:14" "BRIGHTON" "20:37" "Train" "02:23"))
+ (("READING" "18:27" "BASINGSTOKE" "18:51" "Train" "00:24")
+  ("BASINGSTOKE" "19:48" "EASTLEIGH" "20:17" "Train" "00:29")
+  ("EASTLEIGH" "20:24" "PORTSMOUTH HARBOUR" "21:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "21:43" "BRIGHTON" "23:25" "Train" "01:42"))
+ (("READING" "18:34" "GATWICK AIRPORT" "19:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "20:11" "BRIGHTON" "20:51" "Train" "00:40"))
+ (("READING" "18:34" "GATWICK AIRPORT" "19:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "20:09" "BRIGHTON" "20:52" "Train" "00:43"))
+ (("READING" "18:39" "BASINGSTOKE" "19:03" "Train" "00:24")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "21:36" "HAVANT" "21:54" "Train" "00:18")
+  ("HAVANT" "22:00" "BRIGHTON" "23:20" "Train" "01:20"))
+ (("READING" "18:39" "BASINGSTOKE" "19:04" "Train" "00:25")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "21:35" "HAVANT" "21:56" "Train" "00:21")
+  ("HAVANT" "22:00" "BRIGHTON" "23:20" "Train" "01:20"))
+ (("READING" "18:45" "BASINGSTOKE" "19:08" "Train" "00:23")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "21:36" "HAVANT" "21:54" "Train" "00:18")
+  ("HAVANT" "22:00" "BRIGHTON" "23:20" "Train" "01:20"))
+ (("READING" "18:45" "BASINGSTOKE" "19:08" "Train" "00:23")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "21:35" "HAVANT" "21:56" "Train" "00:21")
+  ("HAVANT" "22:00" "BRIGHTON" "23:20" "Train" "01:20"))
+ (("READING" "18:50" "BASINGSTOKE" "19:08" "Train" "00:18")
+  ("BASINGSTOKE" "19:48" "EASTLEIGH" "20:17" "Train" "00:29")
+  ("EASTLEIGH" "20:24" "PORTSMOUTH HARBOUR" "21:13" "Train" "00:49")
+  ("PORTSMOUTH HARBOUR" "21:43" "BRIGHTON" "23:25" "Train" "01:42"))
+ (("READING" "18:56" "BRIGHTON" "21:09" "Train" "02:13"))
+ (("READING" "19:00" "GATWICK AIRPORT" "20:29" "Train" "01:29")
+  ("GATWICK AIRPORT" "20:50" "BRIGHTON" "21:24" "Train" "00:34"))
+ (("READING" "19:01" "BRIGHTON" "21:13" "Train" "02:12"))
+ (("READING" "19:02" "BRIGHTON" "21:13" "Train" "02:11"))
+ (("READING" "19:04" "REDHILL" "20:24" "Train" "01:20")
+  ("REDHILL" "20:31" "GATWICK AIRPORT" "20:39" "Train" "00:08")
+  ("GATWICK AIRPORT" "21:11" "BRIGHTON" "21:50" "Train" "00:39"))
+ (("READING" "19:07" "BASINGSTOKE" "19:31" "Train" "00:24")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:23" "Train" "01:23")
+  ("PORTSMOUTH HARBOUR" "21:36" "HAVANT" "21:54" "Train" "00:18")
+  ("HAVANT" "22:00" "BRIGHTON" "23:20" "Train" "01:20"))
+ (("READING" "19:07" "BASINGSTOKE" "19:31" "Train" "00:24")
+  ("BASINGSTOKE" "20:00" "PORTSMOUTH HARBOUR" "21:25" "Train" "01:25")
+  ("PORTSMOUTH HARBOUR" "21:35" "HAVANT" "21:56" "Train" "00:21")
+  ("HAVANT" "22:00" "BRIGHTON" "23:20" "Train" "01:20"))
+ (("READING" "19:11" "BRIGHTON" "21:19" "Train" "02:08"))
+ (("READING" "19:34" "GATWICK AIRPORT" "20:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "21:11" "BRIGHTON" "21:50" "Train" "00:39"))
+ (("READING" "19:34" "GATWICK AIRPORT" "20:50" "Train" "01:16")
+  ("GATWICK AIRPORT" "21:09" "BRIGHTON" "21:50" "Train" "00:41"))
+ (("READING" "19:39" "BASINGSTOKE" "20:03" "Train" "00:24")
+  ("BASINGSTOKE" "21:00" "PORTSMOUTH HARBOUR" "22:18" "Train" "01:18")
+  ("PORTSMOUTH HARBOUR" "22:35" "HAVANT" "22:55" "Train" "00:20")
+  ("HAVANT" "23:01" "BRIGHTON" "00:25" "Train" "01:24"))
+ (("READING" "19:45" "BASINGSTOKE" "20:08" "Train" "00:23")
+  ("BASINGSTOKE" "21:00" "PORTSMOUTH HARBOUR" "22:18" "Train" "01:18")
+  ("PORTSMOUTH HARBOUR" "22:35" "HAVANT" "22:55" "Train" "00:20")
+  ("HAVANT" "23:01" "BRIGHTON" "00:25" "Train" "01:24"))
+ (("READING" "20:03" "GATWICK AIRPORT" "21:29" "Train" "01:26")
+  ("GATWICK AIRPORT" "21:50" "BRIGHTON" "22:24" "Train" "00:34"))
+ (("READING" "20:04" "REDHILL" "21:23" "Train" "01:19")
+  ("REDHILL" "21:27" "GATWICK AIRPORT" "21:34" "Train" "00:07")
+  ("GATWICK AIRPORT" "21:49" "HOVE" "22:20" "Train" "00:31"))
+ (("READING" "20:07" "BASINGSTOKE" "20:31" "Train" "00:24")
+  ("BASINGSTOKE" "21:00" "PORTSMOUTH HARBOUR" "22:18" "Train" "01:18")
+  ("PORTSMOUTH HARBOUR" "22:35" "HAVANT" "22:55" "Train" "00:20")
+  ("HAVANT" "23:01" "BRIGHTON" "00:25" "Train" "01:24"))
+ (("READING" "20:34" "GATWICK AIRPORT" "21:59" "Train" "01:25")
+  ("GATWICK AIRPORT" "22:11" "BRIGHTON" "22:50" "Train" "00:39"))
+ (("READING" "20:34" "GATWICK AIRPORT" "22:04" "Train" "01:30")
+  ("GATWICK AIRPORT" "22:39" "BRIGHTON" "23:15" "Train" "00:36"))
+ (("READING" "20:39" "BASINGSTOKE" "21:03" "Train" "00:24")
+  ("BASINGSTOKE" "21:36" "EASTLEIGH" "22:01" "Train" "00:25")
+  ("EASTLEIGH" "22:27" "BRIGHTON" "00:25" "Train" "01:58"))
+ (("READING" "20:45" "BASINGSTOKE" "21:08" "Train" "00:23")
+  ("BASINGSTOKE" "21:36" "EASTLEIGH" "22:01" "Train" "00:25")
+  ("EASTLEIGH" "22:27" "BRIGHTON" "00:25" "Train" "01:58"))
+ (("READING" "21:00" "GATWICK AIRPORT" "22:29" "Train" "01:29")
+  ("GATWICK AIRPORT" "22:50" "BRIGHTON" "23:24" "Train" "00:34"))
+ (("READING" "21:07" "BASINGSTOKE" "21:31" "Train" "00:24")
+  ("BASINGSTOKE" "21:36" "EASTLEIGH" "22:01" "Train" "00:25")
+  ("EASTLEIGH" "22:27" "BRIGHTON" "00:25" "Train" "01:58"))
+ (("READING" "21:34" "GATWICK AIRPORT" "22:59" "Train" "01:25")
+  ("GATWICK AIRPORT" "23:11" "BRIGHTON" "23:48" "Train" "00:37"))
+ (("READING" "21:34" "GATWICK AIRPORT" "23:03" "Train" "01:29")
+  ("GATWICK AIRPORT" "23:39" "BRIGHTON" "00:15" "Train" "00:36"))
+ (("READING" "22:03" "GATWICK AIRPORT" "23:29" "Train" "01:26")
+  ("GATWICK AIRPORT" "23:50" "BRIGHTON" "00:24" "Train" "00:34"))
+ (("READING" "22:34" "GATWICK AIRPORT" "00:10" "Train" "01:36")
+  ("GATWICK AIRPORT" "00:43" "HOVE" "01:22" "Train" "00:39"))
+ (("READING" "23:15" "GATWICK AIRPORT" "00:43" "Train" "01:28")
+  ("GATWICK AIRPORT" "01:47" "BRIGHTON" "02:20" "Train" "00:33"))
+ (("READING" "04:34" "GATWICK AIRPORT" "05:54" "Train" "01:20")
+  ("GATWICK AIRPORT" "06:08" "BRIGHTON" "06:47" "Train" "00:39"))
+ (("READING" "04:34" "GATWICK AIRPORT" "05:53" "Train" "01:19")
+  ("GATWICK AIRPORT" "06:20" "BRIGHTON" "06:53" "Train" "00:33")))
+
+  seconds  |     consed    |   calls   |  sec/call  |  name  
+---------------------------------------------------------------
+     5.020 |   775,272,504 |    12,510 |   0.000401 | JOURNEY-COST
+     4.202 |   106,863,432 | 1,597,942 |   0.000003 | STOPS->INFO
+     3.710 |   630,052,144 | 3,271,365 |   0.000001 | SIMPLE-DECODE-TRAIN-STOP
+     1.898 |   116,767,576 |   524,993 |   0.000004 | TIMEDIFFERENCE-ND
+     1.868 |   174,865,536 |       105 |   0.017789 | FIND-SIMPLE-DIRECT-TRAINS
+     0.208 |    16,328,960 |    19,215 |   0.000011 | AVERAGE-TIME-STOPS
+     0.157 |             0 |   518,165 |  0.0000003 | DATE-MATCHES-P
+     0.105 |       889,840 |    47,430 |   0.000002 | YYMMDD->SIMPLE-DATE
+     0.058 |     9,867,344 |         1 |   0.057634 | SORT-RESULT-SUMMARIZE-A*
+     0.042 |    12,722,872 |    23,715 |   0.000002 | DECODE-TRAIN
+     0.030 |     1,473,472 |     2,225 |   0.000014 | READJUST-TRAIN-A*
+     0.029 |     2,427,272 |    47,430 |   0.000001 | DATE2TIME
+     0.023 |        28,784 |       336 |   0.000069 | JOURNEY-SUMMARY-A*
+     0.012 |     4,815,208 |     1,065 |   0.000011 | CURRENT-SHORT-TIME
+     0.007 |             0 |     1,855 |   0.000004 | STOP=
+     0.000 |   140,481,856 |     3,716 |   0.000000 | FIND-DIRECT-TRAINS-ALL-STOPS
+     0.000 |       258,712 |        31 |   0.000000 | FIND-TRAINS-FROM-TO
+     0.000 |             0 |         1 |   0.000000 | POSSIBLE-JOURNEYS-A*
+     0.000 |   144,311,120 |     2,880 |   0.000000 | A*-SEARCH
+     0.000 |       899,608 |    32,329 |   0.000000 | AVERAGE-TIME-PATH
+     0.000 |    16,100,888 |     3,716 |   0.000000 | DIRECT-TRAINS
+     0.000 |    17,309,136 |         3 |   0.000000 | DIRECT-TRAINS->PATH
+     0.000 |        74,056 |         1 |   0.000000 | POSSIBLE-JOURNEYS-ROUTES-A*
+     0.000 |             0 |     2,112 |   0.000000 | VALIDATE-READJUSTED-TRAIN-P
+---------------------------------------------------------------
+    17.368 | 2,171,810,320 | 6,113,141 |            | Total
+
+estimated total profiling overhead: 5.53 seconds
+overhead estimation parameters:
+  1.6000001e-8s/call, 9.04e-7s total profiling, 4.08e-7s internal profiling
+
+These functions were not called:
+ BEST-JOURNEY FAR-ALONG-ON-ROUTE FILTER-LEGS JOURNEY-LEG->TRAINS
+ JOURNEY-SUMMARY JOURNEY< POSSIBLE-JOURNEYS POSSIBLE-JOURNEYS-ROUTES
+ READJUST-TRAIN SORT-RESULT-SUMMARIZE TRAIN-WITH-CHANGES
+; No value
+
+<<<<<<< /home/vb/sondesh/src/performance.orig.
+||||||| /tmp/performance~base.-8Xd5y
+(time (possible-journeys-a* "aberdeen" "wrexham" :time (string->dttm "2007-06-04 Mon 05:00:00 +0100 (BST)")
+				   :time-fn (make-time-test-fn2) :summary-sorted-p t))
+Evaluation took:
+  135.094 seconds of real time
+  33.158073 seconds of user run time
+  40.522533 seconds of system run time
+  [Run times include 20.931 seconds GC run time.]
+  0 calls to %EVAL
+  0 page faults and
+  1,891,608,320 bytes consed.
+((("ABERDEEN" "05:27" "DUNDEE" "06:46" "Train" "01:19")
+  ("DUNDEE" "07:11" "HAYMARKET" "08:21" "Train" "01:10")
+  ("HAYMARKET" "08:57" "CREWE" "12:07" "Train" "03:10")
+  ("CREWE" "12:33" "CHESTER" "12:59" "Train" "00:26")
+  ("CHESTER" "13:28" "WREXHAM GENERAL" "13:44" "Train" "00:16"))
+ (("ABERDEEN" "05:27" "DUNDEE" "06:46" "Train" "01:19")
+  ("DUNDEE" "07:11" "HAYMARKET" "08:21" "Train" "01:10")
+  ("HAYMARKET" "08:56" "CREWE" "12:06" "Train" "03:10")
+  ("CREWE" "12:33" "CHESTER" "12:59" "Train" "00:26")
+  ("CHESTER" "13:28" "WREXHAM GENERAL" "13:44" "Train" "00:16"))
+ (("ABERDEEN" "05:27" "DUNDEE" "06:46" "Train" "01:19")
+  ("DUNDEE" "09:32" "CREWE" "14:12" "Train" "04:40")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "06:00" "EDINBURGH" "08:25" "Train" "02:25")
+  ("EDINBURGH" "08:52" "CREWE" "12:06" "Train" "03:14")
+  ("CREWE" "12:33" "CHESTER" "12:59" "Train" "00:26")
+  ("CHESTER" "13:28" "WREXHAM GENERAL" "13:44" "Train" "00:16"))
+ (("ABERDEEN" "06:00" "EDINBURGH" "08:25" "Train" "02:25")
+  ("EDINBURGH" "08:51" "CREWE" "12:07" "Train" "03:16")
+  ("CREWE" "12:33" "CHESTER" "12:59" "Train" "00:26")
+  ("CHESTER" "13:28" "WREXHAM GENERAL" "13:44" "Train" "00:16"))
+ (("ABERDEEN" "06:00" "DUNDEE" "07:10" "Train" "01:10")
+  ("DUNDEE" "09:32" "CREWE" "14:12" "Train" "04:40")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "06:35" "DUNDEE" "07:50" "Train" "01:15")
+  ("DUNDEE" "08:00" "HAYMARKET" "09:16" "Train" "01:16")
+  ("HAYMARKET" "10:16" "CREWE" "13:31" "Train" "03:15")
+  ("CREWE" "14:03" "CHESTER" "14:27" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "06:35" "DUNDEE" "07:50" "Train" "01:15")
+  ("DUNDEE" "09:32" "CREWE" "14:12" "Train" "04:40")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "06:35" "DUNDEE" "07:50" "Train" "01:15")
+  ("DUNDEE" "08:00" "HAYMARKET" "09:16" "Train" "01:16")
+  ("HAYMARKET" "09:55" "PRESTON" "12:18" "Train" "02:23")
+  ("PRESTON" "14:32" "CREWE" "15:12" "Train" "00:40")
+  ("CREWE" "15:33" "CHESTER" "15:57" "Train" "00:24")
+  ("CHESTER" "16:20" "WREXHAM GENERAL" "16:36" "Train" "00:16"))
+ (("ABERDEEN" "07:04" "DUNDEE" "08:15" "Train" "01:11")
+  ("DUNDEE" "09:32" "CREWE" "14:12" "Train" "04:40")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "07:04" "DUNDEE" "08:15" "Train" "01:11")
+  ("DUNDEE" "08:32" "HAYMARKET" "09:49" "Train" "01:17")
+  ("HAYMARKET" "09:55" "PRESTON" "12:18" "Train" "02:23")
+  ("PRESTON" "14:32" "CREWE" "15:12" "Train" "00:40")
+  ("CREWE" "15:33" "CHESTER" "15:57" "Train" "00:24")
+  ("CHESTER" "16:20" "WREXHAM GENERAL" "16:36" "Train" "00:16"))
+ (("ABERDEEN" "07:07" "DUNDEE" "08:19" "Train" "01:12")
+  ("DUNDEE" "08:32" "HAYMARKET" "09:49" "Train" "01:17")
+  ("HAYMARKET" "10:16" "CREWE" "13:31" "Train" "03:15")
+  ("CREWE" "14:03" "CHESTER" "14:27" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "07:07" "DUNDEE" "08:19" "Train" "01:12")
+  ("DUNDEE" "09:32" "CREWE" "14:12" "Train" "04:40")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "07:22" "EDINBURGH" "09:59" "Train" "02:37")
+  ("EDINBURGH" "10:10" "CREWE" "13:29" "Train" "03:19")
+  ("CREWE" "14:03" "CHESTER" "14:27" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "07:22" "EDINBURGH" "09:55" "Train" "02:33")
+  ("EDINBURGH" "10:10" "CREWE" "13:31" "Train" "03:21")
+  ("CREWE" "14:03" "CHESTER" "14:27" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "07:22" "DUNDEE" "08:31" "Train" "01:09")
+  ("DUNDEE" "09:32" "CREWE" "14:12" "Train" "04:40")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "07:55" "EDINBURGH" "10:25" "Train" "02:30")
+  ("EDINBURGH" "10:52" "CREWE" "14:12" "Train" "03:20")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "07:55" "DUNDEE" "09:06" "Train" "01:11")
+  ("DUNDEE" "09:32" "CREWE" "14:12" "Train" "04:40")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "08:20" "CREWE" "14:12" "Train" "05:52")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "08:50" "EDINBURGH" "11:23" "Train" "02:33")
+  ("EDINBURGH" "11:52" "PRESTON" "14:19" "Train" "02:27")
+  ("PRESTON" "15:29" "CREWE" "16:08" "Train" "00:39")
+  ("CREWE" "16:33" "CHESTER" "16:58" "Train" "00:25")
+  ("CHESTER" "17:28" "WREXHAM GENERAL" "17:44" "Train" "00:16"))
+ (("ABERDEEN" "08:50" "EDINBURGH" "11:23" "Train" "02:33")
+  ("EDINBURGH" "12:52" "CREWE" "16:07" "Train" "03:15")
+  ("CREWE" "16:33" "CHESTER" "16:57" "Train" "00:24")
+  ("CHESTER" "17:28" "WREXHAM GENERAL" "17:44" "Train" "00:16"))
+ (("ABERDEEN" "08:50" "EDINBURGH" "11:23" "Train" "02:33")
+  ("EDINBURGH" "12:49" "CREWE" "16:08" "Train" "03:19")
+  ("CREWE" "16:33" "CHESTER" "16:58" "Train" "00:25")
+  ("CHESTER" "17:28" "WREXHAM GENERAL" "17:44" "Train" "00:16"))
+ (("ABERDEEN" "09:30" "DUNDEE" "10:43" "Train" "01:13")
+  ("DUNDEE" "12:43" "PERTH" "13:03" "Train" "00:20")
+  ("PERTH" "23:02" "CREWE" "05:29" "Train" "06:27")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "09:30" "DUNDEE" "10:43" "Train" "01:13")
+  ("DUNDEE" "13:10" "CREWE" "18:09" "Train" "04:59")
+  ("CREWE" "18:58" "CHESTER" "19:18" "Train" "00:20")
+  ("CHESTER" "19:28" "WREXHAM GENERAL" "19:44" "Train" "00:16"))
+ (("ABERDEEN" "09:30" "DUNDEE" "10:43" "Train" "01:13")
+  ("DUNDEE" "11:25" "EDINBURGH" "13:03" "Train" "01:38")
+  ("EDINBURGH" "14:52" "CREWE" "18:09" "Train" "03:17")
+  ("CREWE" "18:58" "CHESTER" "19:18" "Train" "00:20")
+  ("CHESTER" "19:28" "WREXHAM GENERAL" "19:44" "Train" "00:16"))
+ (("ABERDEEN" "09:55" "EDINBURGH" "12:23" "Train" "02:28")
+  ("EDINBURGH" "12:52" "CREWE" "16:07" "Train" "03:15")
+  ("CREWE" "16:33" "CHESTER" "16:57" "Train" "00:24")
+  ("CHESTER" "17:28" "WREXHAM GENERAL" "17:44" "Train" "00:16"))
+ (("ABERDEEN" "09:55" "EDINBURGH" "12:23" "Train" "02:28")
+  ("EDINBURGH" "12:49" "CREWE" "16:08" "Train" "03:19")
+  ("CREWE" "16:33" "CHESTER" "16:58" "Train" "00:25")
+  ("CHESTER" "17:28" "WREXHAM GENERAL" "17:44" "Train" "00:16"))
+ (("ABERDEEN" "11:30" "DUNDEE" "12:41" "Train" "01:11")
+  ("DUNDEE" "14:43" "PERTH" "15:03" "Train" "00:20")
+  ("PERTH" "23:02" "CREWE" "05:29" "Train" "06:27")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "11:30" "DUNDEE" "12:41" "Train" "01:11")
+  ("DUNDEE" "13:10" "CREWE" "18:09" "Train" "04:59")
+  ("CREWE" "18:58" "CHESTER" "19:18" "Train" "00:20")
+  ("CHESTER" "19:28" "WREXHAM GENERAL" "19:44" "Train" "00:16"))
+ (("ABERDEEN" "11:30" "DUNDEE" "12:41" "Train" "01:11")
+  ("DUNDEE" "16:25" "EDINBURGH" "17:40" "Train" "01:15")
+  ("EDINBURGH" "18:52" "CREWE" "22:12" "Train" "03:20")
+  ("CREWE" "22:55" "CHESTER" "23:19" "Train" "00:24")
+  ("CHESTER" "08:08" "WREXHAM GENERAL" "08:26" "Train" "00:18"))
+ (("ABERDEEN" "11:42" "DUNDEE" "12:52" "Train" "01:10")
+  ("DUNDEE" "18:33" "EDINBURGH" "19:59" "Train" "01:26")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "11:42" "DUNDEE" "12:52" "Train" "01:10")
+  ("DUNDEE" "15:32" "HAYMARKET" "16:46" "Train" "01:14")
+  ("HAYMARKET" "16:57" "CREWE" "20:12" "Train" "03:15")
+  ("CREWE" "20:33" "CHESTER" "20:57" "Train" "00:24")
+  ("CHESTER" "21:28" "WREXHAM GENERAL" "21:44" "Train" "00:16"))
+ (("ABERDEEN" "11:42" "DUNDEE" "12:52" "Train" "01:10")
+  ("DUNDEE" "15:32" "EDINBURGH" "16:53" "Train" "01:21")
+  ("EDINBURGH" "17:52" "CREWE" "21:58" "Train" "04:06")
+  ("CREWE" "22:33" "CHESTER" "22:57" "Train" "00:24")
+  ("CHESTER" "05:16" "WREXHAM GENERAL" "05:37" "Train" "00:21"))
+ (("ABERDEEN" "11:55" "CREWE" "18:09" "Train" "06:14")
+  ("CREWE" "18:58" "CHESTER" "19:18" "Train" "00:20")
+  ("CHESTER" "19:28" "WREXHAM GENERAL" "19:44" "Train" "00:16"))
+ (("ABERDEEN" "12:42" "DUNDEE" "13:51" "Train" "01:09")
+  ("DUNDEE" "15:32" "HAYMARKET" "16:46" "Train" "01:14")
+  ("HAYMARKET" "16:57" "CREWE" "20:12" "Train" "03:15")
+  ("CREWE" "20:33" "CHESTER" "20:57" "Train" "00:24")
+  ("CHESTER" "21:28" "WREXHAM GENERAL" "21:44" "Train" "00:16"))
+ (("ABERDEEN" "12:42" "DUNDEE" "13:51" "Train" "01:09")
+  ("DUNDEE" "15:32" "EDINBURGH" "16:53" "Train" "01:21")
+  ("EDINBURGH" "17:52" "CREWE" "21:58" "Train" "04:06")
+  ("CREWE" "22:33" "CHESTER" "22:57" "Train" "00:24")
+  ("CHESTER" "05:16" "WREXHAM GENERAL" "05:37" "Train" "00:21"))
+ (("ABERDEEN" "12:42" "DUNDEE" "13:51" "Train" "01:09")
+  ("DUNDEE" "18:33" "EDINBURGH" "19:59" "Train" "01:26")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "13:30" "DUNDEE" "14:41" "Train" "01:11")
+  ("DUNDEE" "16:25" "HAYMARKET" "17:34" "Train" "01:09")
+  ("HAYMARKET" "18:57" "CREWE" "22:12" "Train" "03:15")
+  ("CREWE" "22:55" "CHESTER" "23:19" "Train" "00:24")
+  ("CHESTER" "08:08" "WREXHAM GENERAL" "08:26" "Train" "00:18"))
+ (("ABERDEEN" "13:30" "DUNDEE" "14:41" "Train" "01:11")
+  ("DUNDEE" "16:25" "EDINBURGH" "17:40" "Train" "01:15")
+  ("EDINBURGH" "18:52" "CREWE" "22:12" "Train" "03:20")
+  ("CREWE" "22:55" "CHESTER" "23:19" "Train" "00:24")
+  ("CHESTER" "08:08" "WREXHAM GENERAL" "08:26" "Train" "00:18"))
+ (("ABERDEEN" "13:30" "DUNDEE" "14:41" "Train" "01:11")
+  ("DUNDEE" "16:43" "PERTH" "17:03" "Train" "00:20")
+  ("PERTH" "23:02" "CREWE" "05:29" "Train" "06:27")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "14:25" "EDINBURGH" "16:53" "Train" "02:28")
+  ("EDINBURGH" "17:52" "CARLISLE" "19:14" "Train" "01:22")
+  ("CARLISLE" "19:36" "CREWE" "21:36" "Train" "02:00")
+  ("CREWE" "22:03" "CHESTER" "22:27" "Train" "00:24")
+  ("CHESTER" "22:31" "WREXHAM GENERAL" "22:47" "Train" "00:16"))
+ (("ABERDEEN" "14:25" "EDINBURGH" "16:53" "Train" "02:28")
+  ("EDINBURGH" "17:52" "CREWE" "21:58" "Train" "04:06")
+  ("CREWE" "22:33" "CHESTER" "22:57" "Train" "00:24")
+  ("CHESTER" "05:16" "WREXHAM GENERAL" "05:37" "Train" "00:21"))
+ (("ABERDEEN" "14:25" "DUNDEE" "15:31" "Train" "01:06")
+  ("DUNDEE" "18:33" "EDINBURGH" "19:59" "Train" "01:26")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "14:51" "EDINBURGH" "17:22" "Train" "02:31")
+  ("EDINBURGH" "17:52" "CARLISLE" "19:14" "Train" "01:22")
+  ("CARLISLE" "19:36" "CREWE" "21:36" "Train" "02:00")
+  ("CREWE" "22:03" "CHESTER" "22:27" "Train" "00:24")
+  ("CHESTER" "22:31" "WREXHAM GENERAL" "22:47" "Train" "00:16"))
+ (("ABERDEEN" "14:51" "EDINBURGH" "17:22" "Train" "02:31")
+  ("EDINBURGH" "17:52" "CREWE" "21:58" "Train" "04:06")
+  ("CREWE" "22:33" "CHESTER" "22:57" "Train" "00:24")
+  ("CHESTER" "05:16" "WREXHAM GENERAL" "05:37" "Train" "00:21"))
+ (("ABERDEEN" "14:51" "DUNDEE" "16:02" "Train" "01:11")
+  ("DUNDEE" "18:33" "EDINBURGH" "19:59" "Train" "01:26")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "15:10" "EDINBURGH" "17:40" "Train" "02:30")
+  ("EDINBURGH" "18:52" "CREWE" "22:12" "Train" "03:20")
+  ("CREWE" "22:55" "CHESTER" "23:19" "Train" "00:24")
+  ("CHESTER" "08:08" "WREXHAM GENERAL" "08:26" "Train" "00:18"))
+ (("ABERDEEN" "15:10" "DUNDEE" "16:23" "Train" "01:13")
+  ("DUNDEE" "16:43" "PERTH" "17:03" "Train" "00:20")
+  ("PERTH" "23:02" "CREWE" "05:29" "Train" "06:27")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "15:20" "EDINBURGH" "17:53" "Train" "02:33")
+  ("EDINBURGH" "18:52" "CREWE" "22:14" "Train" "03:22")
+  ("CREWE" "22:33" "CHESTER" "22:57" "Train" "00:24")
+  ("CHESTER" "05:16" "WREXHAM GENERAL" "05:37" "Train" "00:21"))
+ (("ABERDEEN" "15:20" "EDINBURGH" "17:53" "Train" "02:33")
+  ("EDINBURGH" "18:52" "CARLISLE" "20:14" "Train" "01:22")
+  ("CARLISLE" "06:30" "CREWE" "08:26" "Train" "01:56")
+  ("CREWE" "09:03" "CHESTER" "09:26" "Train" "00:23")
+  ("CHESTER" "10:20" "WREXHAM GENERAL" "10:36" "Train" "00:16"))
+ (("ABERDEEN" "15:20" "DUNDEE" "16:27" "Train" "01:07")
+  ("DUNDEE" "18:33" "EDINBURGH" "19:59" "Train" "01:26")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "15:30" "DUNDEE" "16:41" "Train" "01:11")
+  ("DUNDEE" "23:04" "EDINBURGH" "00:33" "Train" "01:29")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "15:30" "DUNDEE" "16:41" "Train" "01:11")
+  ("DUNDEE" "19:02" "PERTH" "19:22" "Train" "00:20")
+  ("PERTH" "23:02" "CREWE" "05:29" "Train" "06:27")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "15:30" "DUNDEE" "16:41" "Train" "01:11")
+  ("DUNDEE" "18:19" "EDINBURGH" "19:34" "Train" "01:15")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "16:22" "EDINBURGH" "18:56" "Train" "02:34")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "16:22" "EDINBURGH" "18:56" "Train" "02:34")
+  ("EDINBURGH" "06:34" "CREWE" "10:12" "Train" "03:38")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "17:10" "DUNDEE" "18:17" "Train" "01:07")
+  ("DUNDEE" "19:02" "PERTH" "19:22" "Train" "00:20")
+  ("PERTH" "23:02" "CREWE" "05:29" "Train" "06:27")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "17:10" "EDINBURGH" "19:34" "Train" "02:24")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "17:22" "EDINBURGH" "19:59" "Train" "02:37")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "17:22" "EDINBURGH" "19:59" "Train" "02:37")
+  ("EDINBURGH" "06:34" "CREWE" "10:12" "Train" "03:38")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "17:50" "DUNDEE" "19:00" "Train" "01:10")
+  ("DUNDEE" "23:04" "EDINBURGH" "00:33" "Train" "01:29")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "17:50" "DUNDEE" "19:00" "Train" "01:10")
+  ("DUNDEE" "20:46" "PERTH" "21:07" "Train" "00:21")
+  ("PERTH" "23:02" "CREWE" "05:29" "Train" "06:27")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "17:50" "DUNDEE" "19:00" "Train" "01:10")
+  ("DUNDEE" "20:20" "EDINBURGH" "21:37" "Train" "01:17")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "17:55" "DUNDEE" "19:10" "Train" "01:15")
+  ("DUNDEE" "19:35" "HAYMARKET" "20:45" "Train" "01:10")
+  ("HAYMARKET" "06:56" "CREWE" "10:12" "Train" "03:16")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "17:55" "DUNDEE" "19:10" "Train" "01:15")
+  ("DUNDEE" "19:34" "HAYMARKET" "20:44" "Train" "01:10")
+  ("HAYMARKET" "06:38" "CREWE" "10:12" "Train" "03:34")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "17:55" "DUNDEE" "19:10" "Train" "01:15")
+  ("DUNDEE" "19:35" "EDINBURGH" "20:50" "Train" "01:15")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "17:55" "DUNDEE" "19:10" "Train" "01:15")
+  ("DUNDEE" "19:34" "EDINBURGH" "20:50" "Train" "01:16")
+  ("EDINBURGH" "06:34" "CREWE" "10:12" "Train" "03:38")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "18:23" "EDINBURGH" "20:50" "Train" "02:27")
+  ("EDINBURGH" "06:34" "CREWE" "10:12" "Train" "03:38")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "18:25" "EDINBURGH" "20:50" "Train" "02:25")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "19:10" "DUNDEE" "20:18" "Train" "01:08")
+  ("DUNDEE" "20:46" "PERTH" "21:07" "Train" "00:21")
+  ("PERTH" "23:02" "CREWE" "05:29" "Train" "06:27")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "19:10" "EDINBURGH" "21:37" "Train" "02:27")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "19:20" "EDINBURGH" "21:51" "Train" "02:31")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "19:25" "EDINBURGH" "21:56" "Train" "02:31")
+  ("EDINBURGH" "06:34" "CREWE" "10:12" "Train" "03:38")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "19:35" "DUNDEE" "20:45" "Train" "01:10")
+  ("DUNDEE" "23:04" "EDINBURGH" "00:33" "Train" "01:29")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "20:10" "EDINBURGH" "22:43" "Train" "02:33")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "20:22" "EDINBURGH" "23:07" "Train" "02:45")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "20:26" "EDINBURGH" "23:25" "Train" "02:59")
+  ("EDINBURGH" "06:34" "CREWE" "10:12" "Train" "03:38")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "20:30" "EDINBURGH" "23:27" "Train" "02:57")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "20:51" "EDINBURGH" "23:25" "Train" "02:34")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "21:40" "EDINBURGH" "00:33" "Train" "02:53")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "22:30" "DUNDEE" "23:46" "Train" "01:16")
+  ("DUNDEE" "07:25" "EDINBURGH" "08:59" "Train" "01:34")
+  ("EDINBURGH" "10:52" "CREWE" "14:09" "Train" "03:17")
+  ("CREWE" "14:55" "CHESTER" "15:13" "Train" "00:18")
+  ("CHESTER" "15:20" "WREXHAM GENERAL" "15:36" "Train" "00:16")))
+
+  seconds  |     consed    |    calls   |  sec/call  |  name  
+----------------------------------------------------------------
+    18.411 |   445,002,384 |     21,652 |   0.000850 | FIND-DIRECT-TRAINS-ALL-STOPS
+     6.061 |    61,809,432 |  2,391,413 |   0.000003 | STOPS->INFO
+     3.342 |   219,471,240 |    789,985 |   0.000004 | REMOVE-IF-NOT
+     2.744 |   144,435,184 |    797,971 |   0.000003 | TIMEDIFFERENCE
+     2.639 |    97,993,472 |     22,019 |   0.000120 | CURRENT-SHORT-TIME
+     2.384 |   131,721,448 |    229,353 |   0.000010 | READJUST-TRAIN-A*
+     2.258 |             0 |  2,074,474 |   0.000001 | STN-IN-P
+     1.514 |   141,661,344 |        359 |   0.004218 | FIND-SIMPLE-DIRECT-TRAINS
+     1.077 |    45,679,912 |    713,420 |   0.000002 | SPLIT-TIME
+     1.030 |    46,157,192 |    358,651 |   0.000003 | AVERAGE-TIME-STOPS
+     0.769 |    70,284,320 |  4,281,879 |  0.0000002 | TRAIN-TIME-TEST-P
+     0.744 |    19,026,936 |     88,607 |   0.000008 | JOURNEY-COST
+     0.470 |    79,447,136 |  2,435,928 |  0.0000002 | SIMPLE-DECODE-TRAIN-STOP2
+     0.413 |             0 |    673,885 |   0.000001 | DATE-MATCHES-P
+     0.245 |    26,256,536 |    356,710 |   0.000001 | ADD-TIMES
+     0.209 |    31,002,304 |     85,335 |   0.000002 | DECODE-TRAIN
+     0.179 |    12,810,824 |    178,694 |   0.000001 | SHORT-TIME->MINS
+     0.171 |             0 |    149,795 |   0.000001 | VALIDATE-READJUSTED-TRAIN-P
+     0.152 |       991,032 |     21,652 |   0.000007 | FIND-TRAINS-TIPLOCS
+     0.138 |     1,956,160 |     25,364 |   0.000005 | TIPLOC->STATION-NAME
+     0.123 |    15,416,656 |    483,764 |  0.0000003 | HRMIN->SHORT-TIME
+     0.022 |     2,945,272 |     12,682 |   0.000002 | MSTOPS->INFO
+     0.003 |         8,192 |        120 |   0.000022 | JOURNEY-SUMMARY-A*
+     0.000 |       478,496 |     21,652 |   0.000000 | FIND-TRAINS-FROM-TO
+     0.000 |             0 |          1 |   0.000000 | POSSIBLE-JOURNEYS-A*
+     0.000 |    33,312,352 |     22,591 |   0.000000 | A*-SEARCH
+     0.000 |    20,027,120 |    447,998 |   0.000000 | AVERAGE-TIME-PATH
+     0.000 |   201,404,568 |     21,652 |   0.000000 | DIRECT-TRAINS
+     0.000 |             0 |     21,642 |   0.000000 | STOP=
+     0.000 |       163,824 |         10 |   0.000000 | DIRECT-TRAINS->PATH
+     0.000 |     1,241,320 |          1 |   0.000000 | SORT-RESULT-SUMMARIZE-A*
+     0.000 |        80,848 |          1 |   0.000000 | POSSIBLE-JOURNEYS-ROUTES-A*
+     0.000 |    20,190,040 |    776,329 |   0.000000 | TIMEDIFFERENCE-ND
+     0.000 |    10,253,208 |    178,804 |   0.000000 | JOURNEY-DURATION
+     0.000 |       548,864 |     25,364 |   0.000000 | NUM->TIME
+     0.000 |       696,320 |     12,682 |   0.000000 | TRAIN-DURATION
+     0.000 |             0 |    754,183 |   0.000000 | TIME-TEST-P
+     0.000 |             0 |  1,501,272 |   0.000000 | DBG
+     0.000 |             0 |    797,971 |   0.000000 | MTIMEDIFFERENCE
+     0.000 |     4,460,848 |    179,095 |   0.000000 | MAP-SUBSEQUENT-TWO
+     0.000 |     4,661,248 |    179,095 |   0.000000 | JOURNEY-TIME
+----------------------------------------------------------------
+    45.098 | 1,891,596,032 | 21,134,055 |            | Total
+
+estimated total profiling overhead: 18.77 seconds
+overhead estimation parameters:
+  1.6000001e-8s/call, 8.88e-7s total profiling, 4.08e-7s internal profiling
+
+These functions were not called:
+ BEST-JOURNEY DATE2TIME FAR-ALONG-ON-ROUTE FILTER-LEGS JOURNEY-LEG->TRAINS
+ JOURNEY-SUMMARY JOURNEY< POSSIBLE-JOURNEYS POSSIBLE-JOURNEYS-ROUTES
+ READJUST-TRAIN SIMPLE-DECODE-TRAIN-STOP SIMPLE-ENCODE-TRAIN-STOP2
+ SORT-RESULT-SUMMARIZE TRAIN-WITH-CHANGES YYMMDD->SIMPLE-DATE
+; No value
+=======
+(time (possible-journeys-a* "aberdeen" "wrexham" :time (string->dttm "2007-06-04 Mon 05:00:00 +0100 (BST)")
+				   :time-fn (make-time-test-fn2) :summary-sorted-p t))
+Evaluation took:
+  135.094 seconds of real time
+  33.158073 seconds of user run time
+  40.522533 seconds of system run time
+  [Run times include 20.931 seconds GC run time.]
+  0 calls to %EVAL
+  0 page faults and
+  1,891,608,320 bytes consed.
+((("ABERDEEN" "05:27" "DUNDEE" "06:46" "Train" "01:19")
+  ("DUNDEE" "07:11" "HAYMARKET" "08:21" "Train" "01:10")
+  ("HAYMARKET" "08:57" "CREWE" "12:07" "Train" "03:10")
+  ("CREWE" "12:33" "CHESTER" "12:59" "Train" "00:26")
+  ("CHESTER" "13:28" "WREXHAM GENERAL" "13:44" "Train" "00:16"))
+ (("ABERDEEN" "05:27" "DUNDEE" "06:46" "Train" "01:19")
+  ("DUNDEE" "07:11" "HAYMARKET" "08:21" "Train" "01:10")
+  ("HAYMARKET" "08:56" "CREWE" "12:06" "Train" "03:10")
+  ("CREWE" "12:33" "CHESTER" "12:59" "Train" "00:26")
+  ("CHESTER" "13:28" "WREXHAM GENERAL" "13:44" "Train" "00:16"))
+ (("ABERDEEN" "05:27" "DUNDEE" "06:46" "Train" "01:19")
+  ("DUNDEE" "09:32" "CREWE" "14:12" "Train" "04:40")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "06:00" "EDINBURGH" "08:25" "Train" "02:25")
+  ("EDINBURGH" "08:52" "CREWE" "12:06" "Train" "03:14")
+  ("CREWE" "12:33" "CHESTER" "12:59" "Train" "00:26")
+  ("CHESTER" "13:28" "WREXHAM GENERAL" "13:44" "Train" "00:16"))
+ (("ABERDEEN" "06:00" "EDINBURGH" "08:25" "Train" "02:25")
+  ("EDINBURGH" "08:51" "CREWE" "12:07" "Train" "03:16")
+  ("CREWE" "12:33" "CHESTER" "12:59" "Train" "00:26")
+  ("CHESTER" "13:28" "WREXHAM GENERAL" "13:44" "Train" "00:16"))
+ (("ABERDEEN" "06:00" "DUNDEE" "07:10" "Train" "01:10")
+  ("DUNDEE" "09:32" "CREWE" "14:12" "Train" "04:40")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "06:35" "DUNDEE" "07:50" "Train" "01:15")
+  ("DUNDEE" "08:00" "HAYMARKET" "09:16" "Train" "01:16")
+  ("HAYMARKET" "10:16" "CREWE" "13:31" "Train" "03:15")
+  ("CREWE" "14:03" "CHESTER" "14:27" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "06:35" "DUNDEE" "07:50" "Train" "01:15")
+  ("DUNDEE" "09:32" "CREWE" "14:12" "Train" "04:40")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "06:35" "DUNDEE" "07:50" "Train" "01:15")
+  ("DUNDEE" "08:00" "HAYMARKET" "09:16" "Train" "01:16")
+  ("HAYMARKET" "09:55" "PRESTON" "12:18" "Train" "02:23")
+  ("PRESTON" "14:32" "CREWE" "15:12" "Train" "00:40")
+  ("CREWE" "15:33" "CHESTER" "15:57" "Train" "00:24")
+  ("CHESTER" "16:20" "WREXHAM GENERAL" "16:36" "Train" "00:16"))
+ (("ABERDEEN" "07:04" "DUNDEE" "08:15" "Train" "01:11")
+  ("DUNDEE" "09:32" "CREWE" "14:12" "Train" "04:40")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "07:04" "DUNDEE" "08:15" "Train" "01:11")
+  ("DUNDEE" "08:32" "HAYMARKET" "09:49" "Train" "01:17")
+  ("HAYMARKET" "09:55" "PRESTON" "12:18" "Train" "02:23")
+  ("PRESTON" "14:32" "CREWE" "15:12" "Train" "00:40")
+  ("CREWE" "15:33" "CHESTER" "15:57" "Train" "00:24")
+  ("CHESTER" "16:20" "WREXHAM GENERAL" "16:36" "Train" "00:16"))
+ (("ABERDEEN" "07:07" "DUNDEE" "08:19" "Train" "01:12")
+  ("DUNDEE" "08:32" "HAYMARKET" "09:49" "Train" "01:17")
+  ("HAYMARKET" "10:16" "CREWE" "13:31" "Train" "03:15")
+  ("CREWE" "14:03" "CHESTER" "14:27" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "07:07" "DUNDEE" "08:19" "Train" "01:12")
+  ("DUNDEE" "09:32" "CREWE" "14:12" "Train" "04:40")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "07:22" "EDINBURGH" "09:59" "Train" "02:37")
+  ("EDINBURGH" "10:10" "CREWE" "13:29" "Train" "03:19")
+  ("CREWE" "14:03" "CHESTER" "14:27" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "07:22" "EDINBURGH" "09:55" "Train" "02:33")
+  ("EDINBURGH" "10:10" "CREWE" "13:31" "Train" "03:21")
+  ("CREWE" "14:03" "CHESTER" "14:27" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "07:22" "DUNDEE" "08:31" "Train" "01:09")
+  ("DUNDEE" "09:32" "CREWE" "14:12" "Train" "04:40")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "07:55" "EDINBURGH" "10:25" "Train" "02:30")
+  ("EDINBURGH" "10:52" "CREWE" "14:12" "Train" "03:20")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "07:55" "DUNDEE" "09:06" "Train" "01:11")
+  ("DUNDEE" "09:32" "CREWE" "14:12" "Train" "04:40")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "08:20" "CREWE" "14:12" "Train" "05:52")
+  ("CREWE" "14:33" "CHESTER" "14:57" "Train" "00:24")
+  ("CHESTER" "15:28" "WREXHAM GENERAL" "15:44" "Train" "00:16"))
+ (("ABERDEEN" "08:50" "EDINBURGH" "11:23" "Train" "02:33")
+  ("EDINBURGH" "11:52" "PRESTON" "14:19" "Train" "02:27")
+  ("PRESTON" "15:29" "CREWE" "16:08" "Train" "00:39")
+  ("CREWE" "16:33" "CHESTER" "16:58" "Train" "00:25")
+  ("CHESTER" "17:28" "WREXHAM GENERAL" "17:44" "Train" "00:16"))
+ (("ABERDEEN" "08:50" "EDINBURGH" "11:23" "Train" "02:33")
+  ("EDINBURGH" "12:52" "CREWE" "16:07" "Train" "03:15")
+  ("CREWE" "16:33" "CHESTER" "16:57" "Train" "00:24")
+  ("CHESTER" "17:28" "WREXHAM GENERAL" "17:44" "Train" "00:16"))
+ (("ABERDEEN" "08:50" "EDINBURGH" "11:23" "Train" "02:33")
+  ("EDINBURGH" "12:49" "CREWE" "16:08" "Train" "03:19")
+  ("CREWE" "16:33" "CHESTER" "16:58" "Train" "00:25")
+  ("CHESTER" "17:28" "WREXHAM GENERAL" "17:44" "Train" "00:16"))
+ (("ABERDEEN" "09:30" "DUNDEE" "10:43" "Train" "01:13")
+  ("DUNDEE" "12:43" "PERTH" "13:03" "Train" "00:20")
+  ("PERTH" "23:02" "CREWE" "05:29" "Train" "06:27")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "09:30" "DUNDEE" "10:43" "Train" "01:13")
+  ("DUNDEE" "13:10" "CREWE" "18:09" "Train" "04:59")
+  ("CREWE" "18:58" "CHESTER" "19:18" "Train" "00:20")
+  ("CHESTER" "19:28" "WREXHAM GENERAL" "19:44" "Train" "00:16"))
+ (("ABERDEEN" "09:30" "DUNDEE" "10:43" "Train" "01:13")
+  ("DUNDEE" "11:25" "EDINBURGH" "13:03" "Train" "01:38")
+  ("EDINBURGH" "14:52" "CREWE" "18:09" "Train" "03:17")
+  ("CREWE" "18:58" "CHESTER" "19:18" "Train" "00:20")
+  ("CHESTER" "19:28" "WREXHAM GENERAL" "19:44" "Train" "00:16"))
+ (("ABERDEEN" "09:55" "EDINBURGH" "12:23" "Train" "02:28")
+  ("EDINBURGH" "12:52" "CREWE" "16:07" "Train" "03:15")
+  ("CREWE" "16:33" "CHESTER" "16:57" "Train" "00:24")
+  ("CHESTER" "17:28" "WREXHAM GENERAL" "17:44" "Train" "00:16"))
+ (("ABERDEEN" "09:55" "EDINBURGH" "12:23" "Train" "02:28")
+  ("EDINBURGH" "12:49" "CREWE" "16:08" "Train" "03:19")
+  ("CREWE" "16:33" "CHESTER" "16:58" "Train" "00:25")
+  ("CHESTER" "17:28" "WREXHAM GENERAL" "17:44" "Train" "00:16"))
+ (("ABERDEEN" "11:30" "DUNDEE" "12:41" "Train" "01:11")
+  ("DUNDEE" "14:43" "PERTH" "15:03" "Train" "00:20")
+  ("PERTH" "23:02" "CREWE" "05:29" "Train" "06:27")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "11:30" "DUNDEE" "12:41" "Train" "01:11")
+  ("DUNDEE" "13:10" "CREWE" "18:09" "Train" "04:59")
+  ("CREWE" "18:58" "CHESTER" "19:18" "Train" "00:20")
+  ("CHESTER" "19:28" "WREXHAM GENERAL" "19:44" "Train" "00:16"))
+ (("ABERDEEN" "11:30" "DUNDEE" "12:41" "Train" "01:11")
+  ("DUNDEE" "16:25" "EDINBURGH" "17:40" "Train" "01:15")
+  ("EDINBURGH" "18:52" "CREWE" "22:12" "Train" "03:20")
+  ("CREWE" "22:55" "CHESTER" "23:19" "Train" "00:24")
+  ("CHESTER" "08:08" "WREXHAM GENERAL" "08:26" "Train" "00:18"))
+ (("ABERDEEN" "11:42" "DUNDEE" "12:52" "Train" "01:10")
+  ("DUNDEE" "18:33" "EDINBURGH" "19:59" "Train" "01:26")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "11:42" "DUNDEE" "12:52" "Train" "01:10")
+  ("DUNDEE" "15:32" "HAYMARKET" "16:46" "Train" "01:14")
+  ("HAYMARKET" "16:57" "CREWE" "20:12" "Train" "03:15")
+  ("CREWE" "20:33" "CHESTER" "20:57" "Train" "00:24")
+  ("CHESTER" "21:28" "WREXHAM GENERAL" "21:44" "Train" "00:16"))
+ (("ABERDEEN" "11:42" "DUNDEE" "12:52" "Train" "01:10")
+  ("DUNDEE" "15:32" "EDINBURGH" "16:53" "Train" "01:21")
+  ("EDINBURGH" "17:52" "CREWE" "21:58" "Train" "04:06")
+  ("CREWE" "22:33" "CHESTER" "22:57" "Train" "00:24")
+  ("CHESTER" "05:16" "WREXHAM GENERAL" "05:37" "Train" "00:21"))
+ (("ABERDEEN" "11:55" "CREWE" "18:09" "Train" "06:14")
+  ("CREWE" "18:58" "CHESTER" "19:18" "Train" "00:20")
+  ("CHESTER" "19:28" "WREXHAM GENERAL" "19:44" "Train" "00:16"))
+ (("ABERDEEN" "12:42" "DUNDEE" "13:51" "Train" "01:09")
+  ("DUNDEE" "15:32" "HAYMARKET" "16:46" "Train" "01:14")
+  ("HAYMARKET" "16:57" "CREWE" "20:12" "Train" "03:15")
+  ("CREWE" "20:33" "CHESTER" "20:57" "Train" "00:24")
+  ("CHESTER" "21:28" "WREXHAM GENERAL" "21:44" "Train" "00:16"))
+ (("ABERDEEN" "12:42" "DUNDEE" "13:51" "Train" "01:09")
+  ("DUNDEE" "15:32" "EDINBURGH" "16:53" "Train" "01:21")
+  ("EDINBURGH" "17:52" "CREWE" "21:58" "Train" "04:06")
+  ("CREWE" "22:33" "CHESTER" "22:57" "Train" "00:24")
+  ("CHESTER" "05:16" "WREXHAM GENERAL" "05:37" "Train" "00:21"))
+ (("ABERDEEN" "12:42" "DUNDEE" "13:51" "Train" "01:09")
+  ("DUNDEE" "18:33" "EDINBURGH" "19:59" "Train" "01:26")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "13:30" "DUNDEE" "14:41" "Train" "01:11")
+  ("DUNDEE" "16:25" "HAYMARKET" "17:34" "Train" "01:09")
+  ("HAYMARKET" "18:57" "CREWE" "22:12" "Train" "03:15")
+  ("CREWE" "22:55" "CHESTER" "23:19" "Train" "00:24")
+  ("CHESTER" "08:08" "WREXHAM GENERAL" "08:26" "Train" "00:18"))
+ (("ABERDEEN" "13:30" "DUNDEE" "14:41" "Train" "01:11")
+  ("DUNDEE" "16:25" "EDINBURGH" "17:40" "Train" "01:15")
+  ("EDINBURGH" "18:52" "CREWE" "22:12" "Train" "03:20")
+  ("CREWE" "22:55" "CHESTER" "23:19" "Train" "00:24")
+  ("CHESTER" "08:08" "WREXHAM GENERAL" "08:26" "Train" "00:18"))
+ (("ABERDEEN" "13:30" "DUNDEE" "14:41" "Train" "01:11")
+  ("DUNDEE" "16:43" "PERTH" "17:03" "Train" "00:20")
+  ("PERTH" "23:02" "CREWE" "05:29" "Train" "06:27")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "14:25" "EDINBURGH" "16:53" "Train" "02:28")
+  ("EDINBURGH" "17:52" "CARLISLE" "19:14" "Train" "01:22")
+  ("CARLISLE" "19:36" "CREWE" "21:36" "Train" "02:00")
+  ("CREWE" "22:03" "CHESTER" "22:27" "Train" "00:24")
+  ("CHESTER" "22:31" "WREXHAM GENERAL" "22:47" "Train" "00:16"))
+ (("ABERDEEN" "14:25" "EDINBURGH" "16:53" "Train" "02:28")
+  ("EDINBURGH" "17:52" "CREWE" "21:58" "Train" "04:06")
+  ("CREWE" "22:33" "CHESTER" "22:57" "Train" "00:24")
+  ("CHESTER" "05:16" "WREXHAM GENERAL" "05:37" "Train" "00:21"))
+ (("ABERDEEN" "14:25" "DUNDEE" "15:31" "Train" "01:06")
+  ("DUNDEE" "18:33" "EDINBURGH" "19:59" "Train" "01:26")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "14:51" "EDINBURGH" "17:22" "Train" "02:31")
+  ("EDINBURGH" "17:52" "CARLISLE" "19:14" "Train" "01:22")
+  ("CARLISLE" "19:36" "CREWE" "21:36" "Train" "02:00")
+  ("CREWE" "22:03" "CHESTER" "22:27" "Train" "00:24")
+  ("CHESTER" "22:31" "WREXHAM GENERAL" "22:47" "Train" "00:16"))
+ (("ABERDEEN" "14:51" "EDINBURGH" "17:22" "Train" "02:31")
+  ("EDINBURGH" "17:52" "CREWE" "21:58" "Train" "04:06")
+  ("CREWE" "22:33" "CHESTER" "22:57" "Train" "00:24")
+  ("CHESTER" "05:16" "WREXHAM GENERAL" "05:37" "Train" "00:21"))
+ (("ABERDEEN" "14:51" "DUNDEE" "16:02" "Train" "01:11")
+  ("DUNDEE" "18:33" "EDINBURGH" "19:59" "Train" "01:26")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "15:10" "EDINBURGH" "17:40" "Train" "02:30")
+  ("EDINBURGH" "18:52" "CREWE" "22:12" "Train" "03:20")
+  ("CREWE" "22:55" "CHESTER" "23:19" "Train" "00:24")
+  ("CHESTER" "08:08" "WREXHAM GENERAL" "08:26" "Train" "00:18"))
+ (("ABERDEEN" "15:10" "DUNDEE" "16:23" "Train" "01:13")
+  ("DUNDEE" "16:43" "PERTH" "17:03" "Train" "00:20")
+  ("PERTH" "23:02" "CREWE" "05:29" "Train" "06:27")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "15:20" "EDINBURGH" "17:53" "Train" "02:33")
+  ("EDINBURGH" "18:52" "CREWE" "22:14" "Train" "03:22")
+  ("CREWE" "22:33" "CHESTER" "22:57" "Train" "00:24")
+  ("CHESTER" "05:16" "WREXHAM GENERAL" "05:37" "Train" "00:21"))
+ (("ABERDEEN" "15:20" "EDINBURGH" "17:53" "Train" "02:33")
+  ("EDINBURGH" "18:52" "CARLISLE" "20:14" "Train" "01:22")
+  ("CARLISLE" "06:30" "CREWE" "08:26" "Train" "01:56")
+  ("CREWE" "09:03" "CHESTER" "09:26" "Train" "00:23")
+  ("CHESTER" "10:20" "WREXHAM GENERAL" "10:36" "Train" "00:16"))
+ (("ABERDEEN" "15:20" "DUNDEE" "16:27" "Train" "01:07")
+  ("DUNDEE" "18:33" "EDINBURGH" "19:59" "Train" "01:26")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "15:30" "DUNDEE" "16:41" "Train" "01:11")
+  ("DUNDEE" "23:04" "EDINBURGH" "00:33" "Train" "01:29")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "15:30" "DUNDEE" "16:41" "Train" "01:11")
+  ("DUNDEE" "19:02" "PERTH" "19:22" "Train" "00:20")
+  ("PERTH" "23:02" "CREWE" "05:29" "Train" "06:27")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "15:30" "DUNDEE" "16:41" "Train" "01:11")
+  ("DUNDEE" "18:19" "EDINBURGH" "19:34" "Train" "01:15")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "16:22" "EDINBURGH" "18:56" "Train" "02:34")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "16:22" "EDINBURGH" "18:56" "Train" "02:34")
+  ("EDINBURGH" "06:34" "CREWE" "10:12" "Train" "03:38")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "17:10" "DUNDEE" "18:17" "Train" "01:07")
+  ("DUNDEE" "19:02" "PERTH" "19:22" "Train" "00:20")
+  ("PERTH" "23:02" "CREWE" "05:29" "Train" "06:27")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "17:10" "EDINBURGH" "19:34" "Train" "02:24")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "17:22" "EDINBURGH" "19:59" "Train" "02:37")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "17:22" "EDINBURGH" "19:59" "Train" "02:37")
+  ("EDINBURGH" "06:34" "CREWE" "10:12" "Train" "03:38")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "17:50" "DUNDEE" "19:00" "Train" "01:10")
+  ("DUNDEE" "23:04" "EDINBURGH" "00:33" "Train" "01:29")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "17:50" "DUNDEE" "19:00" "Train" "01:10")
+  ("DUNDEE" "20:46" "PERTH" "21:07" "Train" "00:21")
+  ("PERTH" "23:02" "CREWE" "05:29" "Train" "06:27")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "17:50" "DUNDEE" "19:00" "Train" "01:10")
+  ("DUNDEE" "20:20" "EDINBURGH" "21:37" "Train" "01:17")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "17:55" "DUNDEE" "19:10" "Train" "01:15")
+  ("DUNDEE" "19:35" "HAYMARKET" "20:45" "Train" "01:10")
+  ("HAYMARKET" "06:56" "CREWE" "10:12" "Train" "03:16")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "17:55" "DUNDEE" "19:10" "Train" "01:15")
+  ("DUNDEE" "19:34" "HAYMARKET" "20:44" "Train" "01:10")
+  ("HAYMARKET" "06:38" "CREWE" "10:12" "Train" "03:34")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "17:55" "DUNDEE" "19:10" "Train" "01:15")
+  ("DUNDEE" "19:35" "EDINBURGH" "20:50" "Train" "01:15")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "17:55" "DUNDEE" "19:10" "Train" "01:15")
+  ("DUNDEE" "19:34" "EDINBURGH" "20:50" "Train" "01:16")
+  ("EDINBURGH" "06:34" "CREWE" "10:12" "Train" "03:38")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "18:23" "EDINBURGH" "20:50" "Train" "02:27")
+  ("EDINBURGH" "06:34" "CREWE" "10:12" "Train" "03:38")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "18:25" "EDINBURGH" "20:50" "Train" "02:25")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "19:10" "DUNDEE" "20:18" "Train" "01:08")
+  ("DUNDEE" "20:46" "PERTH" "21:07" "Train" "00:21")
+  ("PERTH" "23:02" "CREWE" "05:29" "Train" "06:27")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "19:10" "EDINBURGH" "21:37" "Train" "02:27")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "19:20" "EDINBURGH" "21:51" "Train" "02:31")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "19:25" "EDINBURGH" "21:56" "Train" "02:31")
+  ("EDINBURGH" "06:34" "CREWE" "10:12" "Train" "03:38")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "19:35" "DUNDEE" "20:45" "Train" "01:10")
+  ("DUNDEE" "23:04" "EDINBURGH" "00:33" "Train" "01:29")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "20:10" "EDINBURGH" "22:43" "Train" "02:33")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "20:22" "EDINBURGH" "23:07" "Train" "02:45")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "20:26" "EDINBURGH" "23:25" "Train" "02:59")
+  ("EDINBURGH" "06:34" "CREWE" "10:12" "Train" "03:38")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "20:30" "EDINBURGH" "23:27" "Train" "02:57")
+  ("EDINBURGH" "06:52" "CREWE" "10:12" "Train" "03:20")
+  ("CREWE" "10:33" "CHESTER" "10:57" "Train" "00:24")
+  ("CHESTER" "11:28" "WREXHAM GENERAL" "11:44" "Train" "00:16"))
+ (("ABERDEEN" "20:51" "EDINBURGH" "23:25" "Train" "02:34")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "21:40" "EDINBURGH" "00:33" "Train" "02:53")
+  ("EDINBURGH" "01:05" "CREWE" "05:29" "Train" "04:24")
+  ("CREWE" "09:00" "CHESTER" "09:18" "Train" "00:18")
+  ("CHESTER" "11:15" "WREXHAM GENERAL" "11:31" "Train" "00:16"))
+ (("ABERDEEN" "22:30" "DUNDEE" "23:46" "Train" "01:16")
+  ("DUNDEE" "07:25" "EDINBURGH" "08:59" "Train" "01:34")
+  ("EDINBURGH" "10:52" "CREWE" "14:09" "Train" "03:17")
+  ("CREWE" "14:55" "CHESTER" "15:13" "Train" "00:18")
+  ("CHESTER" "15:20" "WREXHAM GENERAL" "15:36" "Train" "00:16")))
+
+  seconds  |     consed    |    calls   |  sec/call  |  name  
+----------------------------------------------------------------
+    18.411 |   445,002,384 |     21,652 |   0.000850 | FIND-DIRECT-TRAINS-ALL-STOPS
+     6.061 |    61,809,432 |  2,391,413 |   0.000003 | STOPS->INFO
+     3.342 |   219,471,240 |    789,985 |   0.000004 | REMOVE-IF-NOT
+     2.744 |   144,435,184 |    797,971 |   0.000003 | TIMEDIFFERENCE
+     2.639 |    97,993,472 |     22,019 |   0.000120 | CURRENT-SHORT-TIME
+     2.384 |   131,721,448 |    229,353 |   0.000010 | READJUST-TRAIN-A*
+     2.258 |             0 |  2,074,474 |   0.000001 | STN-IN-P
+     1.514 |   141,661,344 |        359 |   0.004218 | FIND-SIMPLE-DIRECT-TRAINS
+     1.077 |    45,679,912 |    713,420 |   0.000002 | SPLIT-TIME
+     1.030 |    46,157,192 |    358,651 |   0.000003 | AVERAGE-TIME-STOPS
+     0.769 |    70,284,320 |  4,281,879 |  0.0000002 | TRAIN-TIME-TEST-P
+     0.744 |    19,026,936 |     88,607 |   0.000008 | JOURNEY-COST
+     0.470 |    79,447,136 |  2,435,928 |  0.0000002 | SIMPLE-DECODE-TRAIN-STOP2
+     0.413 |             0 |    673,885 |   0.000001 | DATE-MATCHES-P
+     0.245 |    26,256,536 |    356,710 |   0.000001 | ADD-TIMES
+     0.209 |    31,002,304 |     85,335 |   0.000002 | DECODE-TRAIN
+     0.179 |    12,810,824 |    178,694 |   0.000001 | SHORT-TIME->MINS
+     0.171 |             0 |    149,795 |   0.000001 | VALIDATE-READJUSTED-TRAIN-P
+     0.152 |       991,032 |     21,652 |   0.000007 | FIND-TRAINS-TIPLOCS
+     0.138 |     1,956,160 |     25,364 |   0.000005 | TIPLOC->STATION-NAME
+     0.123 |    15,416,656 |    483,764 |  0.0000003 | HRMIN->SHORT-TIME
+     0.022 |     2,945,272 |     12,682 |   0.000002 | MSTOPS->INFO
+     0.003 |         8,192 |        120 |   0.000022 | JOURNEY-SUMMARY-A*
+     0.000 |       478,496 |     21,652 |   0.000000 | FIND-TRAINS-FROM-TO
+     0.000 |             0 |          1 |   0.000000 | POSSIBLE-JOURNEYS-A*
+     0.000 |    33,312,352 |     22,591 |   0.000000 | A*-SEARCH
+     0.000 |    20,027,120 |    447,998 |   0.000000 | AVERAGE-TIME-PATH
+     0.000 |   201,404,568 |     21,652 |   0.000000 | DIRECT-TRAINS
+     0.000 |             0 |     21,642 |   0.000000 | STOP=
+     0.000 |       163,824 |         10 |   0.000000 | DIRECT-TRAINS->PATH
+     0.000 |     1,241,320 |          1 |   0.000000 | SORT-RESULT-SUMMARIZE-A*
+     0.000 |        80,848 |          1 |   0.000000 | POSSIBLE-JOURNEYS-ROUTES-A*
+     0.000 |    20,190,040 |    776,329 |   0.000000 | TIMEDIFFERENCE-ND
+     0.000 |    10,253,208 |    178,804 |   0.000000 | JOURNEY-DURATION
+     0.000 |       548,864 |     25,364 |   0.000000 | NUM->TIME
+     0.000 |       696,320 |     12,682 |   0.000000 | TRAIN-DURATION
+     0.000 |             0 |    754,183 |   0.000000 | TIME-TEST-P
+     0.000 |             0 |  1,501,272 |   0.000000 | DBG
+     0.000 |             0 |    797,971 |   0.000000 | MTIMEDIFFERENCE
+     0.000 |     4,460,848 |    179,095 |   0.000000 | MAP-SUBSEQUENT-TWO
+     0.000 |     4,661,248 |    179,095 |   0.000000 | JOURNEY-TIME
+----------------------------------------------------------------
+    45.098 | 1,891,596,032 | 21,134,055 |            | Total
+
+estimated total profiling overhead: 18.77 seconds
+overhead estimation parameters:
+  1.6000001e-8s/call, 8.88e-7s total profiling, 4.08e-7s internal profiling
+
+These functions were not called:
+ BEST-JOURNEY DATE2TIME FAR-ALONG-ON-ROUTE FILTER-LEGS JOURNEY-LEG->TRAINS
+ JOURNEY-SUMMARY JOURNEY< POSSIBLE-JOURNEYS POSSIBLE-JOURNEYS-ROUTES
+ READJUST-TRAIN SIMPLE-DECODE-TRAIN-STOP SIMPLE-ENCODE-TRAIN-STOP2
+ SORT-RESULT-SUMMARIZE TRAIN-WITH-CHANGES YYMMDD->SIMPLE-DATE
+; No value
+
+(sb-profile:profile possible-journeys readjust-train journey-leg->trains best-journey far-along-on-route get-permitted-journeys-db
+		    find-trains find-saved-trains find-station-by-code best-result trains->journeys direct-trains->path
+		    our-get-unique-trains-changes-no-summary display-journey-summary train-summary get-permitted-journeys)
+>>>>>>> /tmp/performance~other.EwVv4-
+
+
+(sb-profile:profile extract-min! empty? waiting-time->now dijkstra elementary-connections connection-length)
+
+(time (defparameter *test* (dijkstra "RDG")))
+Evaluation took:
+  6.871 seconds of real time
+  3.908245 seconds of user run time
+  1.504094 seconds of system run time
+  [Run times include 1.624 seconds GC run time.]
+  0 calls to %EVAL
+  0 page faults and
+  789,003,288 bytes consed.
+
+(sb-profile:report)
+  seconds  |    consed   | calls |  sec/call  |  name  
+---------------------------------------------------------
+     4.039 | 777,684,584 | 2,043 |   0.001977 | ELEMENTARY-CONNECTIONS
+     0.748 |  10,354,680 |     1 |   0.748306 | DIJKSTRA
+     0.608 |     964,024 |   344 |   0.001767 | EXTRACT-MIN!
+     0.007 |           0 | 1,594 |   0.000005 | CONNECTION-LENGTH
+     0.003 |           0 | 2,021 |   0.000002 | WAITING-TIME->NOW
+     0.000 |           0 |   689 |   0.000000 | EMPTY?
+---------------------------------------------------------
+     5.406 | 789,003,288 | 6,692 |            | Total
+
+estimated total profiling overhead: 0.01 seconds
+overhead estimation parameters:
+  8.000001e-9s/call, 9.12e-7s total profiling, 3.6e-7s internal profiling
+
+---------OLD-------------
+
+  seconds  |     consed    |    calls   |  sec/call  |  name  
+----------------------------------------------------------------
+   132.491 |   435,500,352 |    546,616 |   0.000242 | ELEMENTARY-CONNECTIONS
+    95.295 |   259,320,816 |    118,336 |   0.000805 | EXTRACT-MIN!
+    17.286 | 5,462,017,040 |  1,093,232 |   0.000016 | CURRENT-SHORT-TIME
+     3.258 |   797,998,144 |    687,883 |   0.000005 | TRAIN-DETAILS
+     2.579 |   124,735,384 |        344 |   0.007496 | DIJKSTRA
+     1.296 |             0 |  2,171,899 |   0.000001 | CONNECTION-ARRIVAL-TIME
+     0.510 |   182,796,312 |     13,357 |   0.000038 | TRANSFER->CONNECTION
+     0.007 |             0 |    118,336 |  0.0000001 | NEIGHBOURS
+     0.000 |             0 |    179,897 |   0.000000 | DECREASE-KEY
+     0.000 |    22,687,056 |    687,883 |   0.000000 | HRMIN->SHORT-TIME
+     0.000 |   361,283,152 |  2,789,641 |   0.000000 | CONNECTIONS->LIST
+     0.000 |   180,185,960 |  1,093,232 |   0.000000 | MAKE-TIME-TEST-FN
+     0.000 |             0 |          1 |   0.000000 | CURRENT-HRMINS
+     0.000 |       724,312 |     26,714 |   0.000000 | NOW
+     0.000 |             0 |    237,016 |   0.000000 | EMPTY?
+     0.000 |             0 |    118,336 |   0.000000 | FIXED-NEIGHBOURS
+     0.000 |   217,591,648 |  6,731,919 |   0.000000 | MAKE-ARRAY
+     0.000 |        16,360 |        344 |   0.000000 | MAKE-QUEUE
+     0.000 |             0 |    545,027 |   0.000000 | WAITING-TIME->NOW
+     0.000 |             0 |    666,994 |   0.000000 | FIND-STATION-BY-CODE
+     0.000 |             0 |     39,764 |   0.000000 | ADD-MINUTES
+     0.000 |    27,688,872 |    535,192 |   0.000000 | CONNECTION-LENGTH
+     0.000 |   156,716,776 |          1 |   0.000000 | STORE-RESULTS
+----------------------------------------------------------------
+   252.721 | 8,229,262,184 | 18,401,964 |            | Total
+
+estimated total profiling overhead: 16.05 seconds
+overhead estimation parameters:
+  1.6000001e-8s/call, 8.72e-7s total profiling, 4.16e-7s internal profiling
+
+These functions were not called:
+ AREF DECREASEKEY DIJKSTRA-HEAPED POPMIN SVREF
+; No value
+
+  seconds  |     consed    |    calls   |  sec/call  |  name  
+----------------------------------------------------------------
+    43.588 |   433,953,512 |    546,616 |   0.000080 | ELEMENTARY-CONNECTIONS
+    15.166 | 5,381,484,184 |  1,093,232 |   0.000014 | CURRENT-SHORT-TIME
+     2.939 |   799,630,064 |    687,878 |   0.000004 | TRAIN-DETAILS
+     1.594 |   140,766,912 |        344 |   0.004633 | DIJKSTRA-HEAPED
+     0.522 |   182,801,928 |     13,335 |   0.000039 | TRANSFER->CONNECTION
+     0.501 |    13,492,136 |    118,336 |   0.000004 | POPMIN
+     0.073 |             0 |    180,449 |  0.0000004 | DECREASEKEY
+     0.000 |    22,461,784 |    687,878 |   0.000000 | HRMIN->SHORT-TIME
+     0.000 |   358,698,984 |  2,789,645 |   0.000000 | CONNECTIONS->LIST
+     0.000 |   186,317,064 |  1,093,232 |   0.000000 | MAKE-TIME-TEST-FN
+     0.000 |             0 |          1 |   0.000000 | CURRENT-HRMINS
+     0.000 |       578,624 |     26,670 |   0.000000 | NOW
+     0.000 |             0 |    118,336 |   0.000000 | FIXED-NEIGHBOURS
+     0.000 |             0 |    118,336 |   0.000000 | NEIGHBOURS
+     0.000 |   308,822,592 |  6,849,867 |   0.000000 | MAKE-ARRAY
+     0.000 |             0 |    545,027 |   0.000000 | WAITING-TIME->NOW
+     0.000 |             0 |  2,171,877 |   0.000000 | CONNECTION-ARRIVAL-TIME
+     0.000 |             0 |    666,972 |   0.000000 | FIND-STATION-BY-CODE
+     0.000 |             0 |     39,698 |   0.000000 | ADD-MINUTES
+     0.000 |    27,219,608 |    535,192 |   0.000000 | CONNECTION-LENGTH
+     0.000 |   157,053,944 |          1 |   0.000000 | STORE-RESULTS
+----------------------------------------------------------------
+    64.382 | 8,013,281,336 | 18,282,922 |            | Total
+
+estimated total profiling overhead: 15.94 seconds
+overhead estimation parameters:
+  1.6000001e-8s/call, 8.72e-7s total profiling, 4.16e-7s internal profiling
+
+These functions were not called:
+ AREF DECREASE-KEY DIJKSTRA EMPTY? EXTRACT-MIN! MAKE-QUEUE SVREF
+; No value

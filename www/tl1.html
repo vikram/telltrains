@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html><head
+><title
+></title
+><link href="timeline.css" rel="stylesheet"/>
+<link href="transparent.ico" rel="icon"/>
+<script type="text/javascript" src="timeline.js"></script></head
+><body onload="init();">
+<div id="outerDiv" style="position: relative; overflow: hidden; border: 1px solid #e5e5e5; width: 780px; height: 300px; left: 50%; margin-left: -400px;"
+><div id="markers" style="top: 0px; height: 13px; left: 120px; width: 7455px; position:relative; z-index: 4;"
+><div class="odd" style="left: -180px;"
+>2am</div
+><div class="even" style="left: -120px;"
+>3am</div
+><div class="odd" style="left: -60px;"
+>4am</div
+><div class="even" style="left: 0px;"
+>5am</div
+><div class="odd" style="left: 60px;"
+>6am</div
+><div class="even" style="left: 120px;"
+>7am</div
+><div class="odd" style="left: 180px;"
+>8am</div
+><div class="even" style="left: 240px;"
+>9am</div
+><div class="odd" style="left: 300px;"
+>10am</div
+><div class="even" style="left: 360px;"
+>11am</div
+><div class="odd" style="left: 420px;"
+>noon</div
+><div class="even" style="left: 480px;"
+>1pm</div
+><div class="odd" style="left: 540px;"
+>2pm</div
+><div class="even" style="left: 600px;"
+>3pm</div
+><div class="odd" style="left: 660px;"
+>4pm</div
+><div class="even" style="left: 720px;"
+>5pm</div
+></div
+<div id="container"
+><div id="timeline" style="top: 0px; height: 1200px; left: 120px; width: 7455px; position:relative; z-index: 3;"
+><div id="trains"
+><div class="red" style="top: 2.0em; left: 11px; width: 304px;"
+><div class="deptime"
+>06:01</div
+><div class="arrtime" style="left: 159px;"
+>07:45</div
+><div class="duration" style="left: 159px;"
+>1:44</div
+><img class="train" src="leftbluebar.png" width="5"/><img class="train" style="left: 55px;" src="bluebar.png" width="94"/><img class="train" style="left: 149px;" src="rightbluebar.png" width="5"/></div
+><div class="red" style="top: 4.5em; left: 35px; width: 310px;"
+><div class="deptime"
+>06:25</div
+><div class="arrtime" style="left: 165px;"
+>08:15</div
+><div class="duration" style="left: 165px;"
+>1:50</div
+><img class="train" src="leftbluebar.png" width="5"/><img class="train" style="left: 55px;" src="bluebar.png" width="100"/><img class="train" style="left: 155px;" src="rightbluebar.png" width="5"/></div
+><div class="red" style="top: 7.0em; left: 79px; width: 296px;"
+><div class="deptime"
+>07:09</div
+><div class="arrtime" style="left: 151px;"
+>08:45</div
+><div class="duration" style="left: 151px;"
+>1:36</div
+><img class="train" src="leftbluebar.png" width="5"/><img class="train" style="left: 55px;" src="bluebar.png" width="86"/><img class="train" style="left: 141px;" src="rightbluebar.png" width="5"/></div
+><div class="red" style="top: 9.5em; left: 106px; width: 299px;"
+><div class="deptime"
+>07:36</div
+><div class="arrtime" style="left: 154px;"
+>09:15</div
+><div class="duration" style="left: 154px;"
+>1:39</div
+><img class="train" src="leftbluebar.png" width="5"/><img class="train" style="left: 55px;" src="bluebar.png" width="89"/><img class="train" style="left: 144px;" src="rightbluebar.png" width="5"/></div
+><div class="red" style="top: 12.0em; left: 128px; width: 299px;"
+><div class="deptime"
+>07:58</div
+><div class="arrtime" style="left: 154px;"
+>09:37</div
+><div class="duration" style="left: 154px;"
+>1:39</div
+><img class="train" src="leftbluebar.png" width="5"/><img class="train" style="left: 55px;" src="bluebar.png" width="89"/><img class="train" style="left: 144px;" src="rightbluebar.png" width="5"/></div
+><div class="red" style="top: 14.5em; left: 153px; width: 294px;"
+ ><div class="deptime"
+ >08:23</div
+ ><div class="arrtime" style="left: 149px;"
+ >09:57</div
+ ><div class="duration" style="left: 149px;"
+ >1:34</div
+ ><img class="train" src="leftbluebar.png" width="5"/><img class="train" style="left: 55px;" src="bluebar.png" width="84"/><img class="train" style="left: 139px;" src="rightbluebar.png" width="5"/></div
+><div class="red" style="top: 17.0em; left: 166px; width: 301px;"
+ ><div class="deptime"
+ >08:36</div
+ ><div class="arrtime" style="left: 156px;"
+ >10:17</div
+ ><div class="duration" style="left: 156px;"
+ >1:41</div
+ ><img class="train" src="leftbluebar.png" width="5"/><img class="train" style="left: 55px;" src="bluebar.png" width="91"/><img class="train" style="left: 146px;" src="rightbluebar.png" width="5"/></div
+><div class="red" style="top: 19.5em; left: 186px; width: 301px;"
+ ><div class="deptime"
+ >08:56</div
+ ><div class="arrtime" style="left: 156px;"
+ >10:37</div
+ ><div class="duration" style="left: 156px;"
+ >1:41</div
+ ><img class="train" src="leftbluebar.png" width="5"/><img class="train" style="left: 55px;" src="bluebar.png" width="91"/><img class="train" style="left: 146px;" src="rightbluebar.png" width="5"/></div
+><div class="red" style="top: 22.0em; left: 208px; width: 299px;"
+ ><div class="deptime"
+ >09:18</div
+ ><div class="arrtime" style="left: 154px;"
+ >10:57</div
+ ><div class="duration" style="left: 154px;"
+ >1:39</div
+ ><img class="train" src="leftbluebar.png" width="5"/><img class="train" style="left: 55px;" src="bluebar.png" width="89"/><img class="train" style="left: 144px;" src="rightbluebar.png" width="5"/></div
+></div
+ ><div id="lines"
+ ><div class="even" style="left: -180px;"
+ ></div
+ ><div class="odd" style="left: -120px;"
+ ></div
+ ><div class="even" style="left: -60px;"
+ ></div
+ ><div class="odd" style="left: 0px;"
+ ></div
+ ><div class="even" style="left: 60px;"
+ ></div
+ ><div class="odd" style="left: 120px;"
+ ></div
+ ><div class="even" style="left: 180px;"
+ ></div
+ ><div class="odd" style="left: 240px;"
+ ></div
+ ><div class="even" style="left: 300px;"
+ ></div
+ ><div class="odd" style="left: 360px;"
+ ></div
+ ><div class="even" style="left: 420px;"
+ ></div
+ ><div class="odd" style="left: 480px;"
+ ></div
+ ><div class="even" style="left: 540px;"
+ ></div
+ ><div class="odd" style="left: 600px;"
+ ></div
+ ><div class="even" style="left: 660px;"
+ ></div
+ ><div class="odd" style="left: 720px;"
+ ></div
+ ><div class="even" style="left: 780px;"
+ ></div
+ ></div
+></div
+ ></div
+ ></div
+ ></body
+ ></html
+>

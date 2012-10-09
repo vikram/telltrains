@@ -1,0 +1,11 @@
+<fb:if-is-own-profile>
+    <fb:profile-action url="http://apps.facebook.com/mycommute/mycommute?src=setup">Setup your commute</fb:profile-action>
+    <fb:else>
+        <fb:if-is-app-user uid="profileowner">
+            <fb:profile-action url="http://apps.facebook.com/mycommute/mycommute?src=view">View <fb:name uid="profileowner" firstnameonly="true" possessive="true" /> commute</fb:profile-action>
+            <fb:else>
+                <fb:profile-action url="http://apps.facebook.com/mycommute/mycommute?src=invite">Invite <fb:name uid="profileowner" firstnameonly="true" /> to myCommute</fb:profile-action>
+            </fb:else>
+        </fb:if-is-app-user>
+    </fb:else>
+</fb:if-is-own-profile>
